@@ -2,6 +2,11 @@
 db4.8-utils
 sqlite3
 
+# Office files
+antiword
+docx2txt
+unrtf
+
 # Networking
 drbd83-tools
 iscsitarget-utils
@@ -21,12 +26,16 @@ rmt
 
 # Hardware
 cmospwd
+encled
 flashrom
+hwinfo
+inxi
 irda-utils
 lm_sensors3
 lshw
 mpt-status
 nvramtool
+smartmontools
 smbios-utils
 
 # Misc^2

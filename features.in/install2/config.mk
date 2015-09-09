@@ -3,7 +3,7 @@
 +installer: use/install2/full; @:
 
 use/install2: use/stage2 sub/stage2@install2 use/metadata \
-	use/cleanup/installer use/bootloader
+	use/cleanup/installer
 	@$(call add_feature)
 	@$(call try,INSTALLER,altlinux-generic)	# might be replaced later
 	@$(call add,INSTALL2_PACKAGES,installer-distro-$$(INSTALLER)-stage2)
@@ -16,8 +16,8 @@ use/install2: use/stage2 sub/stage2@install2 use/metadata \
 	@$(call xport,INSTALL2_CLEANUP_KDRIVERS)
 
 # doesn't use/install2/fs on purpose (at least so far)
-use/install2/full: use/install2/packages use/install2/kms use/install2/vmguest \
-	use/syslinux/localboot.cfg use/syslinux/ui/menu; @:
+use/install2/full: use/install2/packages use/install2/vmguest \
+	use/syslinux/localboot.cfg use/syslinux/ui/menu use/bootloader; @:
 
 # see also use/vmguest
 use/install2/vmguest: use/install2/kvm use/install2/vbox use/install2/vmware; @:
@@ -32,10 +32,6 @@ use/install2/repo: use/install2
 # for alterator-pkg to use
 use/install2/net: use/install2
 	@$(call add,INSTALL2_PACKAGES,curl)
-
-# modern free xorg drivers for mainstream hardware require KMS support
-use/install2/kms: use/stage2/kms
-	@$(call add,BASE_KMODULES_REGEXP,drm.*)
 
 # see also use/vmguest/kvm; qxl included in xorg pkglist
 use/install2/kvm:
@@ -66,6 +62,10 @@ use/install2/jfs:
 
 use/install2/reiserfs:
 	@$(call add,SYSTEM_PACKAGES,reiserfsprogs)
+
+# prepare bootloader for software suspend (see also live)
+use/install2/suspend:
+	@$(call add,INSTALL2_PACKAGES,installer-feature-desktop-suspend-stage2)
 
 # when VNC installation is less welcome than a few extra megs
 use/install2/cleanup/vnc:

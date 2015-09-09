@@ -1,7 +1,7 @@
 ifeq (ve,$(IMAGE_CLASS))
 
 # no "vzctl enter"
-ve/bare: ve/.base use/init/sysv; @:
+ve/bare: ve/.base +sysvinit; @:
 
 # /dev/pty and friends start here
 ve/base: ve/bare
@@ -25,5 +25,12 @@ ve/generic: ve/base use/repo
 # example of service-specific template
 ve/openvpn: ve/bare
 	@$(call add,BASE_LISTS,$(call tags,server openvpn))
+
+ve/pgsql94: ve/generic
+	@$(call add,BASE_PACKAGES,postgresql9.4-server)
+
+ve/systemd-bare: ve/.base use/control/sudo-su use/repo use/net/networkd +systemd
+	@$(call add,BASE_PACKAGES,interactivesystem su)
+	@$(call add,BASE_LISTS,openssh)
 
 endif

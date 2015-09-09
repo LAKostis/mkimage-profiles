@@ -14,6 +14,8 @@ use/efi:
 	@$(call add,INSTALL2_PACKAGES,dosfstools fatresize)
 	@$(call try,EFI_BOOTLOADER,elilo)	# default one
 	@$(call add,STAGE1_KCONFIG,EFI EFI_PARTITION EFI_VARS FB_EFI)
+	@$(call set,MKI_VER_OPTIMAL,0.2.17)	# for EFI_BOOTARGS
+	@$(call add,EFI_BOOTARGS,$$(STAGE2_BOOTARGS))
 
 use/efi/refind: use/efi
 	@$(call set,EFI_BOOTLOADER,refind)
@@ -31,7 +33,6 @@ use/efi/memtest86: use/efi/refind
 
 use/efi/debug: use/efi
 	@$(call add,STAGE2_PACKAGES,efibootmgr gdisk)
-	@$(call set,KFLAVOURS,led-ws)
 
 else
 

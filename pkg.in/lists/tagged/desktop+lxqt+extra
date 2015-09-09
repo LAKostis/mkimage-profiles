@@ -9,14 +9,19 @@ icon-theme-simple
 
 # nice and useful qt4 apps
 bsc
-clementine
+easypaint
 fatrat
 focuswriter
 qt4-settings
 qtparted
 tubularix
 smplayer
+QCheckers
 qps
+
+# media player; see also #30556 though
+clementine
+clementine-codecs-full
 
 # upstream recommended
 #ptbatterysystemtray
@@ -25,5 +30,9 @@ arandr
 qbittorrent
 quiterss
 
-# doesn't integrate with pcmanfm-qt as of right now
-#qpdfview
+### doesn't integrate with pcmanfm-qt as of right now
+qpdfview
+
+# useless but cute
+cool-retro-term
+fonts-ttf-liberation

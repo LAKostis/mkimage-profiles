@@ -8,6 +8,7 @@ use/server/mini: use/server use/net-ssh use/syslinux/timeout/600
 		$(call tags,base && (server || network || security || pkg)))
 	@$(call add,THE_LISTS,$(call tags,extra && (server || network)))
 	@$(call add,MAIN_LISTS,osec)
+	@$(call add,INSTALL2_PACKAGES,installer-feature-server-raid-fixup-stage2)
 	@$(call add,DEFAULT_SERVICES_DISABLE,messagebus lvm2-lvmetad)
 
 use/server/ovz: use/server
@@ -16,6 +17,8 @@ use/server/ovz: use/server
 	@$(call add,MAIN_KMODULES,ipset ipt-netflow opendpi pf_ring)
 	@$(call add,MAIN_KMODULES,xtables-addons)	# t6/branch
 	@$(call add,MAIN_KMODULES,drbd83 kvm)
+	@$(call add,MAIN_KMODULES,staging)
+	@$(call add,BASE_PACKAGES,lftp wget)
 	@$(call add,BASE_LISTS,ovz-server)
 
 # NB: examine zabbix-preinstall package, initialization is NOT automatic!

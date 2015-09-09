@@ -2,8 +2,11 @@
 
 use/net: use/services
 	@$(call add_feature)
-	@$(call add,THE_PACKAGES,etcnet)
+	@$(call add,THE_PACKAGES,network-config-subsystem)
 	@$(call add,DEFAULT_SERVICES_ENABLE,network)
+
+use/net/etcnet: use/net
+	@$(call add,THE_PACKAGES,etcnet)
 
 use/net/dhcp: use/net
 	@$(call add,THE_PACKAGES,dhcpcd)
@@ -24,3 +27,6 @@ use/net/nm/mmgui: use/net/nm
 use/net/connman: use/net
 	@$(call add,THE_PACKAGES,connman)
 	@$(call add,DEFAULT_SERVICES_ENABLE,connmand connman)
+
+use/net/networkd: use/net
+	@$(call add,THE_PACKAGES,systemd-networkd)

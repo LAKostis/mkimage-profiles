@@ -13,20 +13,21 @@ lxqt-session
 pcmanfm-qt
 
 # optional components
-lxqt-appswitcher
 lxqt-openssh-askpass
 lxqt-policykit
+qt4-dbus
+udisks2
+gvfs
 
 # system configuration tools
 compton-conf
 lxqt-config
-lxqt-config-randr
 obconf-qt
 
 # utilities
 lximage-qt
 
-# the rest is a combination of lxde and razorqt desktop lists
+# the rest is a combination of lxde and former razorqt desktop lists
 openbox
 eject
 
@@ -45,6 +46,8 @@ psi-plus-plugin-birthdayreminder
 psi-plus-plugin-conferencelogger
 psi-plus-plugin-screenshot
 psi-plus-plugin-watcher
+
+axkb
 
 # reboot/poweroff in logout menu as of May, 2014
 ConsoleKit

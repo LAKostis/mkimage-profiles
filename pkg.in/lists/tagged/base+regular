@@ -13,7 +13,10 @@ mdadm
 make-initrd-mdadm
 
 openssh
+openssh-blacklist
 net-tools
+
+system-report
 
 strace
 powertop
@@ -22,6 +25,8 @@ usbutils
 acpi
 
 apt-repo
+apt-rsync
+apt-scripts
 update-kernel
 eepm
 

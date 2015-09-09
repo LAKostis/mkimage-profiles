@@ -19,8 +19,10 @@ disktype
 #evms
 #evms-ncurses
 gpart
+hddtemp
 idle3-tools
 iotop
+iozone
 iperf
 hdparm
 lsblk
@@ -35,6 +37,7 @@ safecopy
 sdparm
 sfdisk
 smartmontools
+stress
 testdisk
 mtools
 partimage
@@ -79,8 +82,10 @@ f2fs-tools
 jfsprogs
 logfsprogs
 nilfs-utils
+mtd-utils
 reiser4progs
 reiserfsprogs
+shake
 xfsprogs
 
 # Compressed filesystem image
@@ -91,11 +96,17 @@ squashfsprogs3
 squashfsprogs-xz
 
 # Foreign filesystems
+bindfs
 dosfstools
 exfat-utils
 exofs-utils
 fatback
 fatresize
+fuse-chironfs
+fuse-chunkfs
+fuse-ciopfs
+fuse-compFUSEd
+fuse-funion
 fuse-zfs
 hfsprogs
 ifuse
@@ -129,17 +140,19 @@ zerofree
 
 # Archiving/Compression
 archivemount
+fuse-7z
 
 # Applications/Networking
 adcfw-log
 arpwatch
 cifs-utils
-curlftpfs
 davfs2
 dhcpdump
 dsniff
 elinks
 fping
+fuse-curlftpfs
+fuse-lftpfs
 fuse-sshfs
 hostinfo
 hping2
@@ -158,6 +171,7 @@ mtr
 ncpfs
 netcat
 netlist
+nfs-server
 nfs-utils
 ngrep
 nmap
@@ -208,10 +222,14 @@ udis86
 chntpw
 scrounge-ntfs
 wabread
+winusb
 
 # Mobile
 android-tools
+fuse-obexfs
+fuse-siefs
 gammu
+usbmuxd
 
 # l10n
 glibc-locales

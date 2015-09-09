@@ -6,6 +6,11 @@ distro/dos: distro/.init use/dos use/syslinux/ui/menu; @:
 distro/rescue: distro/.base use/rescue use/syslinux/ui/menu \
 	use/efi/signed use/efi/refind use/efi/shell; @:
 
+distro/rescue-remote: distro/.base use/rescue/base use/stage2/net-eth
+	@$(call set,SYSLINUX_CFG,rescue_remote)
+	@$(call set,SYSLINUX_DIRECT,1)
+	@$(call add,RESCUE_PACKAGES,livecd-net-eth)
+
 distro/syslinux: distro/.init \
 	use/syslinux/localboot.cfg use/syslinux/ui/vesamenu use/hdt; @:
 
@@ -20,21 +25,16 @@ distro/.live-kiosk: distro/.base use/live/base use/live/autologin \
 	use/syslinux/timeout/1 use/cleanup use/stage2/net-eth \
 	use/fonts/otf/adobe +power
 	@$(call add,CLEANUP_PACKAGES,'alterator*' 'guile*' 'vim-common')
+	@$(call set,SYSLINUX_CFG,live)
+	@$(call add,DEFAULT_SERVICES_DISABLE,rpcbind klogd syslogd)
+	@$(call add,DEFAULT_SERVICES_DISABLE,consolesaver fbsetfont keytable)
 
-distro/live-builder-mini: distro/.live-base use/dev/mkimage use/dev \
-	use/stage2/net-eth use/net-eth/dhcp use/syslinux/timeout/30 \
-	use/isohybrid
-	@$(call set,KFLAVOURS,$(BIGRAM))
-	@$(call add,LIVE_LISTS,\
-		$(call tags,(base || live) && (server || builder)))
-	@$(call add,LIVE_PACKAGES,livecd-qemu-arch strace)
-	@$(call add,LIVE_PACKAGES,qemu-user-binfmt_misc)
-	@$(call add,LIVE_PACKAGES,zsh sudo)
+distro/live-builder-mini: distro/.live-base use/dev/builder/base \
+	use/syslinux/timeout/30 use/isohybrid \
+	use/stage2/net-eth use/net-eth/dhcp; @:
 
 distro/live-builder: distro/live-builder-mini \
-	use/efi/signed use/live/rw use/live/repo use/dev/repo
-	@$(call add,MAIN_LISTS,$(call tags,live builder))
-	@$(call add,MAIN_PACKAGES,syslinux pciids memtest86+ mkisofs)
+	use/dev/builder/full use/live/rw +efi; @:
 
 distro/live-install: distro/.live-base use/live/textinstall; @:
 distro/.livecd-install: distro/.live-base use/live/install; @:
@@ -46,7 +46,7 @@ distro/live-razorqt: distro/.live-desktop +razorqt; @:
 distro/live-tde: distro/.live-desktop-ru use/live/install +tde; @:
 distro/live-fvwm: distro/.live-desktop-ru use/x11/lightdm/gtk use/x11/fvwm; @:
 
-distro/live-rescue: distro/live-icewm use/efi
+distro/live-rescue: distro/live-icewm +efi
 	@$(call add,LIVE_LISTS,$(call tags,rescue && (fs || live || x11)))
 	@$(call add,LIVE_LISTS,openssh \
 		$(call tags,(base || extra) && (archive || rescue || network)))
@@ -84,27 +84,59 @@ distro/.live-3d: distro/.live-x11 use/x11/3d \
 
 distro/live-glxgears: distro/.live-3d; @:
 
-distro/live-flightgear: distro/.live-kiosk use/x11/3d use/sound \
+distro/.live-games: distro/.live-kiosk use/x11/3d use/sound \
 	use/stage2/net-eth use/net-eth/dhcp use/services +efi +sysvinit
 	@$(call set,KFLAVOURS,un-def)
 	@$(call add,LIVE_LISTS,$(call tags,xorg misc))
-	@$(call add,LIVE_PACKAGES,FlightGear FlightGear-tu154b)
-	@$(call add,LIVE_PACKAGES,fgo input-utils livecd-fgfs)
-	@$(call add,LIVE_PACKAGES,glxgears glxinfo)
+	@$(call add,LIVE_PACKAGES,input-utils glxgears glxinfo)
 	@$(call add,DEFAULT_SERVICES_DISABLE,rpcbind alteratord messagebus)
 	@$(call add,SERVICES_DISABLE,livecd-net-eth)
+
+distro/live-flightgear: distro/.live-games
+	@$(call add,LIVE_PACKAGES,FlightGear FlightGear-tu154b)
+	@$(call add,LIVE_PACKAGES,fgo livecd-fgfs)
 	@$(call try,HOMEPAGE,http://www.4p8.com/eric.brasseur/flight_simulator_tutorial.html)
+
+distro/live-0ad: distro/.live-games
+	@$(call add,STAGE2_BOOTARGS,quiet)
+	@$(call add,LIVE_PACKAGES,0ad livecd-0ad)
+	@$(call try,HOMEPAGE,http://play0ad.com/)
 
 distro/live-e17: distro/.live-desktop-ru use/x11/e17 use/x11/lightdm/gtk; @:
 
 distro/live-gimp: distro/live-icewm use/live/ru
+	@$(call add,LIVE_LISTS,$(call tags,desktop sane))
 	@$(call add,LIVE_PACKAGES,gimp tintii immix fim)
-	@$(call add,LIVE_PACKAGES,sane sane-frontends xsane)
 	@$(call add,LIVE_PACKAGES,darktable geeqie rawstudio ufraw)
 	@$(call add,LIVE_PACKAGES,macrofusion python-module-pygtk-libglade)
 	@$(call add,LIVE_PACKAGES,qtfm openssh-clients rsync usbutils)
 	@$(call add,LIVE_PACKAGES,design-graphics-sisyphus2)
 
 distro/live-robo: distro/live-icewm +robotics use/live/ru; @:
+
+# NB: use/browser won't do as it provides a *single* browser ATM
+distro/live-privacy: distro/.base +power +efi +systemd +vmguest \
+	use/live/base use/live/privacy use/live/ru \
+	use/x11/xorg use/x11/lightdm/gtk use/x11/mate use/x11-autologin \
+	use/browser/firefox/i18n use/sound \
+	use/fonts/otf/adobe use/fonts/otf/mozilla \
+	use/fonts/ttf/google use/fonts/ttf/redhat
+	@$(call set,KFLAVOURS,un-def)
+	@$(call add,LIVE_LISTS,$(call tags,base l10n))
+	@$(call add,LIVE_LISTS,$(call tags,archive extra))
+	@$(call add,LIVE_PACKAGES,chromium gedit mc-full pinta xchm livecd-ru)
+	@$(call add,LIVE_PACKAGES,LibreOffice4-langpack-ru java-1.7.0-openjdk)
+	@$(call add,LIVE_PACKAGES,mate-document-viewer-caja)
+	@$(call add,LIVE_PACKAGES,mate-document-viewer-djvu)
+	@$(call add,LIVE_PACKAGES,cups system-config-printer livecd-admin-cups)
+	@$(call add,LIVE_KMODULES,staging)
+	@$(call add,DEFAULT_SERVICES_ENABLE,cups)
+	@$(call add,EFI_BOOTARGS,live_rw)
+
+distro/live-privacy-dev: distro/live-privacy use/live/rw use/live/repo \
+	use/dev/repo use/dev/mkimage use/dev use/control/sudo-su
+	@$(call add,LIVE_LISTS,$(call tags,(base || live) && builder))
+	@$(call add,MAIN_LISTS,$(call tags,live builder))
+	@$(call add,MAIN_PACKAGES,syslinux mkisofs)
 
 endif

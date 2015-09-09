@@ -25,12 +25,14 @@ distro/live-zabbix: distro/live-icewm use/net-eth
 distro/icewm-efi: distro/icewm use/efi/debug use/firmware
 	@$(call add,INSTALL2_PACKAGES,strace)
 
-distro/razorqt-kz: distro/regular-razorqt
+distro/mate-kz: distro/regular-mate
 	@$(call set,GLOBAL_BOOT_LANG,kk_KZ)
 	@$(call add,LIVE_PACKAGES,hunspell-kk)
 
-distro/server-systemd: distro/server-mini +systemd
-	@$(call set,KFLAVOURS,std-def)
+# a minimalistic systemd-based server installer
+distro/server-systemd: distro/server-nano \
+	use/install2/repo use/cleanup/x11-alterator use/net/networkd +systemd
+	@$(call add,CLEANUP_PACKAGES,glib2 iw libpython libwireless)
 
 distro/server-test: distro/server-mini use/relname
 	@$(call set,RELNAME,Test-Server)
@@ -39,10 +41,8 @@ distro/server-test: distro/server-mini use/relname
 # NB: doesn't carry stage3 thus cannot use/bootloader
 distro/netinst: distro/.base use/install2/net; @:
 
-# tiny network-only server-ovz installer (stage2 comes over net too)
-distro/server-ovz-netinst: distro/.base sub/stage1 use/stage2 \
-	use/syslinux/ui/menu use/syslinux/localboot.cfg use/memtest
-	@$(call add,SYSLINUX_CFG,netinstall2)
+distro/propagator-test: distro/.base use/mediacheck
+	@$(call add,STAGE2_BOOTARGS,propagator-debug)
 
 distro/desktop-luks: distro/icewm use/luks; @:
 distro/desktop-systemd: distro/icewm +systemd; @:

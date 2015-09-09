@@ -3,6 +3,7 @@
 # tar2fs chroot.tar image.raw [size_in_bytes [fstype]]
 
 . shell-error
+export LANG=C
 
 if [ $# -lt 2 ]; then
 	fatal "error: tar2fs needs at least two arguments"
@@ -33,7 +34,7 @@ BOOTPART=
 case "`arch`" in	# NB: sudo => no GLOBAL_ will do either; mind qemu-*
 *86*)
 	# NB: different storage modules might be needed for non-kvm
-	INITRD_MODULES="sd_mod ata_piix"
+	INITRD_MODULES="sd_mod ata_piix ahci"
 	BLOCKDEV="/dev/sda"	# might be /dev/vda for virtio
 	ROOTPART="1"
 	;;
@@ -129,7 +130,7 @@ exit_handler() {
 		umount ${BOOTFS:+"$BOOTFS"} "$ROOTFS"{/dev,/proc,/sys,}
 
 		if [ -n "$LOOPDEV" ]; then
-			kpartx -d "$LOOPDEV"
+			kpartx -d -s "$LOOPDEV"
 			losetup --detach "$LOOPDEV"
 		fi
 		rm -r -- "$ROOTFS"
@@ -209,10 +210,10 @@ chroot "$ROOTFS" make-initrd -k "$KERNEL"
 # ...target device too
 sed -i "s,$LOOPROOT,$ROOTDEV," "$ROOTFS/etc/fstab"
 
-if [ -x /sbin/lilo ]; then
+if [ -x "$ROOTFS"/sbin/lilo ]; then
 	# configure and install bootloader
-	REGEXP='^Disk .*: ([0-9]+) cylinders, ([0-9]+) heads, ([0-9]+) sectors/track*$'
-	set -- $(sfdisk -l "$LOOPDEV" | grep -E "$REGEXP" | sed -r "s@$REGEXP@\1 \2 \3@")
+	REGEXP='^.*: ([0-9]+) cylinders, ([0-9]+) heads, ([0-9]+) sectors/track*$'
+	set -- $(sfdisk -g "$LOOPDEV" | grep -E "$REGEXP" | sed -r "s@$REGEXP@\1 \2 \3@")
 
 	LILO_COMMON="lba32
 delay=1

@@ -1,5 +1,5 @@
 Name: mkimage-profiles
-Version: 1.1.48
+Version: 1.1.73
 Release: alt1
 
 Summary: ALT Linux based distribution metaprofile
@@ -79,6 +79,82 @@ cp -a * %buildroot%mpdir
 %doc %docs/*
 
 %changelog
+* Mon Sep 07 2015 Michael Shigorin <mike@altlinux.org> 1.1.73-alt1
+- im feature
+
+* Mon Aug 31 2015 Michael Shigorin <mike@altlinux.org> 1.1.72-alt1
+- starterkits alpha
+
+* Mon Aug 10 2015 Michael Shigorin <mike@altlinux.org> 1.1.71-alt1
+- docs feature
+
+* Mon Jul 20 2015 Michael Shigorin <mike@altlinux.org> 1.1.70-alt1
+- check KFLAVOURS
+
+* Mon Jun 29 2015 Michael Shigorin <mike@altlinux.org> 1.1.69-alt1
+- yet another systemd- tweak
+
+* Mon Jun 22 2015 Michael Shigorin <mike@altlinux.org> 1.1.68-alt1
+- LIVE_CLEANUP_KDRIVERS actually works
+
+* Mon Jun 08 2015 Michael Shigorin <mike@altlinux.org> 1.1.67-alt1
+- minor post-tweaks
+
+* Mon Jun 01 2015 Michael Shigorin <mike@altlinux.org> 1.1.66-alt1
+- remote rescue
+
+* Mon May 04 2015 Michael Shigorin <mike@altlinux.org> 1.1.65-alt1
+- archdep pkglists
+
+* Mon Apr 20 2015 Michael Shigorin <mike@altlinux.org> 1.1.64-alt1
+- modularized stage1 modules list
+
+* Mon Mar 30 2015 Michael Shigorin <mike@altlinux.org> 1.1.63-alt1
+- support USB3, ACPI suspend
+
+* Mon Mar 16 2015 Michael Shigorin <mike@altlinux.org> 1.1.62-alt1
+- starterkits-20150312
+
+* Mon Mar 09 2015 Michael Shigorin <mike@altlinux.org> 1.1.61-alt1
+- EFI_BOOTARGS
+
+* Mon Mar 02 2015 Michael Shigorin <mike@altlinux.org> 1.1.60-alt1
+- vmguest, install2: refactoring
+
+* Mon Feb 23 2015 Michael Shigorin <mike@altlinux.org> 1.1.59-alt1
+- regular rebase
+
+* Mon Feb 16 2015 Michael Shigorin <mike@altlinux.org> 1.1.58-alt1
+- vagrant feature (closes: #28553)
+
+* Mon Feb 09 2015 Michael Shigorin <mike@altlinux.org> 1.1.57-alt1
+- fix the lists copying fix
+
+* Mon Feb 02 2015 Michael Shigorin <mike@altlinux.org> 1.1.56-alt1
+- fix lilo check for vm images
+
+* Mon Jan 26 2015 Michael Shigorin <mike@altlinux.org> 1.1.55-alt1
+- lists copying fixed
+
+* Mon Jan 05 2015 Michael Shigorin <mike@altlinux.org> 1.1.54-alt1
+- live: don't force localboot
+
+* Mon Dec 15 2014 Michael Shigorin <mike@altlinux.org> 1.1.53-alt1
+- starterkits-20141212
+
+* Mon Nov 17 2014 Michael Shigorin <mike@altlinux.org> 1.1.52-alt1
+- docs: "7.0+" (closes: #30474)
+- l10n feature
+
+* Mon Nov 10 2014 Michael Shigorin <mike@altlinux.org> 1.1.51-alt1
+- current updates
+
+* Mon Oct 27 2014 Michael Shigorin <mike@altlinux.org> 1.1.50-alt1
+- minor tweaks
+
+* Mon Oct 13 2014 Michael Shigorin <mike@altlinux.org> 1.1.49-alt1
+- pkglist updates
+
 * Mon Sep 29 2014 Michael Shigorin <mike@altlinux.org> 1.1.48-alt1
 - (sysv)init: exclude systemd explicitly
 
