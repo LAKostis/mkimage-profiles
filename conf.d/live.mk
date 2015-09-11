@@ -40,11 +40,14 @@ distro/live-install: distro/.live-base use/live/textinstall; @:
 distro/.livecd-install: distro/.live-base use/live/install; @:
 
 distro/live-icewm: distro/.live-desktop use/x11/lightdm/gtk +icewm; @:
-	@$(call set,KFLAVOURS,lks-wks)
-	@$(call add,LIVE_PACKAGES,rfkill NetworkManager NetworkManager-applet-gtk)
 distro/live-razorqt: distro/.live-desktop +razorqt; @:
 distro/live-tde: distro/.live-desktop-ru use/live/install +tde; @:
 distro/live-fvwm: distro/.live-desktop-ru use/x11/lightdm/gtk use/x11/fvwm; @:
+
+distro/live-lakostis: distro/.live-desktop use/x11/lightdm/gtk +icewm +systemd \
+	+wireless use/net/nm/mmgui use/net-ssh use/firmware/laptop; @:
+	@$(call set,KFLAVOURS,lks-wks)
+	@$(call add,LIVE_PACKAGES,driconf libtxc_dxtn i586-libtxc_dxtn i586-libGL 'i586-xorg-dri-*')
 
 distro/live-rescue: distro/live-icewm +efi
 	@$(call add,LIVE_LISTS,$(call tags,rescue && (fs || live || x11)))
