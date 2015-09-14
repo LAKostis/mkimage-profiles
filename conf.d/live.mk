@@ -51,7 +51,7 @@ distro/live-lakostis: distro/.live-desktop use/x11/lightdm/gtk +icewm \
 	@$(call set,KFLAVOURS,lks-wks)
 	@$(call add,LIVE_PACKAGES,driconf libtxc_dxtn i586-libtxc_dxtn \
 	i586-libGL 'i586-xorg-dri-*' udev-extras kodi pavucontrol bluez \
-	pulseaudio-bluez)
+	pulseaudio-bluez speedtest-cli)
 
 distro/live-rescue: distro/live-icewm +efi
 	@$(call add,LIVE_LISTS,$(call tags,rescue && (fs || live || x11)))
