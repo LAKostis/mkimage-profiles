@@ -15,7 +15,9 @@ make-initrd-mdadm
 openssh
 openssh-blacklist
 net-tools
+nfs-utils
 
+smartmontools
 system-report
 
 strace
@@ -33,5 +35,6 @@ eepm
 bash-completion
 cpufreq-simple
 eject
+bc
 
 zsh

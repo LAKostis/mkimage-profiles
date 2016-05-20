@@ -30,8 +30,8 @@ gnustep-Camera
 gnustep-CameraTransfer
 gnustep-Cartotheque
 gnustep-CDPlayer
-gnustep-cenon
-gnustep-Chess
+#gnustep-cenon
+#gnustep-Chess
 #gnustep-Connect
 gnustep-Cynthiune
 gnustep-DataBasin
@@ -48,7 +48,7 @@ gnustep-Gemas
 gnustep-Ghack
 gnustep-gmastermind
 gnustep-gmines
-gnustep-GNUMail
+#gnustep-GNUMail
 gnustep-GNUWash
 gnustep-Gomoku
 gnustep-gorm
@@ -56,7 +56,7 @@ gnustep-Graphos
 gnustep-Grouch
 gnustep-Grr
 gnustep-GRubik
-gnustep-GSBench
+#gnustep-GSBench
 gnustep-GScheme
 gnustep-GSCommander
 #gnustep-GSDock # i586-only, abandoned
@@ -77,13 +77,13 @@ gnustep-LapisPuzzle
 gnustep-LaternaMagica
 gnustep-Localize
 #gnustep-LoginPanel
-gnustep-LuserNET
+#gnustep-LuserNET
 gnustep-Lynkeos
 #gnustep-Mixer
 gnustep-Money
 gnustep-MPDCon
 gnustep-MusicBox
-gnustep-MusicKit
+#gnustep-MusicKit
 gnustep-MyWiki
 #gnustep-NeXTGo
 gnustep-NoteBook
@@ -95,13 +95,13 @@ gnustep-Poe
 gnustep-Popup
 gnustep-Preview
 gnustep-PRICE
-gnustep-projectcenter
+#gnustep-projectcenter
 gnustep-ProjectManager
 gnustep-quartzcore
 gnustep-RemoteDesk
 #gnustep-renaissance
 gnustep-SequenceConverter
-gnustep-SimpleAgenda
+#gnustep-SimpleAgenda
 gnustep-SlideShow
 gnustep-Stepbill
 gnustep-Stepulator
@@ -110,7 +110,7 @@ gnustep-systempreferences
 gnustep-TalkSoup
 gnustep-terminal
 gnustep-TextEdit
-gnustep-thematic
+#gnustep-thematic
 gnustep-Ticker
 gnustep-TimeMon
 gnustep-Toolbox

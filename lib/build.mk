@@ -4,7 +4,7 @@ ANSI_FAIL ?= 1;31
 
 MAX_LINES = 200
 MAX_ERRORS = 5
-GOTCHA := ^(((\*\* )?(E:|[Ee]rror|[Ww]arning).*)|(.* (FAILURE|FATAL|ERROR|conflicts|Depends:) .*)|(.* (Stop|failed|not found)\.))$$
+GOTCHA := ^(((\*\* )?(E:|[Ee]rror|[Ww]arning).*)|(.* (FAILURE|FATAL|ERROR|conflicts|Depends:) .*)|(.* (Stop|failed|not found)\.)|(not allowed))$$
 
 ifndef MKIMAGE_PROFILES
 $(error this makefile is designed to be included in toplevel one)
@@ -65,9 +65,9 @@ build-image: profile/populate
 		DURATION="(`tail -1 $(BUILDLOG) | cut -f1 -d.`)"; \
 		tail -n $(MAX_LINES) "$(BUILDLOG)" $(SHORTEN) \
 		| if [ -z "$(QUIET)" ]; then \
-			echo "$(TIME) done  $$DURATION"; \
-			GREP_COLOR="$(ANSI_OK)" GREP_OPTIONS="--color=auto" \
-			  grep '^\*\* image: .*$$' ||:; \
+			echo "$(TIME) done $$DURATION"; \
+			GREP_COLOR="$(ANSI_OK)" \
+			  grep --color=auto '^\*\* image: .*$$' ||:; \
 		else \
 			echo -n "$(TIME) $$DURATION "; \
 			sed -rn 's/^\*\* image: (.*)$$/\1/p'; \
@@ -85,8 +85,8 @@ build-image: profile/populate
 			echo "$(TIME) (you might want to rerun with DEBUG=1)"; \
 		fi; \
 		tail -n $(MAX_LINES) "$(BUILDLOG)" \
-		| GREP_COLOR="$(ANSI_FAIL)" GREP_OPTIONS="--color=auto" \
-		  egrep -m "$(MAX_ERRORS)" "$(GOTCHA)"; \
+		| GREP_COLOR="$(ANSI_FAIL)" \
+		  egrep --color=auto -m "$(MAX_ERRORS)" "$(GOTCHA)"; \
 		df -P $(BUILDDIR) | awk 'END { if ($$4 < $(LOWSPACE)) \
 			{ print "NB: low space on "$$6" ("$$5" used)"}}'; \
 	fi; \

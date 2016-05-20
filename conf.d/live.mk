@@ -25,7 +25,9 @@ distro/.live-kiosk: distro/.base use/live/base use/live/autologin \
 	use/syslinux/timeout/1 use/cleanup use/stage2/net-eth \
 	use/fonts/otf/adobe +power
 	@$(call add,CLEANUP_PACKAGES,'alterator*' 'guile*' 'vim-common')
+	@$(call set,SYSLINUX_UI,none)
 	@$(call set,SYSLINUX_CFG,live)
+	@$(call add,STAGE2_BOOTARGS,quiet)
 	@$(call add,DEFAULT_SERVICES_DISABLE,rpcbind klogd syslogd)
 	@$(call add,DEFAULT_SERVICES_DISABLE,consolesaver fbsetfont keytable)
 
@@ -58,24 +60,25 @@ distro/live-rescue: distro/live-icewm +efi
 		$(call tags,(base || extra) && (archive || rescue || network)))
 
 # NB: this one doesn't include the browser, needs to be chosen downstream
-distro/.live-webkiosk: distro/.live-kiosk use/live/hooks use/live/ru use/sound
+distro/.live-webkiosk: distro/.live-kiosk \
+	use/isohybrid use/live/hooks use/live/ru use/sound
 	@$(call add,LIVE_LISTS,$(call tags,live desktop))
 
 distro/.live-webkiosk-gtk: distro/.live-webkiosk
 	@$(call add,CLEANUP_PACKAGES,'libqt4*' 'qt4*')
 
+# kiosk users rather prefer stability to latest bling
 distro/live-webkiosk-mini: distro/.live-webkiosk-gtk \
-	use/fonts/otf/mozilla use/isohybrid
+	use/browser/firefox use/browser/firefox/esr use/fonts/otf/mozilla
 	@$(call add,LIVE_PACKAGES,livecd-webkiosk-firefox)
 
 # NB: flash/java plugins are predictable security holes
 distro/live-webkiosk-flash: distro/live-webkiosk-mini use/plymouth/live \
-	use/browser/plugin/flash use/browser/plugin/java use/efi/signed \
-	+vmguest; @:
+	use/browser/plugin/flash use/browser/plugin/java +vmguest; @:
 
 distro/live-webkiosk: distro/live-webkiosk-mini use/live/desktop; @:
 
-distro/live-webkiosk-chromium: distro/.live-webkiosk use/fonts/ttf/google
+distro/live-webkiosk-chromium: distro/.live-webkiosk use/fonts/ttf/google +efi
 	@$(call add,LIVE_PACKAGES,livecd-webkiosk-chromium)
 
 distro/live-webkiosk-seamonkey: distro/.live-webkiosk use/fonts/ttf/google
@@ -94,14 +97,17 @@ distro/.live-games: distro/.live-kiosk use/x11/3d use/sound \
 	use/stage2/net-eth use/net-eth/dhcp use/services +efi +sysvinit
 	@$(call set,KFLAVOURS,un-def)
 	@$(call add,LIVE_LISTS,$(call tags,xorg misc))
-	@$(call add,LIVE_PACKAGES,input-utils glxgears glxinfo)
+	@$(call add,LIVE_PACKAGES,pciutils input-utils glxgears glxinfo)
 	@$(call add,DEFAULT_SERVICES_DISABLE,rpcbind alteratord messagebus)
 	@$(call add,SERVICES_DISABLE,livecd-net-eth)
 
 distro/live-flightgear: distro/.live-games
-	@$(call add,LIVE_PACKAGES,FlightGear FlightGear-tu154b)
+	@$(call add,LIVE_PACKAGES,FlightGear)
 	@$(call add,LIVE_PACKAGES,fgo livecd-fgfs)
 	@$(call try,HOMEPAGE,http://www.4p8.com/eric.brasseur/flight_simulator_tutorial.html)
+
+distro/live-flightgear-tu154: distro/.live-games
+	@$(call add,LIVE_PACKAGES,FlightGear-tu154b)
 
 distro/live-0ad: distro/.live-games
 	@$(call add,STAGE2_BOOTARGS,quiet)
@@ -131,7 +137,7 @@ distro/live-privacy: distro/.base +power +efi +systemd +vmguest \
 	@$(call add,LIVE_LISTS,$(call tags,base l10n))
 	@$(call add,LIVE_LISTS,$(call tags,archive extra))
 	@$(call add,LIVE_PACKAGES,chromium gedit mc-full pinta xchm livecd-ru)
-	@$(call add,LIVE_PACKAGES,LibreOffice4-langpack-ru java-1.7.0-openjdk)
+	@$(call add,LIVE_PACKAGES,LibreOffice-langpack-ru java-1.8.0-openjdk)
 	@$(call add,LIVE_PACKAGES,mate-document-viewer-caja)
 	@$(call add,LIVE_PACKAGES,mate-document-viewer-djvu)
 	@$(call add,LIVE_PACKAGES,cups system-config-printer livecd-admin-cups)

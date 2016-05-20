@@ -14,5 +14,11 @@ use/kernel/net:
 	@$(call add,THE_KMODULES,e1000e igb)
 	@$(call add,MAIN_KMODULES,r8168 rtl8168)
 
-use/kernel/wireless:
+use/kernel/wireless: use/firmware/wireless
 	@$(call add,THE_KMODULES,bcmwl ndiswrapper)
+
+use/kernel/laptop: use/firmware/laptop
+	@$(call add,KMODULES,omnibook tp_smapi)
+
+use/kernel/desktop:
+	@$(call add,KMODULES,lirc v4l)

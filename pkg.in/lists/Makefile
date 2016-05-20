@@ -18,7 +18,7 @@ include $(BUILDDIR)/distcfg.mk
 SUFFIX := pkg/lists
 TARGET := $(BUILDDIR)/$(SUFFIX)
 
-all: | $(TARGET) $(GLOBAL_DEBUG) $(DOTBASE) copy-lists copy-groups grep-archdep
+all: | $(TARGET) $(GLOBAL_DEBUG) copy-lists copy-groups grep-archdep
 	@mp-commit "$(TARGET)" "requested $(SUFFIX) copied over"
 
 # env | sort -u | grep _LISTS | xargs -r cp -t
@@ -30,7 +30,7 @@ copy-lists:
 
 copy-groups:
 	@if [ -n "$(THE_GROUPS)$(MAIN_GROUPS)" ]; then \
-		cp -at $(TARGET) -- $(THE_GROUPS) $(MAIN_GROUPS); \
+		cp --parents -at $(TARGET) -- $(THE_GROUPS) $(MAIN_GROUPS); \
 	fi
 
 grep-archdep: a = $(ARCH)

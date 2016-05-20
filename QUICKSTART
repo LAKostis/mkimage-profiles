@@ -5,15 +5,14 @@ http://en.altlinux.org/Hasher; large tmpfs helps a lot).
 ~~~~~~~~~
 - ALT Linux 7.0 или выше (возможна адаптация "вниз")
 - установленный mkimage (свежий, как и hasher)
-- пользователь с правом запуска hasher
+- пользователь с правом запуска hasher и подключения /proc к нему
 
 полезно
 ~~~~~~~
-- смонтированный tmpfs на несколько гигабайт
+- смонтированный tmpfs на несколько гигабайт (или укажите BUILDDIR)
   * например, в /tmp или /home/USER/hasher
   * каталог из prefix в /etc/hasher-priv/system
-- установленный git-core
-- настроенный ~/.gitconfig
+- установленный git-core и настроенный ~/.gitconfig
 
 команды
 ~~~~~~~

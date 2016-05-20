@@ -109,16 +109,19 @@ SDDM_RC=/etc/X11/sddm/sddm.conf
 SDDM_SESSION=
 if [ -f "$SDDM_RC" ]; then
 	backup "$SDDM_RC"
+	backup "/etc/group"
+	add_nopasswdlogin_group sddm ||:
 	sed -i "s,^User=$,&$USER," "$SDDM_RC"
 	if [ -f /usr/share/xsessions/lxqt.desktop ]; then
-		SDDM_SESSION=LXQt
+		SDDM_SESSION=lxqt
 	elif [ -f /usr/share/xsessions/plasma.desktop ]; then
-		SDDM_SESSION=PLASMA
+		SDDM_SESSION=plasma
 	fi
 	if [ -n "$SDDM_SESSION" ]; then
 		sed -i "s,^Session=$,&$SDDM_SESSION," "$SDDM_RC"
 	fi
 	restore_later "$SDDM_RC"
+	restore_later "/etc/group"
 fi
 
 ## nodm autologin (the last since the most intrusive)

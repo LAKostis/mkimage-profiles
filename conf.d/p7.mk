@@ -1,7 +1,9 @@
 # p7 base kits
 
-mixin/p7:
+mixin/p7: use/browser/firefox/esr
 	@$(call set,BRANDING,altlinux-starterkit)
+	@$(call set,IMAGE_FLAVOUR,$(subst altlinux-p7-,,$(IMAGE_NAME)))
+	@$(call set,META_VOL_ID,ALT Linux p7 $$(IMAGE_FLAVOUR)/$(ARCH))
 
 ifeq (distro,$(IMAGE_CLASS))
 
@@ -26,6 +28,7 @@ distro/altlinux-p7-xfce-sysv: distro/regular-xfce-sysv mixin/p7; @:
 distro/altlinux-p7-sysv-tde: distro/regular-sysv-tde mixin/p7; @:
 
 distro/altlinux-p7-jeos: distro/regular-jeos mixin/p7; @:
+distro/altlinux-p7-jeos-ovz: distro/regular-jeos-ovz mixin/p7; @:
 distro/altlinux-p7-server: distro/regular-server mixin/p7; @:
 distro/altlinux-p7-server-ovz: distro/regular-server-ovz mixin/p7; @:
 distro/altlinux-p7-server-hyperv: distro/regular-server-hyperv mixin/p7; @:

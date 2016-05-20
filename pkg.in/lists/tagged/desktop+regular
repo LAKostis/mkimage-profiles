@@ -1,6 +1,8 @@
 synaptic
 synaptic-usermode
 
+userpasswd
+
 xdg-user-dirs
 
 alterator-browser-qt
@@ -16,12 +18,11 @@ alterator-net-openvpn
 alterator-net-eth
 alterator-net-wifi
 
+alterator-datetime
 alterator-proxy
 
 #alterator-x11
 alterator-xkb
-
-#alterator-datetime
 
 glxgears
 xorg-conf-synaptics
@@ -29,7 +30,11 @@ xorg-conf-synaptics
 hdparm
 lm_sensors3
 sdparm
-smartmontools
 
 fonts-bitmap-terminus
-fonts-ttf-levien-inconsolata
+
+ldd-requires
+
+gparted
+
+x11-ssh-askpass

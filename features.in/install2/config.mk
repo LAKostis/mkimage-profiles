@@ -19,6 +19,13 @@ use/install2: use/stage2 sub/stage2@install2 use/metadata \
 use/install2/full: use/install2/packages use/install2/vmguest \
 	use/syslinux/localboot.cfg use/syslinux/ui/menu use/bootloader; @:
 
+# for distributions with their own -stage3 installer part
+use/install2/stage3: use/install2
+	@$(call add,BASE_PACKAGES,installer-$$(INSTALLER)-stage3)
+
+# just an alias, better use its endpoint directly
+use/install2/fonts: use/fonts/install2
+
 # see also use/vmguest
 use/install2/vmguest: use/install2/kvm use/install2/vbox use/install2/vmware; @:
 
@@ -40,6 +47,7 @@ use/install2/kvm:
 # virtualbox guest support for installer
 use/install2/vbox:
 	@$(call add,STAGE1_KMODULES,virtualbox-addition vboxguest)
+	@$(call add,INSTALL2_PACKAGES,xorg-drv-vboxvideo)
 
 # see also use/vmguest/vmware
 use/install2/vmware:

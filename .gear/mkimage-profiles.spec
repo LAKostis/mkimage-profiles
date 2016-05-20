@@ -1,5 +1,5 @@
 Name: mkimage-profiles
-Version: 1.1.73
+Version: 1.1.90
 Release: alt1
 
 Summary: ALT Linux based distribution metaprofile
@@ -11,7 +11,7 @@ Source: %name-%version.tar
 Packager: Michael Shigorin <mike@altlinux.org>
 
 BuildArch: noarch
-BuildRequires: rsync asciidoc-a2x xmlgraphics-fop fonts-ttf-dejavu
+BuildRequires: rsync asciidoc-a2x fop fonts-ttf-dejavu
 
 Requires: rsync git-core
 Requires: time schedutils sfdisk
@@ -23,12 +23,13 @@ Requires: mkimage-preinstall
 %define mpdir %_datadir/%name
 %add_findreq_skiplist %mpdir/*.in/*
 
+%def_with doc
 %define docs $HOME/docs
 
 %package doc
 Summary: %name documentation
 Group: Development/Documentation
-BuildRequires: java /proc
+%{?_with_doc:BuildRequires: java /proc}
 
 %description
 mkimage-profiles is a collection of bits and pieces useful for
@@ -64,21 +65,82 @@ as a book in HTML and PDF formats.
 %setup
 
 %build
+%if_with doc
 make BUILDDIR=%docs docs
+%endif
 
 %install
-mkdir -p %buildroot%mpdir
+mkdir -p %buildroot{%mpdir,%_man7dir}
 cp -a * %buildroot%mpdir
+%if_with doc
+mv %buildroot%mpdir/doc/mkimage-profiles.7 %buildroot%_man7dir/
+%endif
 
 %files
 %mpdir/
+%if_with doc
+%_man7dir/*
+%endif
 
+%if_with doc
 %files doc
 %doc README
 %doc QUICKSTART
 %doc %docs/*
+%endif
 
 %changelog
+* Tue May 03 2016 Michael Shigorin <mike@altlinux.org> 1.1.90-alt1
+- starterkits-20160429
+
+* Mon Apr 25 2016 Michael Shigorin <mike@altlinux.org> 1.1.89-alt1
+- preparing for p8 starterkits
+
+* Mon Apr 11 2016 Michael Shigorin <mike@altlinux.org> 1.1.88-alt1
+- pkg.in/profiles
+
+* Mon Mar 14 2016 Michael Shigorin <mike@altlinux.org> 1.1.87-alt1
+- starterkits-20160312
+
+* Mon Feb 29 2016 Michael Shigorin <mike@altlinux.org> 1.1.86-alt1
+- junior
+
+* Mon Feb 15 2016 Michael Shigorin <mike@altlinux.org> 1.1.85-alt1
+- regular-jeos-ovz
+
+* Mon Feb 08 2016 Michael Shigorin <mike@altlinux.org> 1.1.84-alt1
+- %name(7) :)
+
+* Mon Jan 25 2016 Michael Shigorin <mike@altlinux.org> 1.1.83-alt1
+- openssh 7.x (see also #31716)
+
+* Mon Jan 11 2016 Michael Shigorin <mike@altlinux.org> 1.1.82-alt1
+- firmwarez
+
+* Mon Dec 07 2015 Michael Shigorin <mike@altlinux.org> 1.1.81-alt1
+- regular fixes
+
+* Mon Nov 30 2015 Michael Shigorin <mike@altlinux.org> 1.1.80-alt1
+- pre-starterkit cleanups
+
+* Mon Nov 16 2015 Michael Shigorin <mike@altlinux.org> 1.1.79-alt1
+- faked workaround
+
+* Mon Nov 09 2015 Michael Shigorin <mike@altlinux.org> 1.1.78-alt1
+- regular-enlightenment
+
+* Mon Oct 19 2015 Michael Shigorin <mike@altlinux.org> 1.1.77-alt1
+- webkiosk improvements
+
+* Mon Oct 12 2015 Michael Shigorin <mike@altlinux.org> 1.1.76-alt1
+- no more GREP_OPTIONS
+
+* Mon Sep 28 2015 Michael Shigorin <mike@altlinux.org> 1.1.75-alt1
+- systemd-specific hook for installer (solo@)
+
+* Mon Sep 14 2015 Michael Shigorin <mike@altlinux.org> 1.1.74-alt1
+- starterkits-20150912
+
 * Mon Sep 07 2015 Michael Shigorin <mike@altlinux.org> 1.1.73-alt1
 - im feature
 

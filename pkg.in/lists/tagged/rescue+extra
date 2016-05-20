@@ -50,6 +50,7 @@ whdd
 binutils
 dmidecode
 gnupg
+htop
 pciutils
 procps
 quota
@@ -71,6 +72,7 @@ agrep-tre
 enca
 findutils
 file
+ldd-requires
 less
 lnav
 wdiff
@@ -96,6 +98,7 @@ squashfsprogs3
 squashfsprogs-xz
 
 # Foreign filesystems
+afpfs-ng
 bindfs
 dosfstools
 exfat-utils
@@ -220,12 +223,14 @@ udis86
 
 # win32
 chntpw
+hivex
 scrounge-ntfs
 wabread
 winusb
 
 # Mobile
 android-tools
+jmtpfs
 fuse-obexfs
 fuse-siefs
 gammu
