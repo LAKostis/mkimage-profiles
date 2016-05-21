@@ -1,0 +1,89 @@
+#!/bin/sh
+
+if [ ! -x /usr/bin/X ]; then
+	echo "SKIP autostart: X not installed" >&2
+	exit 0
+fi
+
+X_CFG=/etc/skel/.Xdefaults
+if [ -f "$X_CFG" ]; then
+	backup "$X_CFG"
+	cat >> "$X_CFG" <<- EOF
+Rxvt*font: -*-terminus-*-*-*-*-20-*-*-*-*-*-iso10646-1
+Rxvt*color0: black
+Rxvt*color1: tomato3
+Rxvt*color2: pale green
+Rxvt*color3: goldenrod2
+Rxvt*color4: #003355
+Rxvt*color5: magenta3
+Rxvt*color6: LightBlue3
+Rxvt*color7: gray100
+Rxvt*color8: gray30
+Rxvt*color9: tomato
+Rxvt*color10: spring green
+Rxvt*color11: gold
+Rxvt*color12: blue
+Rxvt*color13: magenta
+Rxvt*color14: LightBlue2
+Rxvt*color15: white
+Rxvt*colorUL: yellow
+Rxvt*colorBD: white
+!Rxvt*background: #112233
+Rxvt*background: black
+Rxvt*foreground: #FFEEBB
+Rxvt*cursorColor: Gold
+
+UXTerm*background: black
+!UXTerm*foreground: green
+UXTerm*VT100*font: -*-terminus-*-*-*-*-20-*-*-*-*-*-iso10646-1
+UXTerm*color0: black
+UXTerm*color1: tomato3
+UXTerm*color2: pale green
+UXTerm*color3: goldenrod2
+UXTerm*color4: #003355
+UXTerm*color5: magenta3
+UXTerm*color6: LightBlue3
+UXTerm*color7: gray100
+UXTerm*color8: gray30
+UXTerm*color9: tomato
+UXTerm*color10: spring green
+UXTerm*color11: gold
+UXTerm*color12: blue
+UXTerm*color13: magenta
+UXTerm*color14: LightBlue2
+UXTerm*color15: white
+UXTerm*colorUL: yellow
+UXTerm*colorBD: white
+!UXTerm*background: #112233
+UXTerm*foreground: #FFEEBB
+UXTerm*cursorColor: Gold
+
+XTerm*background: black
+!XTerm*foreground: green
+XTerm*VT100*font: -*-terminus-*-*-*-*-20-*-*-*-*-*-iso10646-1
+XTerm*color0: black
+XTerm*color1: tomato3
+XTerm*color2: pale green
+XTerm*color3: goldenrod2
+XTerm*color4: #003355
+XTerm*color5: magenta3
+XTerm*color6: LightBlue3
+XTerm*color7: gray100
+XTerm*color8: gray30
+XTerm*color9: tomato
+XTerm*color10: spring green
+XTerm*color11: gold
+XTerm*color12: blue
+XTerm*color13: magenta
+XTerm*color14: LightBlue2
+XTerm*color15: white
+XTerm*colorUL: yellow
+XTerm*colorBD: white
+!XTerm*background: #112233
+XTerm*foreground: #FFEEBB
+XTerm*cursorColor: Gold
+	EOF
+	restore_later "$X_CFG"
+fi
+
+:
