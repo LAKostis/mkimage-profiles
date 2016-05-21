@@ -6,9 +6,7 @@ if [ ! -x /usr/bin/X ]; then
 fi
 
 X_CFG=/etc/skel/.Xdefaults
-if [ -f "$X_CFG" ]; then
-	backup "$X_CFG"
-	cat >> "$X_CFG" <<- EOF
+cat >> "$X_CFG" <<- EOF
 Rxvt*font: -*-terminus-*-*-*-*-20-*-*-*-*-*-iso10646-1
 Rxvt*color0: black
 Rxvt*color1: tomato3
@@ -82,8 +80,5 @@ XTerm*colorBD: white
 !XTerm*background: #112233
 XTerm*foreground: #FFEEBB
 XTerm*cursorColor: Gold
-	EOF
-	restore_later "$X_CFG"
-fi
-
+EOF
 :
