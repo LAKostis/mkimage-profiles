@@ -5,7 +5,7 @@ if [ ! -x /usr/bin/X ]; then
 	exit 0
 fi
 
-X_CFG=/etc/skel/.Xdefaults
+X_CFG=/home/altlinux/.Xdefaults
 cat >> "$X_CFG" <<- EOF
 Rxvt*font: -*-terminus-*-*-*-*-20-*-*-*-*-*-iso10646-1
 Rxvt*color0: black
