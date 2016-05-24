@@ -40,6 +40,7 @@ distro/.regular-desktop: distro/.regular-wm \
 	@$(call add,THE_BRANDING,bootloader)
 	@$(call add,THE_PACKAGES,upower bluez)
 	@$(call add,DEFAULT_SERVICES_DISABLE,gssd idmapd krb5kdc rpcbind)
+	@$(call add,DEFAULT_SERVICES_ENABLE,powertop)
 	@$(call set,KFLAVOURS,std-def)
 
 distro/.regular-gtk: distro/.regular-desktop use/x11/lightdm/gtk +plymouth; @:
@@ -157,7 +158,7 @@ distro/regular-cinnamon: distro/.regular-gtk \
 distro/regular-gnome3: distro/.regular-desktop +plymouth +nm \
 	use/x11/gnome3 use/browser/epiphany use/fonts/ttf/redhat
 	@$(call set,KFLAVOURS,un-def)
-	@$(call add,LIVE_PACKAGES_REGEXP,^setup-gnome3-done.*)
+	@$(call add,LIVE_PACKAGES,livecd-gnome3-setup-done)
 	@$(call add,LIVE_PACKAGES,gnome3-regular xcalib templates)
 	@$(call add,LIVE_PACKAGES,gnome-flashback)
 
