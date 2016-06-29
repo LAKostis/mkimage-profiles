@@ -46,13 +46,13 @@ distro/live-razorqt: distro/.live-desktop +razorqt; @:
 distro/live-tde: distro/.live-desktop-ru use/live/install +tde; @:
 distro/live-fvwm: distro/.live-desktop-ru use/x11/lightdm/gtk use/x11/fvwm; @:
 
-distro/live-lakostis: distro/.live-desktop use/x11/lightdm/gtk +icewm +efi \
+distro/live-lakostis: distro/.live-desktop use/x11/lightdm/gtk use/x11/e17 +efi \
 	+wireless +systemd use/fonts/ttf/google use/net/nm/nodelay use/net-ssh \
 	use/firmware/laptop use/x11-neatterm +power
 	@$(call set,KFLAVOURS,lks-wks)
 	@$(call add,LIVE_PACKAGES,driconf libtxc_dxtn i586-libtxc_dxtn \
 	i586-libGL 'i586-xorg-dri-*' udev-extras kodi pavucontrol bluez \
-	pulseaudio-bluez speedtest-cli pommed gpomme xorg-conf-synaptics)
+	pulseaudio-bluez pommed gpomme xorg-conf-synaptics usbutils)
 
 distro/live-rescue: distro/live-icewm +efi
 	@$(call add,LIVE_LISTS,$(call tags,rescue && (fs || live || x11)))
