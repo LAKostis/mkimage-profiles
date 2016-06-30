@@ -1,0 +1,18 @@
+#!/bin/sh -e
+# toggle CPU microcode on boot
+
+cat << EOF > /etc/systemd/system/microcode.service
+[Unit]
+Description=Reload CPU microcode
+
+[Service]
+ExecStart=echo 1 > /sys/devices/system/cpu/microcode/reload
+Type=oneshot
+RemainAfterExit=yes
+
+[Install]
+WantedBy=default.target
+EOF
+
+systemctl enable microcode.service
+
