@@ -1,9 +1,0 @@
-[Desktop Entry]
-Encoding=UTF-8
-Type=Directory
-Name=FTP Server
-X-Alterator-PackageList=ftp-server
-X-Alterator-Required=no
-Name[ru_RU]=Сервер FTP
-Categories=Server;Networking
-

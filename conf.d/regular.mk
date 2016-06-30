@@ -126,7 +126,7 @@ distro/regular-xfce-sysv: distro/.regular-sysv-gtk \
 	use/init/sysv/polkit use/x11/xfce \
 	use/fonts/ttf/redhat use/fonts/otf/adobe use/fonts/otf/mozilla
 	@$(call set,KFLAVOURS,un-def)
-	@$(call add,LIVE_PACKAGES,xfce4-mixer pm-utils bc elinks mpg123)
+	@$(call add,LIVE_PACKAGES,xfce4-mixer pm-utils elinks mpg123)
 
 distro/regular-lxde: distro/.regular-gtk use/x11/lxde use/fonts/infinality \
 	use/x11/gtk/nm use/im +nm
@@ -232,12 +232,14 @@ distro/regular-sysv-tde: distro/.regular-install-x11 \
 	@$(call add,THE_PACKAGES,kpowersave)
 	@$(call add,MAIN_PACKAGES,anacron man-whatis usb-modeswitch)
 
-distro/.regular-server: distro/.regular-install \
-	use/server/mini use/firmware/qlogic use/rescue/base \
-	use/cleanup/x11 use/stage2/kms
+distro/.regular-server-base: distro/.regular-install \
+	use/server/base use/stage2/kms
 	@$(call add,THE_LISTS,$(call tags,regular server))
-	@$(call add,MAIN_PACKAGES,aptitude)
 	@$(call set,INSTALLER,altlinux-server)
+
+distro/.regular-server: distro/.regular-server-base \
+	use/server/mini use/firmware/qlogic use/rescue/base use/cleanup/x11
+	@$(call add,MAIN_PACKAGES,aptitude)
 	@$(call add,CLEANUP_PACKAGES,qt4-common)
 	@$(call add,DEFAULT_SERVICES_DISABLE,bridge)
 
@@ -248,18 +250,36 @@ distro/.regular-server-managed: distro/.regular-server
 	@$(call add,DEFAULT_SERVICES_DISABLE,ahttpd alteratord)
 
 distro/regular-server: distro/.regular-server-managed use/server/groups/base
-	@$(call add,MAIN_GROUPS,sambaDC-server)
-	@$(call add,MAIN_GROUPS,hyperv-tools)
+	@$(call add,MAIN_GROUPS,server/sambaDC)
+	@$(call add,MAIN_GROUPS,tools/hyperv)
 
 distro/regular-server-ovz: distro/.regular-server \
 	use/server/ovz use/server/groups/tools use/cleanup/x11-alterator
-	@$(call add,MAIN_GROUPS,vzstats)
+	@$(call add,MAIN_GROUPS,tools/vzstats)
 
 distro/regular-server-hyperv: distro/.regular-server-managed
 	@$(call set,KFLAVOURS,un-def)
 	@$(call add,THE_PACKAGES,hyperv-daemons)
 	@$(call add,DEFAULT_SERVICES_DISABLE,bridge smartd)
 	@$(call add,DEFAULT_SERVICES_DISABLE,cpufreq-simple powertop)
+
+distro/.regular-server-openstack: distro/.regular-server-base \
+	use/firmware/qlogic use/server/groups/openstack
+	@$(call add,MAIN_GROUPS,tools/ipmi tools/monitoring)
+
+distro/regular-server-openstack: distro/.regular-server-openstack +systemd; @:
+
+distro/regular-server-openstack-sysv: distro/.regular-server-openstack +sysvinit
+	@$(call add,DEFAULT_SERVICES_DISABLE,lvm2-lvmetad)
+
+distro/regular-server-pve: distro/.regular-server-base \
+	use/firmware/qlogic +efi +systemd
+	@$(call set,BASE_BOOTLOADER,grub)
+	@$(call set,INSTALLER,altlinux-server)
+	@$(call add,THE_PACKAGES,pve-manager)
+	@$(call add,THE_PACKAGES,bridge-utils faketime tzdata)
+	@$(call add,THE_KMODULES,ipset kvm)
+	@$(call add,DEFAULT_SERVICES_ENABLE,pve-manager)
 
 distro/regular-builder: distro/.regular-bare \
 	use/dev/builder/full +sysvinit +efi +power \
