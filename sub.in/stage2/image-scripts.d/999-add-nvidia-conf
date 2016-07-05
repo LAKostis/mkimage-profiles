@@ -7,6 +7,8 @@ cat > xorg.conf << EOF
 Section "Device"
 	Identifier	"Nvidia GPU"
 	Driver		"nvidia"
+	# EDID could report this incorrectly so disable
+	Option "UseEdidDpi" "false"
 EndSection
 EOF
 fi
