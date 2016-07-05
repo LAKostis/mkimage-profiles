@@ -54,6 +54,15 @@ distro/live-lakostis: distro/.live-desktop use/x11/lightdm/gtk use/x11/lxde +efi
 	i586-libGL 'i586-xorg-dri-*' udev-extras kodi pavucontrol bluez \
 	pulseaudio-bluez pommed gpomme xorg-conf-synaptics usbutils)
 
+distro/live-lakostis-oldmac: distro/.live-x11 use/x11/lightdm/gtk use/x11/lxde +efi \
+	+wireless +systemd use/fonts/ttf/google use/net/nm/nodelay use/net-ssh \
+	use/firmware/laptop use/x11-neatterm use/x11/gtk/nm +power
+	@$(call set,KFLAVOURS,lks-wks)
+	@$(call set,NVIDIA_KMODULES,nvidia_legacy_340.xx)
+	@$(call set,NVIDIA_PACKAGES,nvidia_glx_legacy_340.xx nvidia-settings nvidia-xconfig)
+	@$(call add,LIVE_PACKAGES,nvdock udev-extras kodi pavucontrol bluez \
+	pulseaudio-bluez pommed gpomme xorg-conf-synaptics usbutils)
+
 distro/live-rescue: distro/live-icewm +efi
 	@$(call add,LIVE_LISTS,$(call tags,rescue && (fs || live || x11)))
 	@$(call add,LIVE_LISTS,openssh \
