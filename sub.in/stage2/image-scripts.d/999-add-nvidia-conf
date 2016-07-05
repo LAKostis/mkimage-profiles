@@ -1,0 +1,13 @@
+#!/bin/sh
+
+cd /etc/X11 || exit 1
+
+if [ -f /lib/modules/*/nVidia/nvidia.ko ]; then
+cat > xorg.conf << EOF
+Section "Device"
+	Identifier	"Nvidia GPU"
+	Driver		"nvidia"
+EndSection
+EOF
+fi
+:
