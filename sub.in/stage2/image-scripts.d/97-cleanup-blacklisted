@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 # don't cripple the image to be copied over
 [ -x /usr/sbin/live-install -o -x /usr/sbin/livecd-install ] && exit 0
@@ -8,5 +8,5 @@
 #	while read i; do
 #		find /lib/modules/ -type f -name "$i.ko" -delete
 #	done
-#
-#:
+
+:
