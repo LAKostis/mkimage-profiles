@@ -20,8 +20,9 @@ use/x11/xorg: use/x11; @:
 endif
 
 # both free and excellent
+# use modesetting + glamor instead of DDX driver
 use/x11/intel: use/x11
-	@$(call add,THE_PACKAGES,xorg-drv-intel)
+	@$(call add,THE_PACKAGES,xorg-drv-modesetting)
 	@$(call add,THE_PACKAGES,xorg-dri-intel)	### #25044
 
 # for those cases when no 3D means no use at all
