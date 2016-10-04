@@ -19,12 +19,13 @@ distro/.regular-x11: distro/.regular-base +vmguest +wireless \
 	@$(call add,LIVE_LISTS,$(call tags,base rescue))
 	@$(call add,LIVE_PACKAGES,gpm livecd-install-apt-cache)
 	@$(call add,DEFAULT_SERVICES_ENABLE,gpm)
+	@$(call add,DEFAULT_SERVICES_DISABLE,powertop lvm2-lvmpolld)
 	@$(call add,EFI_BOOTARGS,live_rw)
 
 # common WM live/installer bits
 mixin/regular-desktop: use/x11/xorg use/sound use/xdg-user-dirs
 	@$(call add,THE_PACKAGES,installer-feature-desktop-other-fs-stage2)
-	@$(call add,THE_PACKAGES,alterator-notes)
+	@$(call add,THE_PACKAGES,alterator-notes dvd+rw-tools)
 	@$(call add,THE_BRANDING,alterator graphics indexhtml notes)
 	@$(call add,THE_PACKAGES,$$(THE_IMAGEWRITER))
 	@$(call set,THE_IMAGEWRITER,imagewriter)
@@ -39,8 +40,9 @@ distro/.regular-desktop: distro/.regular-wm \
 	@$(call add,LIVE_LISTS,domain-client)
 	@$(call add,THE_BRANDING,bootloader)
 	@$(call add,THE_PACKAGES,upower bluez)
+	@$(call add,THE_PACKAGES,disable-usb-autosuspend)
 	@$(call add,DEFAULT_SERVICES_DISABLE,gssd idmapd krb5kdc rpcbind)
-	@$(call add,DEFAULT_SERVICES_ENABLE,powertop)
+	@$(call add,DEFAULT_SERVICES_ENABLE,bluetoothd)
 	@$(call set,KFLAVOURS,std-def)
 
 distro/.regular-gtk: distro/.regular-desktop use/x11/lightdm/gtk +plymouth; @:
@@ -92,7 +94,7 @@ distro/.regular-install-x11: distro/.regular-install \
 	@$(call add,THE_LISTS,$(call tags,regular desktop))
 
 distro/regular-icewm: distro/.regular-sysv-gtk +icewm \
-	use/browser/seamonkey/i18n use/fonts/ttf/redhat
+	use/browser/palemoon/i18n use/fonts/ttf/redhat
 	@$(call add,LIVE_LISTS,$(call tags,regular icewm))
 	@$(call add,LIVE_PACKAGES,mnt winswitch xpra)
 	@$(call set,KFLAVOURS,un-def)
@@ -105,7 +107,7 @@ mixin/regular-wmaker: use/efi/refind use/syslinux/ui/gfxboot \
 
 # wdm can't do autologin so add standalone one for livecd
 distro/regular-wmaker: distro/.regular-sysv \
-	mixin/regular-wmaker use/live/autologin use/browser/seamonkey/i18n
+	mixin/regular-wmaker use/live/autologin use/browser/palemoon/i18n
 	@$(call add,LIVE_PACKAGES,wdm wmxkbru)
 
 # gdm2.20 can reboot/halt with both sysvinit and systemd, and is slim
@@ -143,16 +145,15 @@ distro/regular-mate: distro/.regular-gtk +nm \
 distro/regular-e17: distro/.regular-gtk use/x11/e17 use/fonts/infinality; @:
 
 distro/regular-enlightenment: distro/.regular-gtk \
-	use/x11/enlightenment use/fonts/infinality
-	@$(call set,META_VOL_ID,ALT Linux regular-E/$(ARCH))
+	use/x11/enlightenment use/fonts/infinality; @:
 
 distro/regular-enlightenment-sysv: distro/.regular-sysv-gtk \
 	use/x11/enlightenment
-	@$(call set,META_VOL_ID,ALT Linux regular-E-SysV/$(ARCH))
+	@$(call set,META_VOL_ID,ALT regular-E-SysV/$(ARCH)) # see also #28271
 
 distro/regular-cinnamon: distro/.regular-gtk \
-	use/x11/cinnamon use/fonts/infinality use/net/nm/mmgui use/im
-	@$(call set,META_VOL_ID,ALT Linux $(IMAGE_NAME)) # see also #28271
+	use/x11/cinnamon use/fonts/infinality use/fonts/ttf/google \
+	use/net/nm/mmgui use/im; @:
 
 # not .regular-gtk due to gdm vs lightdm
 distro/regular-gnome3: distro/.regular-desktop +plymouth +nm \
@@ -166,7 +167,7 @@ distro/regular-gnome3: distro/.regular-desktop +plymouth +nm \
 mixin/regular-tde: +tde \
 	use/syslinux/ui/gfxboot use/browser/firefox/classic use/fonts/ttf/redhat
 	@$(call add,THE_PACKAGES,kdeedu)
-	@$(call add,DEFAULT_SERVICES_DISABLE,upower bluez)
+	@$(call add,DEFAULT_SERVICES_DISABLE,upower bluetoothd)
 
 distro/regular-tde: distro/.regular-desktop mixin/regular-tde +plymouth \
 	use/x11/gtk/nm use/net/nm/mmgui
@@ -277,9 +278,11 @@ distro/regular-server-pve: distro/.regular-server-base \
 	@$(call set,BASE_BOOTLOADER,grub)
 	@$(call set,INSTALLER,altlinux-server)
 	@$(call add,THE_PACKAGES,pve-manager)
-	@$(call add,THE_PACKAGES,bridge-utils faketime tzdata)
+	@$(call add,THE_PACKAGES,bridge-utils faketime tzdata postfix)
 	@$(call add,THE_KMODULES,ipset kvm)
-	@$(call add,DEFAULT_SERVICES_ENABLE,pve-manager)
+	@$(call add,DEFAULT_SERVICES_DISABLE,pve-manager pve-cluster \
+		pve-firewall pve-ha-crm pve-manager pveproxy pvedaemon \
+		pvefw-logger pve-ha-lrm pvenetcommit pvestatd spiceproxy)
 
 distro/regular-builder: distro/.regular-bare \
 	use/dev/builder/full +sysvinit +efi +power \

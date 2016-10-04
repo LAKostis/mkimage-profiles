@@ -3,7 +3,7 @@ ifeq (distro,$(IMAGE_CLASS))
 distro/basealt-workstation: workstation_groups = $(addprefix workstation/,\
 	10-office 20-networking 30-multimedia 40-virtualization 50-publishing \
 	blender emulators gnome-peer-to-peer graphics-editing \
-	gtk-dictionary libreoffice mate-usershare pidgin qgis remmina \
+	gtk-dictionary libreoffice mate-usershare pidgin remmina \
 	scanning scribus sound-editing vlc \
 	freecad ganttproject thunderbird \
 	kvm virtualbox)
@@ -42,6 +42,7 @@ distro/basealt-workstation: distro/.base use/luks  \
 	@$(call add,INSTALL2_PACKAGES,alterator-notes)
 	@$(call add,THE_LISTS,$(call tags,regular desktop))
 	@$(call add,MAIN_GROUPS,$(workstation_groups))
+	@$(call add,MAIN_LISTS,workstation/extras)
 	@$(call add,BASE_LISTS,$(call tags,desktop cups))
 	@$(call add,LIVE_LISTS,$(call tags,desktop sane))
 	@$(call add,LIVE_LISTS,$(call tags,desktop office))
@@ -50,9 +51,11 @@ distro/basealt-workstation: distro/.base use/luks  \
 	@$(call add,THE_LISTS,$(call tags,base desktop))
 	@$(call add,THE_LISTS,$(call tags,archive extra))
 	@$(call add,THE_LISTS,$(call tags,mobile mate))
+	@$(call add,THE_LISTS,$(call tags,clamav && (base || desktop))
 	@$(call add,LIVE_PACKAGES,virt-viewer vlc)
 	@$(call add,LIVE_PACKAGES,volumes-profile-regular)
 	@$(call add,INSTALL2_PACKAGES,volumes-profile-regular)
+	@$(call add,THE_PACKAGES,disable-usb-autosuspend)
 	@$(call add,THE_PACKAGES,bluez pulseaudio-bluez rpminstall)
 	@$(call add,BASE_PACKAGES,installer-feature-centaurus-keyring)
 	@$(call add,BASE_PACKAGES,samba-winbind)
@@ -69,7 +72,7 @@ distro/basealt-workstation: distro/.base use/luks  \
 	@$(call add,RESCUE_BOOTARGS,nomodeset vga=0)
 	@$(call add,CONTROL,xdg-user-dirs:enabled)
 	@$(call add,SERVICES_ENABLE,cups smb nmb httpd2)
-	@$(call add,DEFAULT_SERVICES_ENABLE,powertop)
+	@$(call add,DEFAULT_SERVICES_DISABLE,powertop)
 	@$(call set,META_PUBLISHER,BaseALT Ltd)
 	@$(call set,META_VOL_SET,BaseALT)
 	@$(call set,META_VOL_ID,BaseALT Workstation)

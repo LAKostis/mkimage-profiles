@@ -1,10 +1,14 @@
+# x86: various VM guest modules/tools
+ifeq (,$(filter-out i586 x86_64,$(ARCH)))
+
 +vmguest: use/vmguest/complete; @:
 
 use/vmguest:
 	@$(call add_feature)
 
 use/vmguest/base: use/vmguest/vbox use/vmguest/vmware; @:
-use/vmguest/complete: use/vmguest/base use/vmguest/vbox/x11 use/vmguest/kvm; @:
+use/vmguest/complete: use/vmguest/base \
+	use/vmguest/vbox/x11 use/vmguest/vmware/x11 use/vmguest/kvm; @:
 
 use/vmguest/vbox: use/vmguest
 	@$(call add,THE_KMODULES,virtualbox-addition vboxguest)
@@ -24,4 +28,10 @@ use/vmguest/vmware:
 	@$(call add,THE_KMODULES,scsi)	# mptspi.ko
 
 use/vmguest/vmware/x11: use/vmguest/vmware
-	@$(call add,THE_PACKAGES,xorg-drv-vmware)
+	@$(call add,THE_PACKAGES,xorg-drv-vmware xorg-drv-vmmouse)
+
+else
+
++vmguest: ;@:
+
+endif
