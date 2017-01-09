@@ -45,18 +45,21 @@ distro/live-icewm: distro/.live-desktop use/x11/lightdm/gtk +icewm; @:
 distro/live-tde: distro/.live-desktop-ru use/live/install +tde; @:
 distro/live-fvwm: distro/.live-desktop-ru use/x11/lightdm/gtk use/x11/fvwm; @:
 
-distro/live-lakostis: distro/.live-desktop use/x11/lightdm/gtk use/x11/lxde +efi \
-	+wireless +systemd use/fonts/ttf/google use/net/nm/nodelay use/net-ssh \
+distro/live-lakostis: distro/.live-desktop \
+	use/x11/vulkan use/x11/lightdm/gtk use/x11/lxde +efi \
+	+wireless +systemd use/fonts/ttf/google use/browser/chromium use/net/nm/nodelay use/net-ssh \
 	use/firmware/laptop use/x11-neatterm use/x11/gtk/nm +power
 	@$(call set,KFLAVOURS,lks-wks)
-	@$(call add,LIVE_PACKAGES,driconf libtxc_dxtn i586-libtxc_dxtn \
-	i586-libGL 'i586-xorg-dri-*' udev-extras kodi pavucontrol bluez \
-	pulseaudio-bluez pommed gpomme xorg-conf-synaptics usbutils)
+	@$(call add,LIVE_PACKAGES,driconf libtxc_dxtn i586-libtxc_dxtn libXScrnSaver \
+	i586-libGL 'i586-xorg-dri-*' i586-libassimp3 libassimp3 udev-extras kodi \
+	pavucontrol bluez pulseaudio-bluez pommed gpomme speedtest-cli \
+	xorg-conf-synaptics usbutils libva-driver-intel)
 
 distro/live-lakostis-oldmac: distro/.live-x11 use/x11/lightdm/gtk use/x11/lxde +efi \
 	+wireless +systemd use/fonts/ttf/google use/net/nm/nodelay use/net-ssh \
-	use/firmware/laptop use/x11-neatterm use/x11/gtk/nm +power
+	use/firmware/laptop use/x11-neatterm use/x11/gtk/nm +power use/hw-quirks/apple
 	@$(call set,KFLAVOURS,lks-wks)
+	@$(call add,STAGE2_BOOTARGS,nomodeset video=vesa:off vga=normal)
 	@$(call set,NVIDIA_KMODULES,nvidia_legacy_340.xx)
 	@$(call set,NVIDIA_PACKAGES,nvidia_glx_legacy_340.xx nvidia-settings nvidia-xconfig)
 	@$(call add,LIVE_PACKAGES,nvdock udev-extras kodi pavucontrol bluez \
