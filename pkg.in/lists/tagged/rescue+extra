@@ -153,6 +153,7 @@ davfs2
 dhcpdump
 dsniff
 elinks
+exabgp
 fping
 fuse-curlftpfs
 fuse-lftpfs
@@ -179,11 +180,13 @@ nfs-utils
 ngrep
 nmap
 p0f
+pdsh
 rsh
 rsync
 scanssh
 sflowtool
 #shellinabox
+sshpt
 #stunnel
 tcpdump
 tcpflow

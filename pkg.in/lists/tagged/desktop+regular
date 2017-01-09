@@ -10,6 +10,7 @@ alterator-standalone
 
 alterator-root
 alterator-users
+alterator-groups
 
 alterator-net-general
 alterator-net-pppoe rp-pppoe-client
@@ -20,6 +21,7 @@ alterator-net-wifi
 
 alterator-datetime
 alterator-proxy
+alterator-services
 
 #alterator-x11
 alterator-xkb
@@ -28,7 +30,9 @@ glxgears
 xorg-conf-synaptics
 
 hdparm
+inxi
 lm_sensors3
+lsblk
 sdparm
 
 fonts-bitmap-terminus

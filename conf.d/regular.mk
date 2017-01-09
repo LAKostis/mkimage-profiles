@@ -18,8 +18,7 @@ distro/.regular-x11: distro/.regular-base +vmguest +wireless \
 	@$(call add,LIVE_LISTS,$(call tags,(base || desktop) && regular))
 	@$(call add,LIVE_LISTS,$(call tags,base rescue))
 	@$(call add,LIVE_PACKAGES,gpm livecd-install-apt-cache)
-	@$(call add,DEFAULT_SERVICES_ENABLE,gpm)
-	@$(call add,DEFAULT_SERVICES_DISABLE,powertop lvm2-lvmpolld)
+	@$(call add,DEFAULT_SERVICES_DISABLE,gpm powertop lvm2-lvmpolld)
 	@$(call add,EFI_BOOTARGS,live_rw)
 
 # common WM live/installer bits
@@ -41,6 +40,7 @@ distro/.regular-desktop: distro/.regular-wm \
 	@$(call add,THE_BRANDING,bootloader)
 	@$(call add,THE_PACKAGES,upower bluez)
 	@$(call add,THE_PACKAGES,disable-usb-autosuspend)
+	@$(call add,THE_PACKAGES,systemd-udev-console-fb)	#28805
 	@$(call add,DEFAULT_SERVICES_DISABLE,gssd idmapd krb5kdc rpcbind)
 	@$(call add,DEFAULT_SERVICES_ENABLE,bluetoothd)
 	@$(call set,KFLAVOURS,std-def)
@@ -93,10 +93,22 @@ distro/.regular-install-x11: distro/.regular-install \
 	@$(call set,INSTALLER,altlinux-desktop)
 	@$(call add,THE_LISTS,$(call tags,regular desktop))
 
-distro/regular-icewm: distro/.regular-sysv-gtk +icewm \
-	use/browser/palemoon/i18n use/fonts/ttf/redhat
+# assumes somewhat more experienced user, mostly for sysv variants
+distro/.regular-install-x11-full: distro/.regular-install-x11 \
+	mixin/desktop-installer mixin/regular-desktop use/install2/fs \
+	use/fonts/otf/adobe use/fonts/otf/mozilla \
+	use/branding/complete use/branding/slideshow/once \
+	use/net-eth/dhcp use/efi/refind use/efi/shell use/rescue/base
+	@$(call add,RESCUE_LISTS,$(call tags,rescue misc))
+	@$(call add,MAIN_PACKAGES,anacron man-whatis usb-modeswitch)
+
+distro/regular-icewm: distro/.regular-sysv-gtk +icewm +nm \
+	use/x11/lightdm/gtk use/init/sysv/polkit use/deflogin/sysv/nm \
+	use/browser/chromium use/fonts/ttf/redhat
+	@$(call add,LIVE_LISTS,$(call tags,desktop nm))
 	@$(call add,LIVE_LISTS,$(call tags,regular icewm))
 	@$(call add,LIVE_PACKAGES,mnt winswitch xpra)
+	@$(call add,LIVE_PACKAGES,icewm-startup-networkmanager)
 	@$(call set,KFLAVOURS,un-def)
 
 mixin/regular-wmaker: use/efi/refind use/syslinux/ui/gfxboot \
@@ -120,15 +132,21 @@ distro/regular-gnustep: distro/.regular-sysv \
 distro/regular-gnustep-systemd: distro/.regular-wm +systemd \
 	mixin/regular-wmaker mixin/regular-gnustep; @:
 
-distro/regular-xfce: distro/.regular-gtk \
-	use/x11/xfce use/domain-client/full use/browser/firefox/classic \
-	use/fonts/ttf/redhat use/x11/gtk/nm +nm; @:
+mixin/regular-xfce: use/x11/xfce use/fonts/ttf/redhat use/x11/gtk/nm +nm; @:
+
+distro/regular-xfce: distro/.regular-gtk mixin/regular-xfce \
+	use/x11/xfce/full use/domain-client/full
+	@$(call set,KFLAVOURS,un-def)
+
+mixin/regular-xfce-sysv: use/init/sysv/polkit use/deflogin/sysv/nm \
+	use/x11/lightdm/gtk \
+	use/browser/firefox use/browser/firefox/classic \
+	use/browser/firefox/i18n use/browser/firefox/h264 \
+	use/fonts/otf/adobe use/fonts/otf/mozilla
+	@$(call add,THE_PACKAGES,xfce4-mixer pm-utils elinks mpg123)
 
 distro/regular-xfce-sysv: distro/.regular-sysv-gtk \
-	use/init/sysv/polkit use/x11/xfce \
-	use/fonts/ttf/redhat use/fonts/otf/adobe use/fonts/otf/mozilla
-	@$(call set,KFLAVOURS,un-def)
-	@$(call add,LIVE_PACKAGES,xfce4-mixer pm-utils elinks mpg123)
+	mixin/regular-xfce mixin/regular-xfce-sysv; @:
 
 distro/regular-lxde: distro/.regular-gtk use/x11/lxde use/fonts/infinality \
 	use/x11/gtk/nm use/im +nm
@@ -185,8 +203,7 @@ distro/regular-kde4: distro/.regular-desktop use/x11/kde4/nm use/x11/kdm4 \
 	@$(call add,DEFAULT_SERVICES_ENABLE,prefdm)
 
 mixin/regular-lxqt: use/x11/lxqt use/x11/sddm \
-	use/net/connman use/browser/qupzilla +plymouth
-	@$(call add,THE_PACKAGES,qconnman-ui)
+	use/browser/qupzilla use/x11/gtk/nm +nm +plymouth
 	@$(call set,THE_IMAGEWRITER,rosa-imagewriter)
 
 distro/regular-lxqt: distro/.regular-desktop mixin/regular-lxqt; @:
@@ -222,24 +239,23 @@ distro/regular-rescue: distro/.regular-base use/rescue/rw use/luks \
 	@$(call add,RESCUE_LISTS,$(call tags,base && (smartcard || bench)))
 	@$(call add,RESCUE_LISTS,$(call tags,network security))
 
-distro/regular-sysv-tde: distro/.regular-install-x11 \
-	mixin/desktop-installer mixin/regular-tde use/install2/fs \
-	use/branding/complete use/branding/slideshow/once \
-	use/net-eth/dhcp use/efi/refind use/efi/shell use/rescue/base \
-	use/fonts/otf/adobe use/fonts/otf/mozilla
-	@$(call add,RESCUE_LISTS,$(call tags,rescue misc))
+distro/regular-sysv-tde: distro/.regular-install-x11-full mixin/regular-tde
 	@$(call add,THE_LISTS,$(call tags,base desktop))
 	@$(call add,THE_LISTS,$(call tags,regular tde))
 	@$(call add,THE_PACKAGES,kpowersave)
-	@$(call add,MAIN_PACKAGES,anacron man-whatis usb-modeswitch)
+
+distro/regular-sysv-xfce: distro/.regular-install-x11-full \
+	mixin/regular-xfce mixin/regular-xfce-sysv; @:
 
 distro/.regular-server-base: distro/.regular-install \
 	use/server/base use/stage2/kms
 	@$(call add,THE_LISTS,$(call tags,regular server))
 	@$(call set,INSTALLER,altlinux-server)
+	@$(call add,SYSTEM_PACKAGES,multipath-tools)
+	@$(call add,INSTALL2_PACKAGES,installer-feature-multipath)
 
 distro/.regular-server: distro/.regular-server-base \
-	use/server/mini use/firmware/qlogic use/rescue/base use/cleanup/x11
+	use/server/mini use/firmware/qlogic use/rescue/base use/cleanup/libs
 	@$(call add,MAIN_PACKAGES,aptitude)
 	@$(call add,CLEANUP_PACKAGES,qt4-common)
 	@$(call add,DEFAULT_SERVICES_DISABLE,bridge)
@@ -277,8 +293,9 @@ distro/regular-server-pve: distro/.regular-server-base \
 	use/firmware/qlogic +efi +systemd
 	@$(call set,BASE_BOOTLOADER,grub)
 	@$(call set,INSTALLER,altlinux-server)
-	@$(call add,THE_PACKAGES,pve-manager)
-	@$(call add,THE_PACKAGES,bridge-utils faketime tzdata postfix)
+	@$(call add,INSTALL2_PACKAGES,installer-feature-pve)
+	@$(call add,THE_PACKAGES,pve-manager nfs-clients su)
+	@$(call add,THE_PACKAGES,bridge-utils dhcpcd faketime tzdata postfix)
 	@$(call add,THE_KMODULES,ipset kvm)
 	@$(call add,DEFAULT_SERVICES_DISABLE,pve-manager pve-cluster \
 		pve-firewall pve-ha-crm pve-manager pveproxy pvedaemon \
