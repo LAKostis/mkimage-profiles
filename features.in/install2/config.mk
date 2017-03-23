@@ -27,7 +27,7 @@ use/install2/stage3: use/install2
 	@$(call add,BASE_PACKAGES,installer-$$(INSTALLER)-stage3)
 
 # just an alias, better use its endpoint directly
-use/install2/fonts: use/fonts/install2
+use/install2/fonts: use/fonts/install2; @:
 
 # see also use/vmguest
 use/install2/vmguest: use/install2/kvm use/install2/vbox use/install2/vmware; @:
@@ -60,7 +60,18 @@ use/install2/vmware:
 
 # NB: sort of conflicts with use/install2/cleanup/vnc
 use/install2/vnc:
-	@$(call add,INSTALL2_PACKAGES,x11vnc)
+	@$(call add,INSTALL2_PACKAGES,x11vnc xterm net-tools)
+
+# this one expects external vncviewer to come
+use/install2/vnc/listen: \
+	use/install2/vnc use/syslinux/install-vnc-listen.cfg; @:
+
+# this one connects to a specified vncviewer --listen
+use/install2/vnc/connect: \
+	use/install2/vnc use/syslinux/install-vnc-connect.cfg; @:
+
+# add both bootloader items to be *that* explicit ;-)
+use/install2/vnc/full: use/install2/vnc/listen use/install2/vnc/connect; @:
 
 # filesystems handling
 use/install2/fs: use/install2/xfs use/install2/jfs use/install2/reiserfs; @:

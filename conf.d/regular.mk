@@ -23,6 +23,7 @@ distro/.regular-x11: distro/.regular-base +vmguest +wireless \
 
 # common WM live/installer bits
 mixin/regular-desktop: use/x11/xorg use/sound use/xdg-user-dirs
+	@$(call add,THE_PACKAGES,pam-limits-desktop)
 	@$(call add,THE_PACKAGES,installer-feature-desktop-other-fs-stage2)
 	@$(call add,THE_PACKAGES,alterator-notes dvd+rw-tools)
 	@$(call add,THE_BRANDING,alterator graphics indexhtml notes)
@@ -30,7 +31,7 @@ mixin/regular-desktop: use/x11/xorg use/sound use/xdg-user-dirs
 	@$(call set,THE_IMAGEWRITER,imagewriter)
 
 # WM base target
-distro/.regular-wm: distro/.regular-x11 mixin/regular-desktop
+distro/.regular-wm: distro/.regular-x11 mixin/regular-desktop; @:
 
 # DE base target
 # TODO: use/plymouth/live when luks+plymouth is done, see also #28255
@@ -249,13 +250,14 @@ distro/regular-sysv-xfce: distro/.regular-install-x11-full \
 
 distro/.regular-server-base: distro/.regular-install \
 	use/server/base use/stage2/kms
-	@$(call add,THE_LISTS,$(call tags,regular server))
+	@$(call add,THE_LISTS,$(call tags,server && (regular || network)))
 	@$(call set,INSTALLER,altlinux-server)
 	@$(call add,SYSTEM_PACKAGES,multipath-tools)
 	@$(call add,INSTALL2_PACKAGES,installer-feature-multipath)
 
 distro/.regular-server: distro/.regular-server-base \
 	use/server/mini use/firmware/qlogic use/rescue/base use/cleanup/libs
+	@$(call add,RESCUE_LISTS,$(call tags,rescue misc))
 	@$(call add,MAIN_PACKAGES,aptitude)
 	@$(call add,CLEANUP_PACKAGES,qt4-common)
 	@$(call add,DEFAULT_SERVICES_DISABLE,bridge)
@@ -266,7 +268,8 @@ distro/.regular-server-managed: distro/.regular-server
 	@$(call add,INSTALL2_PACKAGES,ntfs-3g)
 	@$(call add,DEFAULT_SERVICES_DISABLE,ahttpd alteratord)
 
-distro/regular-server: distro/.regular-server-managed use/server/groups/base
+distro/regular-server: distro/.regular-server-managed \
+	use/server/groups/base use/install2/vnc/full
 	@$(call add,MAIN_GROUPS,server/sambaDC)
 	@$(call add,MAIN_GROUPS,tools/hyperv)
 
@@ -311,9 +314,9 @@ distro/regular-builder: distro/.regular-bare \
 	@$(call add,LIVE_PACKAGES,ccache rpm-utils wodim)
 	@$(call add,DEFAULT_SERVICES_ENABLE,gpm)
 
-distro/regular-server-samba4: distro/regular-server
+distro/regular-server-samba4: distro/.regular-server-managed
 	@$(call add,THE_LISTS,$(call tags,server && (sambaDC || alterator)))
-	@$(call add,THE_PACKAGES,alterator-fbi alterator-dhcp)
+	@$(call add,THE_PACKAGES,alterator-dhcp)
 	@$(call add,DEFAULT_SERVICES_DISABLE,smbd nmbd winbind)
 
 endif

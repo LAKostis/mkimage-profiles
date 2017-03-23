@@ -3,6 +3,7 @@ use/server: use/power/acpi/button
 
 use/server/base: use/server use/firmware/server \
 	use/net-ssh use/syslinux/timeout/600
+	@$(call set,BOOTVGA,)
 	@$(call add,THE_LISTS,server-base)
 	@$(call add,THE_KMODULES,e1000e igb)
 	@$(call add,STAGE1_KMODULES,e1000e igb)
@@ -18,7 +19,7 @@ use/server/mini: use/server/base
 use/server/ovz-base: use/server
 	@$(call set,STAGE1_KFLAVOUR,std-def)
 	@$(call set,KFLAVOURS,std-def ovz-el)
-	@$(call add,BASE_PACKAGES,lftp wget)
+	@$(call add,BASE_PACKAGES,lftp wget hdparm)
 	@$(call add,BASE_LISTS,$(call tags,base openvz))
 
 use/server/ovz: use/server/ovz-base
@@ -37,6 +38,7 @@ use/server/zabbix: use/server use/services use/control
 
 use/server/groups/tools: use/server
 	@$(call add,MAIN_GROUPS,tools/diag tools/ipmi tools/monitoring)
+	@$(call add,MAIN_GROUPS,tools/tuning)
 
 use/server/groups/services: use/server
 	@$(call add,MAIN_GROUPS,server/dns server/http server/ftp server/kvm)

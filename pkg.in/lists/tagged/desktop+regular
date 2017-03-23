@@ -29,6 +29,8 @@ alterator-xkb
 glxgears
 xorg-conf-synaptics
 
+cpu-x
+fuse-exfat
 hdparm
 inxi
 lm_sensors3
