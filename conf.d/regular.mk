@@ -41,7 +41,7 @@ distro/.regular-desktop: distro/.regular-wm \
 	@$(call add,THE_BRANDING,bootloader)
 	@$(call add,THE_PACKAGES,upower bluez)
 	@$(call add,THE_PACKAGES,disable-usb-autosuspend)
-	@$(call add,THE_PACKAGES,systemd-udev-console-fb)	#28805
+	@$(call add,THE_PACKAGES,vconsole-setup-kludge)	#28805
 	@$(call add,DEFAULT_SERVICES_DISABLE,gssd idmapd krb5kdc rpcbind)
 	@$(call add,DEFAULT_SERVICES_ENABLE,bluetoothd)
 	@$(call set,KFLAVOURS,std-def)
@@ -59,19 +59,24 @@ distro/.regular-install: distro/.regular-base +installer +sysvinit +power \
 	@$(call add,THE_BRANDING,alterator)
 
 # common base for the very bare distros
-distro/.regular-jeos: distro/.regular-bare use/isohybrid +sysvinit \
-	use/branding use/bootloader/lilo use/syslinux/lateboot.cfg \
+distro/.regular-jeos-base: distro/.regular-bare +sysvinit \
+	use/isohybrid use/branding use/bootloader/grub \
 	use/install2/repo use/install2/packages \
-	use/install2/cleanup/everything use/install2/cleanup/kernel/everything \
-	use/cleanup/jeos use/net/etcnet use/power/acpi/button
-	@$(call add,STAGE2_BOOTARGS,vga=0)
-	@$(call add,BASE_KMODULES,guest scsi vboxguest)
-	@$(call add,BASE_PACKAGES,make-initrd-mdadm cpio)
+	use/net/etcnet use/power/acpi/button
+	@$(call set,BOOTVGA,)
 	@$(call set,INSTALLER,altlinux-generic)
 	@$(call add,INSTALL2_BRANDING,alterator notes)
 	@$(call add,THE_BRANDING,alterator) # just to be cleaned up later on
 	@$(call add,THE_PACKAGES,apt basesystem dhcpcd vim-console)
 	@$(call add,THE_LISTS,openssh)
+
+# ...and for somewhat bare distros
+distro/.regular-jeos: distro/.regular-jeos-base \
+	use/bootloader/lilo use/syslinux/lateboot.cfg \
+	use/install2/cleanup/everything use/install2/cleanup/kernel/everything \
+	use/cleanup/jeos
+	@$(call add,BASE_KMODULES,guest scsi vboxguest)
+	@$(call add,BASE_PACKAGES,make-initrd-mdadm cpio)
 
 # NB:
 # - stock cleanup is not enough (or installer-common-stage3 deps soaring)
@@ -229,16 +234,23 @@ distro/regular-kde5: distro/.regular-desktop \
 #     which will change propagator's behaviour to probe additional
 #     filesystems (ro but no loop) thus potentially writing to
 #     an unrecovered filesystem's journal
-distro/regular-rescue: distro/.regular-base use/rescue/rw use/luks \
-	use/branding use/efi/refind use/efi/shell use/efi/memtest86 \
-	use/hdt use/syslinux/ui/menu use/syslinux/timeout/600 \
-	use/syslinux/rescue_fm.cfg use/syslinux/rescue_remote.cfg \
-	use/firmware/qlogic use/mediacheck test/rescue/no-x11 \
-	+wireless +sysvinit
+mixin/regular-rescue: use/rescue use/isohybrid use/luks use/branding \
+	use/syslinux/ui/menu use/syslinux/timeout/600 \
+	use/firmware/qlogic test/rescue/no-x11 +sysvinit; @:
+
+distro/regular-rescue: distro/.regular-base mixin/regular-rescue  \
+	use/rescue/rw use/efi/refind use/efi/shell use/efi/memtest86 \
+	use/hdt use/syslinux/rescue_fm.cfg use/syslinux/rescue_remote.cfg \
+	use/mediacheck +wireless
 	@$(call set,KFLAVOURS,un-def)
 	@$(call add,RESCUE_PACKAGES,gpm livecd-net-eth)
 	@$(call add,RESCUE_LISTS,$(call tags,base && (smartcard || bench)))
 	@$(call add,RESCUE_LISTS,$(call tags,network security))
+
+distro/regular-rescue-netbootxyz: distro/.regular-bare mixin/regular-rescue
+	@$(call set,RELNAME,en.altlinux.org/rescue (netboot.xyz edition))
+	@$(call set,META_VOL_ID,ALT Rescue)
+	@$(call set,META_APP_ID,$(ARCH))
 
 distro/regular-sysv-tde: distro/.regular-install-x11-full mixin/regular-tde
 	@$(call add,THE_LISTS,$(call tags,base desktop))
