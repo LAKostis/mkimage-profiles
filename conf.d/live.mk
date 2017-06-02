@@ -46,15 +46,26 @@ distro/live-icewm: distro/.live-desktop use/x11/lightdm/gtk +icewm; @:
 distro/live-tde: distro/.live-desktop-ru use/live/install +tde; @:
 distro/live-fvwm: distro/.live-desktop-ru use/x11/lightdm/gtk use/x11/fvwm; @:
 
-distro/live-lakostis: distro/.live-desktop \
-	use/x11/vulkan use/x11/lightdm/gtk use/x11/lxde +efi \
+distro/live-lakostis: distro/.live-desktop use/docs/license \
+	use/x11/vulkan use/x11/glvnd use/x11/nvidia use/x11/lightdm/gtk use/x11/lxde +efi \
 	+wireless +systemd use/fonts/ttf/google use/browser/chromium use/net/nm/nodelay use/net-ssh \
-	use/firmware/laptop use/x11-neatterm use/x11/gtk/nm +power
+	use/firmware/laptop use/x11-neatterm use/x11/gtk/nm +power +vmguest
 	@$(call set,KFLAVOURS,lks-wks)
 	@$(call add,LIVE_PACKAGES,driconf libtxc_dxtn i586-libtxc_dxtn libXScrnSaver \
-	i586-libGL 'i586-xorg-dri-*' i586-libassimp3 libassimp3 udev-extras kodi \
-	pavucontrol bluez pulseaudio-bluez pommed gpomme speedtest-cli \
-	xorg-conf-synaptics usbutils libva-driver-intel)
+		i586-libGL 'i586-xorg-dri-*' i586-nvidia_glx i586-libassimp3 libassimp3 udev-extras kodi \
+		pavucontrol bluez pulseaudio-bluez pommed gpomme speedtest-cli \
+		xorg-conf-synaptics usbutils libva-driver-intel nvidia_glx \
+		installer-feature-no-xconsole-stage3 volumes-profile-regular \
+		installer-common-stage3 btrfs-progs)
+	@$(call add,THE_PACKAGES,pam-limits-desktop)
+	@$(call add,THE_PACKAGES,disable-usb-autosuspend)
+	@$(call add,THE_PACKAGES,vconsole-setup-kludge) #28805
+	@$(call add,THE_PACKAGES,installer-feature-desktop-other-fs-stage2)
+	@$(call add,LIVE_LISTS,$(call tags,(base || desktop) && regular))
+	@$(call add,LIVE_LISTS,$(call tags,base rescue))
+	@$(call add,DEFAULT_SERVICES_DISABLE,gpm powertop lvm2-lvmpolld)
+	@$(call add,DEFAULT_SERVICES_ENABLE,bluetoothd)
+
 
 distro/live-lakostis-oldmac: distro/.live-x11 use/x11/lightdm/gtk use/x11/lxde +efi \
 	+wireless +systemd use/fonts/ttf/google use/net/nm/nodelay use/net-ssh \
