@@ -48,7 +48,7 @@ use/x11/amdgpu: use/x11 use/firmware
 
 # Vulkan is new and bleeding edge, only intel and amgpu(pro?)
 use/x11/vulkan: use/x11/intel use/x11/amdgpu
-	@$(call add,THE_PACKAGES,vulkan)
+	@$(call add,THE_PACKAGES,libvulkan1 vulkan-demos vulkan-examples)
 	@$(call add,THE_PACKAGES,vulkan-radeon vulkan-intel)
 
 # see https://github.com/NVIDIA/libglvnd for all gory details
