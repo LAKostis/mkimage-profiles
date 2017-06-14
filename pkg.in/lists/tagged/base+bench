@@ -16,10 +16,10 @@ iozone
 ffsb
 
 # networking
-dbench
+#dbench
 hammerhead
 nepim
-postal
+#postal
 siege
 t50
 wrk
