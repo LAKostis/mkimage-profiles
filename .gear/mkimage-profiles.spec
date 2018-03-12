@@ -1,5 +1,5 @@
 Name: mkimage-profiles
-Version: 1.1.109
+Version: 1.2.11
 Release: alt1
 
 Summary: ALT based distribution metaprofile
@@ -128,6 +128,45 @@ mv %buildroot%mpdir/doc/mkimage-profiles.7 %buildroot%_man7dir/
 %endif
 
 %changelog
+* Mon Mar 12 2018 Michael Shigorin <mike@altlinux.org> 1.2.11-alt1
+- starterkits-20180312
+
+* Mon Feb 19 2018 Michael Shigorin <mike@altlinux.org> 1.2.10-alt1
+- antohami@'s fixups
+
+* Mon Feb 12 2018 Michael Shigorin <mike@altlinux.org> 1.2.9-alt1
+- antohami@'s release
+
+* Mon Feb 05 2018 Michael Shigorin <mike@altlinux.org> 1.2.8-alt1
+- regular fixes
+
+* Mon Jan 22 2018 Michael Shigorin <mike@altlinux.org> 1.2.7-alt1
+- 2018: better sound feature (antohami@)
+
+* Mon Dec 11 2017 Michael Shigorin <mike@altlinux.org> 1.2.6-alt1
+- starterkits-20171212
+
+* Mon Dec 04 2017 Michael Shigorin <mike@altlinux.org> 1.2.5-alt1
+- qcow2c
+
+* Mon Nov 20 2017 Michael Shigorin <mike@altlinux.org> 1.2.4-alt1
+- opennebula-systemd
+
+* Mon Sep 25 2017 Michael Shigorin <mike@altlinux.org> 1.2.3-alt1
+- p8+
+
+* Mon Sep 11 2017 Michael Shigorin <mike@altlinux.org> 1.2.2-alt1
+- regular-engineering
+
+* Mon Aug 21 2017 Michael Shigorin <mike@altlinux.org> 1.2.1-alt1
+- seven years ago...
+
+* Mon Aug 07 2017 Michael Shigorin <mike@altlinux.org> 1.2.0-alt1
+- e2k
+
+* Mon Jul 31 2017 Michael Shigorin <mike@altlinux.org> 1.1.110-alt1
+- lxde-sysv
+
 * Mon Jun 12 2017 Michael Shigorin <mike@altlinux.org> 1.1.109-alt1
 - starterkits-20170612
 

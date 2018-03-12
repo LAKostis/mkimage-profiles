@@ -56,6 +56,10 @@ CLEANUP_OUTDIR ?=
 GLOBAL_TARGET := $(ARCH)
 GLOBAL_HSH_APT_CONFIG := $(wildcard $(APTCONF))
 
+# take the latter part for complex-specified subprofiles like stage2@live;
+# care to exclude non-directories holding no makefiles like rootfs
+SUBDIRS = $(sort $(dir $(wildcard $(addsuffix /Makefile,$(SUBPROFILE_DIRS)))))
+
 # the lib/build-*.mk comes from features.in/build-*/lib
 include $(sort $(wildcard lib/*.mk))
 include $(MKIMAGE_PREFIX)/targets.mk
@@ -80,6 +84,10 @@ imagedir:
 
 postprocess: | $(addprefix postprocess-,$(sort $(POSTPROCESS_TARGETS)))
 	@OUTSIZE="`ls -lh "$(IMAGE_OUTPATH)" | cut -f5 -d' '`"; \
+	if [ ! -n "$$OUTSIZE" ]; then \
+		echo "** error: $(IMAGE_OUTPATH) missing" >&2; \
+		exit 1; \
+	fi; \
 	echo "** image: $(IMAGE_OUTPATH) [$$OUTSIZE]" >&2 && \
 	echo "IMAGE_OUTPATH = $(IMAGE_OUTPATH)" && \
 	echo "IMAGE_OUTFILE = $(IMAGE_OUTFILE)" && \
@@ -92,7 +100,7 @@ postprocess: | $(addprefix postprocess-,$(sort $(POSTPROCESS_TARGETS)))
 		cp -a distcfg.mk "$(LOGDIR)/$(IMAGE_OUTFILE).cfg"; \
 	fi
 
-debug:
+debug::
 	@echo "TOPDIR=$(TOPDIR)"
 	@echo "IMAGEDIR=$(IMAGEDIR)"
 	@echo "ARCH=$(ARCH)"

@@ -1,6 +1,6 @@
 use/browser:
 	@$(call add_feature)
-	@$(call add,THE_PACKAGES_REGEXP,$$(THE_BROWSER))
+	@$(call add,THE_PACKAGES,$$(THE_BROWSER))
 	@$(call try,THE_BROWSER,elinks)	# X11-less fallback
 
 # support both firefox and firefox-esr
@@ -33,20 +33,22 @@ use/browser/firefox/live: use/browser/firefox
 
 # scarey, and will have to be done otherwise when l10n feature is there
 use/browser/firefox/i18n: use/browser/firefox
-	@$(call add,THE_BROWSER,firefox$$(FX_FLAVOUR)-be)
 	@$(call add,THE_BROWSER,firefox$$(FX_FLAVOUR)-kk)
 	@$(call add,THE_BROWSER,firefox$$(FX_FLAVOUR)-ru)
 	@$(call add,THE_BROWSER,firefox$$(FX_FLAVOUR)-uk)
 
 # fx29+
 use/browser/firefox/classic: use/browser/firefox
-	@$(call add,THE_BROWSER,firefox-classic_theme_restorer.*)
+	@$(call add,THE_BROWSER,firefox-classic_theme_restorer)
 
 use/browser/seamonkey/i18n: use/browser/seamonkey
 	@$(call add,THE_BROWSER,seamonkey-ru)
 
 use/browser/palemoon/i18n: use/browser/palemoon
 	@$(call add,THE_BROWSER,palemoon-ru)
+
+use/browser/palemoon/suggested: use/browser/palemoon/i18n
+	@$(call add,THE_BROWSER,palemoon-suggested)
 
 # inherently insecure, NPAPI only
 use/browser/plugin/flash: use/browser

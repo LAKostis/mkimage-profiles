@@ -10,25 +10,17 @@ distro/.regular-base: distro/.regular-bare use/vmguest use/memtest +efi; @:
 
 # graphical target (not enforcing xorg drivers or blobs)
 distro/.regular-x11: distro/.regular-base +vmguest +wireless \
-	use/live/x11 use/live/install use/live/suspend \
+	use/x11/amdgpu use/live/x11 use/live/install use/live/suspend \
 	use/live/repo use/live/rw use/luks use/x11/wacom use/ntp/client \
 	use/branding use/browser/firefox/live use/browser/firefox/i18n \
-	use/browser/firefox/h264
-	@$(call add,LIVE_PACKAGES,volumes-profile-regular)
+	use/browser/firefox/h264 use/services/lvm2-disable
+	@$(call add,THE_PACKAGES,disable-usb-autosuspend)
+	@$(call add,LIVE_PACKAGES,volumes-profile-regular btrfs-progs)
 	@$(call add,LIVE_LISTS,$(call tags,(base || desktop) && regular))
 	@$(call add,LIVE_LISTS,$(call tags,base rescue))
 	@$(call add,LIVE_PACKAGES,gpm livecd-install-apt-cache)
-	@$(call add,DEFAULT_SERVICES_DISABLE,gpm powertop lvm2-lvmpolld)
+	@$(call add,DEFAULT_SERVICES_DISABLE,gpm powertop)
 	@$(call add,EFI_BOOTARGS,live_rw)
-
-# common WM live/installer bits
-mixin/regular-desktop: use/x11/xorg use/sound use/xdg-user-dirs
-	@$(call add,THE_PACKAGES,pam-limits-desktop)
-	@$(call add,THE_PACKAGES,installer-feature-desktop-other-fs-stage2)
-	@$(call add,THE_PACKAGES,alterator-notes dvd+rw-tools)
-	@$(call add,THE_BRANDING,alterator graphics indexhtml notes)
-	@$(call add,THE_PACKAGES,$$(THE_IMAGEWRITER))
-	@$(call set,THE_IMAGEWRITER,imagewriter)
 
 # WM base target
 distro/.regular-wm: distro/.regular-x11 mixin/regular-desktop; @:
@@ -39,20 +31,22 @@ distro/.regular-desktop: distro/.regular-wm \
 	use/syslinux/ui/gfxboot use/firmware/laptop use/efi/refind +systemd
 	@$(call add,THE_BRANDING,bootloader)
 	@$(call add,THE_PACKAGES,upower bluez)
-	@$(call add,THE_PACKAGES,disable-usb-autosuspend)
 	@$(call add,THE_PACKAGES,vconsole-setup-kludge)	#28805
 	@$(call add,DEFAULT_SERVICES_DISABLE,gssd idmapd krb5kdc rpcbind)
 	@$(call add,DEFAULT_SERVICES_ENABLE,bluetoothd)
 	@$(call set,KFLAVOURS,std-def)
 
 distro/.regular-gtk: distro/.regular-desktop use/x11/lightdm/gtk +plymouth; @:
-distro/.regular-sysv: distro/.regular-wm +sysvinit; @:
+distro/.regular-sysv: distro/.regular-wm +sysvinit \
+	use/init/sysv/consolekit; @:
 distro/.regular-sysv-gtk: distro/.regular-sysv use/syslinux/ui/gfxboot \
 	use/x11/gdm2.20; @:
 
 distro/.regular-install: distro/.regular-base +installer +sysvinit +power \
 	use/branding use/bootloader/grub use/luks \
 	use/install2/fs use/install2/vnc use/install2/repo
+	@$(call add,INSTALL2_PACKAGES,fdisk)
+	@$(call add,INSTALL2_PACKAGES,xorg-conf-synaptics)
 	@$(call add,THE_LISTS,$(call tags,base regular))
 	@$(call add,INSTALL2_BRANDING,alterator notes)
 	@$(call add,THE_BRANDING,alterator)
@@ -81,10 +75,12 @@ distro/.regular-jeos: distro/.regular-jeos-base \
 # - stock cleanup is not enough (or installer-common-stage3 deps soaring)
 distro/regular-jeos: distro/.regular-jeos use/cleanup/jeos/full \
 	use/install2/vmguest use/vmguest/base
+	@$(call add,BASE_PACKAGES,nfs-utils gdisk)
 	@$(call add,MAIN_PACKAGES,firmware-linux)
 	@$(call add,INSTALL2_PACKAGES,volumes-profile-jeos)
-	@$(call add,CLEANUP_PACKAGES,'glib2*' libffi 'libltdl*')
+	@$(call add,CLEANUP_PACKAGES,libffi 'libltdl*')
 	@$(call add,CLEANUP_PACKAGES,bridge-utils)
+	@$(call add,DEFAULT_SERVICES_DISABLE,fbsetfont)
 	@$(call add,STAGE2_BOOTARGS,quiet)
 	@$(call set,KFLAVOURS,un-def)
 
@@ -96,12 +92,13 @@ distro/regular-jeos-ovz: distro/.regular-jeos \
 distro/.regular-install-x11: distro/.regular-install \
 	use/install2/suspend mixin/regular-desktop +vmguest +wireless
 	@$(call set,INSTALLER,altlinux-desktop)
+	@$(call add,THE_PACKAGES,disable-usb-autosuspend)
 	@$(call add,THE_LISTS,$(call tags,regular desktop))
 
 # assumes somewhat more experienced user, mostly for sysv variants
 distro/.regular-install-x11-full: distro/.regular-install-x11 \
 	mixin/desktop-installer mixin/regular-desktop use/install2/fs \
-	use/fonts/otf/adobe use/fonts/otf/mozilla \
+	use/fonts/otf/adobe use/fonts/otf/mozilla use/fonts/chinese \
 	use/branding/complete use/branding/slideshow/once \
 	use/net-eth/dhcp use/efi/refind use/efi/shell use/rescue/base
 	@$(call add,RESCUE_LISTS,$(call tags,rescue misc))
@@ -116,46 +113,28 @@ distro/regular-icewm: distro/.regular-sysv-gtk +icewm +nm \
 	@$(call add,LIVE_PACKAGES,icewm-startup-networkmanager)
 	@$(call set,KFLAVOURS,un-def)
 
-mixin/regular-wmaker: use/efi/refind use/syslinux/ui/gfxboot \
-	use/fonts/ttf/redhat use/x11/wmaker
-	@$(call add,LIVE_PACKAGES,livecd-install-wmaker)
-	@$(call add,LIVE_PACKAGES,installer-feature-no-xconsole-stage3)
-	@$(call add,MAIN_PACKAGES,wmgtemp wmhdaps wmpomme wmxkbru xxkb)
-
 # wdm can't do autologin so add standalone one for livecd
 distro/regular-wmaker: distro/.regular-sysv \
 	mixin/regular-wmaker use/live/autologin use/browser/palemoon/i18n
 	@$(call add,LIVE_PACKAGES,wdm wmxkbru)
-
-# gdm2.20 can reboot/halt with both sysvinit and systemd, and is slim
-mixin/regular-gnustep: use/x11/gnustep use/x11/gdm2.20 use/mediacheck \
-	use/browser/firefox/classic
-	@$(call add,THE_BRANDING,graphics)
 
 distro/regular-gnustep: distro/.regular-sysv \
 	mixin/regular-wmaker mixin/regular-gnustep; @:
 distro/regular-gnustep-systemd: distro/.regular-wm +systemd \
 	mixin/regular-wmaker mixin/regular-gnustep; @:
 
-mixin/regular-xfce: use/x11/xfce use/fonts/ttf/redhat use/x11/gtk/nm +nm; @:
-
 distro/regular-xfce: distro/.regular-gtk mixin/regular-xfce \
 	use/x11/xfce/full use/domain-client
 	@$(call set,KFLAVOURS,un-def)
 
-mixin/regular-xfce-sysv: use/init/sysv/polkit use/deflogin/sysv/nm \
-	use/x11/lightdm/gtk \
-	use/browser/firefox use/browser/firefox/classic \
-	use/browser/firefox/i18n use/browser/firefox/h264 \
-	use/fonts/otf/adobe use/fonts/otf/mozilla
-	@$(call add,THE_PACKAGES,xfce4-mixer pm-utils elinks mpg123)
-
 distro/regular-xfce-sysv: distro/.regular-sysv-gtk \
 	mixin/regular-xfce mixin/regular-xfce-sysv; @:
 
-distro/regular-lxde: distro/.regular-gtk use/x11/lxde use/fonts/infinality \
-	use/x11/gtk/nm use/im +nm
-	@$(call add,LIVE_LISTS,$(call tags,desktop gvfs))
+distro/regular-lxde: distro/.regular-gtk mixin/regular-lxde
+	@$(call add,THE_PACKAGES,lxde)
+
+distro/regular-lxde-sysv: distro/.regular-sysv-gtk mixin/regular-lxde
+	@$(call add,THE_PACKAGES,lxde-sysvinit)
 
 distro/regular-xmonad: distro/.regular-gtk use/x11/xmonad
 	@$(call add,LIVE_PACKAGES,livecd-regular-xmonad)
@@ -163,21 +142,20 @@ distro/regular-xmonad: distro/.regular-gtk use/x11/xmonad
 distro/regular-mate: distro/.regular-gtk +nm \
 	use/x11/mate use/fonts/ttf/google use/domain-client
 	@$(call add,LIVE_LISTS,$(call tags,mobile mate))
-	@$(call add,LIVE_LISTS,$(call tags,desktop sane))
 	@$(call add,LIVE_LISTS,$(call tags,base smartcard))
 
-distro/regular-e17: distro/.regular-gtk use/x11/e17 use/fonts/infinality; @:
+distro/regular-mate-sysv: distro/.regular-sysv-gtk use/x11/mate +nm
+	@$(call add,LIVE_LISTS,$(call tags,mobile mate))
 
-distro/regular-enlightenment: distro/.regular-gtk \
-	use/x11/enlightenment use/fonts/infinality; @:
+distro/regular-enlightenment: distro/.regular-gtk use/x11/enlightenment; @:
 
 distro/regular-enlightenment-sysv: distro/.regular-sysv-gtk \
 	use/x11/enlightenment
 	@$(call set,META_VOL_ID,ALT regular-E-SysV/$(ARCH)) # see also #28271
 
-distro/regular-cinnamon: distro/.regular-gtk \
-	use/x11/cinnamon use/fonts/infinality use/fonts/ttf/google \
-	use/net/nm/mmgui use/im; @:
+distro/regular-cinnamon: distro/.regular-gtk use/x11/cinnamon \
+	use/fonts/ttf/google use/net/nm/mmgui use/im
+	@$(call add,THE_PACKAGES,thunderbird-ru)	### l10n
 
 # not .regular-gtk due to gdm vs lightdm
 distro/regular-gnome3: distro/.regular-desktop +plymouth +nm \
@@ -185,17 +163,10 @@ distro/regular-gnome3: distro/.regular-desktop +plymouth +nm \
 	@$(call set,KFLAVOURS,un-def)
 	@$(call add,LIVE_PACKAGES,livecd-gnome3-setup-done)
 	@$(call add,LIVE_PACKAGES,gnome3-regular xcalib templates)
-	@$(call add,LIVE_PACKAGES,gnome-flashback)
-
-# reusable bits
-mixin/regular-tde: +tde \
-	use/syslinux/ui/gfxboot use/browser/firefox/classic use/fonts/ttf/redhat
-	@$(call add,THE_PACKAGES,kdeedu)
-	@$(call add,DEFAULT_SERVICES_DISABLE,upower bluetoothd)
+	@$(call add,LIVE_PACKAGES,gnome-flashback screenpen)
 
 distro/regular-tde: distro/.regular-desktop mixin/regular-tde +plymouth \
 	use/x11/gtk/nm use/net/nm/mmgui
-	@$(call add,THE_LISTS,openscada)
 
 distro/regular-tde-sysv: distro/.regular-sysv mixin/regular-tde \
 	use/net-eth/dhcp use/efi/refind; @:
@@ -208,19 +179,10 @@ distro/regular-kde4: distro/.regular-desktop use/x11/kde4/nm use/x11/kdm4 \
 	@$(call set,THE_IMAGEWRITER,rosa-imagewriter)
 	@$(call add,DEFAULT_SERVICES_ENABLE,prefdm)
 
-mixin/regular-lxqt: use/x11/lxqt use/x11/sddm \
-	use/browser/qupzilla use/x11/gtk/nm +nm +plymouth
-	@$(call set,THE_IMAGEWRITER,rosa-imagewriter)
-
 distro/regular-lxqt: distro/.regular-desktop mixin/regular-lxqt; @:
 
 distro/regular-lxqt-sysv: distro/.regular-sysv mixin/regular-lxqt \
 	use/net-eth/dhcp use/efi/refind; @:
-
-distro/regular-sugar: distro/.regular-gtk use/x11/sugar; @:
-
-distro/regular-leechcraft: distro/.regular-desktop \
-	use/x11/leechcraft use/x11/lightdm/lxqt +pulse; @:
 
 distro/regular-kde5: distro/.regular-desktop \
 	use/x11/kde5 use/x11/sddm use/domain-client \
@@ -228,15 +190,6 @@ distro/regular-kde5: distro/.regular-desktop \
 	+nm +pulse +plymouth
 	@$(call add,THE_PACKAGES,kde5-telepathy)
 	@$(call set,THE_IMAGEWRITER,rosa-imagewriter)
-
-# NB: never ever use/syslinux/ui/gfxboot here as gfxboot mangles
-#     kernel cmdline resulting in method:disk instead of method:cdrom
-#     which will change propagator's behaviour to probe additional
-#     filesystems (ro but no loop) thus potentially writing to
-#     an unrecovered filesystem's journal
-mixin/regular-rescue: use/rescue use/isohybrid use/luks use/branding \
-	use/syslinux/ui/menu use/syslinux/timeout/600 \
-	use/firmware/qlogic test/rescue/no-x11 +sysvinit; @:
 
 distro/regular-rescue: distro/.regular-base mixin/regular-rescue  \
 	use/rescue/rw use/efi/refind use/efi/shell use/efi/memtest86 \
@@ -281,7 +234,7 @@ distro/.regular-server-managed: distro/.regular-server
 	@$(call add,DEFAULT_SERVICES_DISABLE,ahttpd alteratord)
 
 distro/regular-server: distro/.regular-server-managed \
-	use/server/groups/base use/install2/vnc/full
+	use/server/groups/base use/dev/groups/builder use/install2/vnc/full
 	@$(call add,MAIN_GROUPS,server/sambaDC)
 	@$(call add,MAIN_GROUPS,tools/hyperv)
 
@@ -330,5 +283,15 @@ distro/regular-server-samba4: distro/.regular-server-managed
 	@$(call add,THE_LISTS,$(call tags,server && (sambaDC || alterator)))
 	@$(call add,THE_PACKAGES,alterator-dhcp)
 	@$(call add,DEFAULT_SERVICES_DISABLE,smbd nmbd winbind)
+
+distro/regular-engineering: distro/regular-lxde use/live/ru
+	@$(call add,THE_LISTS,$(call tags,engineering desktop))
+	@$(call add,THE_LISTS,$(call tags,desktop sane))
+	@$(call add,THE_LISTS,$(call tags,cups desktop))
+	@$(call add,THE_PACKAGES,LibreOffice LibreOffice-gnome LibreOffice-langpack-ru)
+	@$(call add,THE_PACKAGES,gnome-disk-utility)
+	@$(call add,THE_KMODULES,staging)
+	@$(call add,DEFAULT_SERVICES_ENABLE,cups)
+	@$(call add,DEFAULT_SERVICES_ENABLE,ModemManager)
 
 endif

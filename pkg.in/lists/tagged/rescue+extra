@@ -18,6 +18,7 @@ disktype
 #     would suddenly get busy otherwise
 #evms
 #evms-ncurses
+fio
 gpart
 hddtemp
 idle3-tools
@@ -29,6 +30,7 @@ lsmount
 lvm2
 mdadm
 ms-sys
+myrescue
 parted
 recoverdm
 safecopy
@@ -192,7 +194,6 @@ socat
 sshpt
 #stunnel
 tcpdump
-tcpflow
 tcpreen
 tcpreplay
 tcptrace
@@ -202,7 +203,6 @@ tcpxtract
 telnet
 traceroute
 uucp
-wdfs
 wget
 whatmask
 whois

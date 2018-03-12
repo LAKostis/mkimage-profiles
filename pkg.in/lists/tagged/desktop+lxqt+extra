@@ -1,3 +1,7 @@
+# system configuration tools (qt4)
+compton-conf
+obconf-qt
+
 # carefully chosen
 x-cursor-theme-BlueGlass3D
 x-cursor-theme-CP38
@@ -14,9 +18,15 @@ fatrat
 focuswriter
 qt4-settings
 tubularix
-smplayer
+smplayer-mpv
 QCheckers
 qps
+juffed
+juffed-plugins
+axkb
+
+# file archiver
+file-roller
 
 # media player; see also #30556 though
 clementine
@@ -32,6 +42,10 @@ quiterss
 ### doesn't integrate with pcmanfm-qt as of right now
 qpdfview
 
+# clipboard history applet
+qlipper
+
 # useless but cute
 cool-retro-term
+
 fonts-ttf-liberation

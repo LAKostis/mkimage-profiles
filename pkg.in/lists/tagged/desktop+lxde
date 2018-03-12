@@ -7,7 +7,6 @@ lxde-common
 lxde-lxpanel
 lxde-lxsession
 lxde-lxsession-edit
-lxde-lxpolkit
 lxde-lxrandr
 lxde-lxtask
 lxde-lxshortcut
@@ -15,15 +14,13 @@ lxde-lxappearance
 lxde-lxappearance-obconf
 lxde-lxshortcut
 lxde-lxinput
+lxde-lxhotkey
 
 menu-cache
 altlinux-freedesktop-menu-lxde
 
 # NB: an lxde-settings is required by lxde-common
-lxde-settings-upstream
+lxde-settings-lxdesktop
 
 lxde-icon-theme
 tango-icon-theme
-
-# reboot/poweroff in logout menu as of July, 2013
-ConsoleKit

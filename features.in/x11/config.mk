@@ -119,12 +119,14 @@ use/x11/gtk/nm: use/net/nm
 
 use/x11/xfce: use/x11
 	@$(call add,THE_PACKAGES,xfce4-regular)
+ifneq (,$(filter-out e2k,$(ARCH)))
 	@$(call add,IM_PACKAGES,imsettings-xfce)
+endif
 
-use/x11/xfce/full: use/x11/xfce
+use/x11/xfce/full: use/x11/xfce +pulse
 	@$(call add,THE_PACKAGES,xfce4-full)
 
-use/x11/cinnamon: use/x11/xorg
+use/x11/cinnamon: use/x11/xorg +pulse
 	@$(call add,THE_LISTS,$(call tags,cinnamon desktop))
 	@$(call add,IM_PACKAGES,imsettings-cinnamon)
 
@@ -135,7 +137,7 @@ use/x11/gnome3: use/x11/xorg +pulse
 use/x11/e17: use/x11 use/net/connman
 	@$(call add,THE_LISTS,$(call tags,e17 desktop))
 
-use/x11/enlightenment: use/x11 use/net/connman
+use/x11/enlightenment: use/x11 use/net/connman +pulse
 	@$(call add,THE_LISTS,$(call tags,enlightenment desktop))
 	@$(call add,DEFAULT_SERVICES_DISABLE,acpid)
 
@@ -162,7 +164,7 @@ use/x11/gnustep: use/x11
 use/x11/xmonad: use/x11
 	@$(call add,THE_LISTS,$(call tags,xmonad desktop))
 
-use/x11/mate: use/x11
+use/x11/mate: use/x11 +pulse
 	@$(call add,THE_LISTS,$(call tags,mate desktop))
 	@$(call add,IM_PACKAGES,imsettings-mate)
 
