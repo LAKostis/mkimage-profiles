@@ -8,6 +8,7 @@ vm/e2k-live: vm/.e2k-bare use/deflogin/live use/net-ssh use/control/sudo-su
 
 vm/e2k-rescue: vm/e2k-live mixin/e2k-base use/services/lvm2-disable
 	@$(call add,THE_PACKAGES,agetty gpm fdisk parted smartmontools pv sshfs)
+	@$(call add,THE_PACKAGES,make-initrd dhcpcd hdparm nfs-clients)
 	@$(call add,THE_LISTS,$(call tags,server && (network || extra)))
 	@$(call add,DEFAULT_SERVICES_DISABLE,gpm mdadm smartd)
 
@@ -19,6 +20,9 @@ vm/e2k-lxqt: vm/e2k-rescue mixin/e2k-desktop
 
 vm/e2k-mate: vm/systemd mixin/e2k-base mixin/e2k-desktop \
 	use/deflogin/live use/x11/mate; @:
+
+vm/e2k-lxqt: vm/e2k-rescue mixin/e2k-desktop
+	@$(call add,THE_LISTS,$(call tags,desktop && lxqt && !extra))
 
 vm/e2k-builder: vm/e2k-rescue use/dev/builder/base; @:
 

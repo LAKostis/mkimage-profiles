@@ -1,7 +1,3 @@
-# system configuration tools (qt4)
-compton-conf
-obconf-qt
-
 # carefully chosen
 x-cursor-theme-BlueGlass3D
 x-cursor-theme-CP38
@@ -23,7 +19,6 @@ QCheckers
 qps
 juffed
 juffed-plugins
-axkb
 
 # file archiver
 file-roller

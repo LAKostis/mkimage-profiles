@@ -18,7 +18,8 @@ disktype
 #     would suddenly get busy otherwise
 #evms
 #evms-ncurses
-fio
+# fio pulls in a bunch of huge libraries down to libicu
+#fio
 gpart
 hddtemp
 idle3-tools
@@ -220,7 +221,6 @@ screen
 tmux
 
 # Development/Debuggers
-btparser
 gdb
 ltrace
 strace
@@ -232,7 +232,6 @@ chntpw
 hivex
 scrounge-ntfs
 wabread
-winusb
 
 # Mobile
 android-tools
