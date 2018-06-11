@@ -14,7 +14,7 @@ use/x11:
 
 # x86: free drivers for various hardware (might lack acceleration)
 ifeq (,$(filter-out i586 x86_64,$(ARCH)))
-use/x11/xorg: use/x11/intel use/x11/nouveau use/x11/radeon
+use/x11/xorg: use/x11/intel use/x11/nouveau use/x11/amdgpu use/x11/radeon
 	@$(call add,THE_LISTS,$(call tags,desktop xorg))
 else
 use/x11/xorg: use/x11; @:
@@ -24,7 +24,7 @@ endif
 # use modesetting + glamor instead of DDX driver
 use/x11/intel: use/x11
 	@$(call add,THE_PACKAGES,xorg-drv-modesetting)
-	@$(call add,THE_PACKAGES,xorg-dri-intel)	### #25044
+	@$(call add,THE_PACKAGES,mesa-dri-drivers)	### #25044
 
 # for those cases when no 3D means no use at all
 # NB: blobs won't Just Work (TM) along with nouveau/radeon
@@ -53,7 +53,8 @@ use/x11/vulkan: use/x11/intel use/x11/amdgpu
 
 # see https://github.com/NVIDIA/libglvnd for all gory details
 use/x11/glvnd: use/x11
-	@$(call add,THE_PACKAGES,libglvnd-glx,libglvnd-egl)
+	@$(call add,THE_PACKAGES,libglvnd-glx libglvnd-egl)
+	@$(call add,THE_PACKAGES,libGL-mesa libEGL-mesa)
 
 # sometimes broken with current xorg-server
 use/x11/nvidia: use/x11
