@@ -164,6 +164,7 @@ distro/regular-gnome3: distro/.regular-desktop +plymouth +nm \
 	@$(call add,LIVE_PACKAGES,livecd-gnome3-setup-done)
 	@$(call add,LIVE_PACKAGES,gnome3-regular xcalib templates)
 	@$(call add,LIVE_PACKAGES,gnome-flashback screenpen)
+	@$(call add,DEFAULT_SERVICES_ENABLE,gdm)
 
 distro/lakostis-gnome3: distro/.regular-desktop +plymouth +nm \
 	use/x11/gnome3 use/browser/epiphany use/fonts/ttf/redhat \
