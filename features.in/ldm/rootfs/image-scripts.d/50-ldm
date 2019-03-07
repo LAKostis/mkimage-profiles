@@ -15,4 +15,3 @@ WantedBy=default.target
 EOF
 
 systemctl enable ldm.service
-

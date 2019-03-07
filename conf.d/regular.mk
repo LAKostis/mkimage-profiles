@@ -168,13 +168,13 @@ distro/regular-gnome3: distro/.regular-desktop +plymouth +nm \
 
 distro/lakostis-gnome3: distro/.regular-desktop +plymouth +nm \
 	use/x11/gnome3 use/browser/epiphany use/fonts/ttf/redhat \
-	use/x11/vulkan use/x11/glvnd use/x11/nvidia
+	use/x11/vulkan use/x11/nvidia use/ldm/session/gdm
 	@$(call set,KFLAVOURS,lks-wks)
 	@$(call add,SERVICES_ENABLE,sshd)
 	@$(call add,LIVE_PACKAGES,livecd-gnome3-setup-done)
 	@$(call add,LIVE_PACKAGES,gnome3-regular xcalib templates)
 	@$(call add,LIVE_PACKAGES,gnome-flashback screenpen)
-	@$(call add,LIVE_PACKAGES,ldm-session-init-gdm ldm-session-init-lightdm)
+	@$(call add,DEFAULT_SERVICES_ENABLE,gdm ldm)
 
 distro/regular-tde: distro/.regular-desktop mixin/regular-tde +plymouth \
 	use/x11/gtk/nm use/net/nm/mmgui

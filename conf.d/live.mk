@@ -48,7 +48,7 @@ distro/live-tde: distro/.live-desktop-ru use/live/install +tde; @:
 distro/live-fvwm: distro/.live-desktop-ru use/x11/lightdm/gtk use/x11/fvwm; @:
 
 distro/live-lakostis: distro/.live-desktop use/docs/license \
-	use/x11/vulkan use/x11/glvnd use/x11/nvidia use/x11/lightdm/gtk use/x11/lxde +efi \
+	use/x11/vulkan use/x11/nvidia use/x11/lightdm/gtk use/x11/lxde +efi \
 	+wireless +systemd use/fonts/ttf/google use/browser/chromium use/net/nm/nodelay use/net-ssh \
 	use/firmware/laptop use/x11-neatterm use/x11/gtk/nm +power +vmguest
 	@$(call set,KFLAVOURS,lks-wks)
@@ -63,7 +63,7 @@ distro/live-lakostis: distro/.live-desktop use/docs/license \
 	@$(call add,DEFAULT_SERVICES_ENABLE,bluetoothd)
 
 distro/live-lakostis-elogind: distro/.live-x11 use/docs/license \
-	use/x11/vulkan use/x11/glvnd use/x11/lightdm/gtk use/x11/lxde +efi \
+	use/x11/vulkan use/x11/lightdm/gtk use/x11/lxde +efi \
 	+wireless +sysvinit use/init/sysv/polkit use/fonts/ttf/google \
 	use/browser/chromium use/net-ssh \
 	use/firmware/laptop use/x11-neatterm use/x11/gtk/nm +power
