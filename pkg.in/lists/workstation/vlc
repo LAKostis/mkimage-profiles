@@ -1,6 +1,11 @@
 vlc
-totem-video-thumbnailer
-smtube
-simplescreenrecorder
-cheese
+vlc-plugin-h264
+vlc-plugin-h265
+vlc-plugin-modplug
+vlc-plugin-speex
+
+totem-video-thumbnailer@X86
+smtube@X86
+simplescreenrecorder@X86
+cheese@X86
 gst-libav

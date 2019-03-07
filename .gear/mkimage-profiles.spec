@@ -1,5 +1,5 @@
 Name: mkimage-profiles
-Version: 1.2.15
+Version: 1.3.5
 Release: alt1
 
 Summary: ALT based distribution metaprofile
@@ -128,6 +128,54 @@ mv %buildroot%mpdir/doc/mkimage-profiles.7 %buildroot%_man7dir/
 %endif
 
 %changelog
+* Mon Mar 04 2019 Michael Shigorin <mike@altlinux.org> 1.3.5-alt1
+- Spring 2019 patch queue cleanup
+  + antohami@, jqt4@, iv@, obirvalger@, zerg@, me
+  + tar2fs fixes for mipsel, qemu etc
+  + lots of pkglist updates
+
+* Mon Jan 14 2019 Michael Shigorin <mike@altlinux.org> 1.3.4-alt1
+- new 2019 year release ;-)
+- tar2fs related security fix (iv@) iff sudo's been configured
+- use/x11/dm rework (antohami@)
+- archfixes (antohami@, iv@)
+- pre-p8 bits cleanup (me)
+
+* Mon Dec 24 2018 Michael Shigorin <mike@altlinux.org> 1.3.3-alt1
+- aarch64/armh portability fixups (antohami@)
+- grub-based vm images (shaba@)
+- even smaller images (glebfm@)
+- lxc/lxd lists/feature/image (dans@)
+- updated robotics lists/image (dd@)
+- e2k: 801/101/jeos tweaks (me)
+
+* Mon Dec 10 2018 Michael Shigorin <mike@altlinux.org> 1.3.2-alt1
+- sisyphus drops
+
+* Mon Nov 05 2018 Michael Shigorin <mike@altlinux.org> 1.3.1-alt1
+- current fixes and tweaks
+
+* Mon Oct 15 2018 Michael Shigorin <mike@altlinux.org> 1.3.0-alt1
+- pre-p9 sisyphus: fixes, drops and just two kludges
+
+* Mon Aug 13 2018 Michael Shigorin <mike@altlinux.org> 1.2.21-alt1
+- volumes feature; fixups
+
+* Mon Aug 06 2018 Michael Shigorin <mike@altlinux.org> 1.2.20-alt1
+- isoboot/isodata; apt-conf feature; dual-seat e801
+
+* Mon Jul 23 2018 Michael Shigorin <mike@altlinux.org> 1.2.19-alt1
+- alt-workstation: x86 (sem@), e2k (me)
+
+* Mon Jul 16 2018 Michael Shigorin <mike@altlinux.org> 1.2.18-alt1
+- ldm feature (lakostis@)
+
+* Mon Jun 25 2018 Michael Shigorin <mike@altlinux.org> 1.2.17-alt1
+- e2k & profiles
+
+* Mon Jun 11 2018 Michael Shigorin <mike@altlinux.org> 1.2.16-alt1
+- starterkits-20180612
+
 * Mon May 28 2018 Michael Shigorin <mike@altlinux.org> 1.2.15-alt1
 - fixup release
 

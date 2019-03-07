@@ -8,8 +8,7 @@ mate-file-manager-actions
 mate-file-manager-terminal
 mate-document-viewer-caja
 mate-document-viewer-djvu
-
-altlinux-freedesktop-menu-mate
+vino-mate@X86
 
 # put these two into a pkggroup so no-extra-services setup could be achieved
 #mate-user-share

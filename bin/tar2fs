@@ -52,6 +52,10 @@ e2k)
 	BOOTPART="1"
 	ROOTPART="2"
 	;;
+mips*)
+	ROOTPART="1"
+	BLOCKDEV="/dev/sda"
+	;;
 esac
 
 # figure out the part taken by /boot in the given tarball
@@ -134,6 +138,7 @@ fi
 
 exit_handler() {
 	rc=$?
+	cd /
 	if [ -n "$ROOTFS" ]; then
 		umount ${BOOTFS:+"$BOOTFS"} "$ROOTFS"{/dev,/proc,/sys,}
 
@@ -213,6 +218,16 @@ if [ -n "$BOOTPART" ]; then
 	echo "$BOOTDEV /boot $BOOTFSTYPE defaults 1 2" >> "$ROOTFS/etc/fstab"
 fi
 
+# Query ARCH in chroot and redefine arch-dependent variable
+ARCH="$(chroot "$ROOTFS" rpm --eval '%_host_cpu')"
+
+if [[ $ARCH = *86* ]]
+	then 	# NB: different storage modules might be needed for non-kvm
+		INITRD_MODULES="sd_mod ata_piix ahci virtio-scsi virtio-blk"
+else
+	INITRD_MODULES=
+fi
+
 echo "MODULES_PRELOAD += $INITRD_MODULES $ROOTFSTYPE" >> "$ROOTFS/etc/initrd.mk"
 
 case "$ARCH" in
@@ -227,6 +242,9 @@ esac
 # NB: don't stick BOOTFS here, it has slightly different semantics
 pushd $ROOTFS/boot
 
+# 4.9.76-elbrus-def-alt1.11.1 -> def
+get_label() { echo "${1# *}" | sed -r 's,.*elbrus-([0-9a-z]+)-.*$,\1,'; }
+
 KVERSIONS=
 if [ -s .origver ]; then
 	while read kver; do
@@ -240,16 +258,22 @@ rm -f .origver
 # ...target device too
 sed -i "s,$LOOPROOT,$ROOTDEV," "$ROOTFS/etc/fstab"
 
+echo "** KVERSIONS=[$KVERSIONS]" >&2
+
+if [ "`echo $KVERSIONS | wc -w`" = 1 ]; then # 2+ labels
+	echo -e "default=`get_label $KVERSIONS`\n" >> boot.conf
+fi
+
 # FIXME: relies on particular (current) kernel package naming scheme
 for v in $KVERSIONS; do
-	l="$(echo "$v" | sed -r 's,.*elbrus-([0-9a-z]+)-.*$,\1,')"
+	l="`get_label "$v"`"
 	cat >> boot.conf <<EOF
-
 label=$l
 	partition=0
 	image=/image-$v
 	initrd=/initrd-$v.img
 	cmdline=console=ttyS0,115200 console=tty0 consoleblank=0 hardreset root=UUID=$ROOTUUID
+
 EOF
 done
 
@@ -290,8 +314,17 @@ image=/boot/vmlinuz
 	boot=$BLOCKDEV
 	$LILO_COMMON
 	EOF
+elif [ -x "$ROOTFS"/usr/sbin/grub-efi-autoupdate ]; then
+	chroot "$ROOTFS" grub-mkconfig -o /boot/grub/grub.cfg
+	chroot "$ROOTFS" grub-install
+elif [ -x "$ROOTFS"/usr/sbin/grub-autoupdate ]; then
+	chroot "$ROOTFS" grub-mkconfig -o /boot/grub/grub.cfg
+	chroot "$ROOTFS" grub-install --target=i386-pc "$LOOPDEV"
 fi
 
 if [ -n "$SUDO_USER" ]; then
-	chown "$SUDO_USER:$(id -g "$SUDO_USER")" "$IMG" "$ROOTFS" "$WORKDIR" ||:
+	chown "$SUDO_USER:$(id -g "$SUDO_USER")" "$IMG" ||:
 fi
+# maybe qemu interpreter was copied to chroot;
+# this is no longer necessary, remove
+rm -rf "$ROOTFS"/.host ||:

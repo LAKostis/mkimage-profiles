@@ -23,11 +23,15 @@ check-sudo:
 	fi
 
 prepare-image: check-sudo
-	@if [ -x $(MKIMAGE_PREFIX)/bin/tar2fs ]; then \
-		TOPDIR=$(MKIMAGE_PREFIX); \
+	@# need to copy $(BUILDDIR)/.work/chroot/.host/qemu* into chroot
+	@#if qemu is used
+	@(cd "$(BUILDDIR)/.work/chroot/"; \
+		tar -rf "$(VM_TARBALL)" ./.host/qemu*) ||:; \
+	if [ -x /usr/share/mkimage-profiles/bin/tar2fs ]; then \
+		TOPDIR=/usr/share/mkimage-profiles; \
 	fi; \
-	if ! sudo $(TOPDIR)/bin/tar2fs \
-		"$(VM_TARBALL)" "$(VM_RAWDISK)"  $(VM_SIZE) $(VM_FSTYPE); then \
+	if ! sudo $$TOPDIR/bin/tar2fs \
+		"$(VM_TARBALL)" "$(VM_RAWDISK)" $(VM_SIZE) $(VM_FSTYPE); then \
 		echo "** error: sudo tar2fs failed, see build log" >&2; \
 		exit 1; \
 	fi
@@ -35,7 +39,10 @@ prepare-image: check-sudo
 convert-image: prepare-image
 	@VM_COMPRESS=; \
 	case "$(IMAGE_TYPE)" in \
-	"img") mv "$(VM_RAWDISK)" "$(IMAGE_OUTPATH)"; exit 0;; \
+	"img") \
+		mv "$(VM_RAWDISK)" "$(IMAGE_OUTPATH)"; \
+		if [ "0$(DEBUG)" -le 1 ]; then rm "$(VM_TARBALL)"; fi; \
+		exit 0;; \
 	"vhd") VM_FORMAT="vpc";; \
 	"qcow2c") VM_FORMAT="qcow2"; VM_COMPRESS="-c";; \
 	*) VM_FORMAT="$(IMAGE_TYPE)"; \

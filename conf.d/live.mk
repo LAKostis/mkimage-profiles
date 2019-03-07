@@ -1,10 +1,10 @@
 # live images
 ifeq (distro,$(IMAGE_CLASS))
 
-distro/dos: distro/.init use/dos use/syslinux/ui/menu
+distro/dos: distro/.boot use/dos use/syslinux/ui/menu
 	@$(call set,RELNAME,ALT FreeDOS)
 
-distro/rescue: distro/.base use/rescue use/syslinux/ui/menu \
+distro/rescue: distro/.base use/rescue use/syslinux/ui/menu use/stage2/cifs \
 	use/efi/signed use/efi/refind use/efi/shell; @:
 
 distro/rescue-remote: distro/.base use/rescue/base use/stage2/net-eth
@@ -12,7 +12,7 @@ distro/rescue-remote: distro/.base use/rescue/base use/stage2/net-eth
 	@$(call set,SYSLINUX_DIRECT,1)
 	@$(call add,RESCUE_PACKAGES,livecd-net-eth)
 
-distro/syslinux: distro/.init \
+distro/syslinux: distro/.boot \
 	use/syslinux/localboot.cfg use/syslinux/ui/vesamenu use/hdt; @:
 
 distro/.live-base: distro/.base use/live/base use/power/acpi/button; @:
@@ -153,8 +153,6 @@ distro/live-gimp: distro/live-icewm use/live/ru
 	@$(call add,LIVE_PACKAGES,macrofusion python-module-pygtk-libglade)
 	@$(call add,LIVE_PACKAGES,qtfm openssh-clients rsync usbutils)
 	@$(call add,LIVE_PACKAGES,design-graphics-sisyphus2)
-
-distro/live-robo: distro/live-icewm +robotics use/live/ru; @:
 
 # NB: use/browser won't do as it provides a *single* browser ATM
 distro/live-privacy: distro/.base +power +efi +systemd +vmguest \

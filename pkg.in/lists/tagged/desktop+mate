@@ -1,8 +1,8 @@
 mate-default
 # this might be a tad too much anyways
-mate-maxi@X86
+mate-maxi
 
-altlinux-freedesktop-menu-mate
+#altlinux-freedesktop-menu-mate
 
 ### should be dropped at some stage; see bugreports within this thread:
 # http://lists.altlinux.org/pipermail/sisyphus/2012-August/358079.html
@@ -10,3 +10,6 @@ iso-codes
 tzdata
 
 pavucontrol
+
+# clipboard manager
+parcellite

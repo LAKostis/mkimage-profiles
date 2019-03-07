@@ -21,4 +21,3 @@ use/ldm/session/sddm: use/ldm/session
 # configure gdm session
 use/ldm/session/gdm: use/ldm/session
 	@$(call add,COMMON_PACKAGES,ldm-session-init-gdm)
-

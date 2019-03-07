@@ -1,9 +1,9 @@
 +x11: use/x11/xorg; @:
 +icewm: use/x11/icewm; @:
 +xmonad: use/x11/xmonad; @:
-+tde: use/x11/tde use/x11/kdm; @:
 +kde4-lite: use/x11/kde4-lite use/x11/kdm4; @:
 
+## hardware support
 # the very minimal driver set
 use/x11:
 	@$(call add_feature)
@@ -26,10 +26,12 @@ use/x11/intel: use/x11
 	@$(call add,THE_PACKAGES,xorg-drv-modesetting)
 	@$(call add,THE_PACKAGES,mesa-dri-drivers)	### #25044
 
+use/x11/armsoc: use/x11 use/firmware
+	@$(call add,THE_PACKAGES,xorg-dri-armsoc)
+
 # for those cases when no 3D means no use at all
 # NB: blobs won't Just Work (TM) along with nouveau/radeon
 #     as free drivers get prioritized during autodetection
-#use/x11/3d: use/x11/intel use/x11/nvidia use/x11/fglrx; @:
 use/x11/3d: use/x11/intel use/x11/nvidia/optimus use/x11/radeon; @:
 
 # somewhat lacking compared to radeon but still
@@ -42,7 +44,7 @@ use/x11/radeon: use/x11 use/firmware
 	@$(call set,RADEON_KMODULES,drm-radeon)
 	@$(call set,RADEON_PACKAGES,xorg-drv-ati xorg-drv-radeon)
 
-# here the future
+# here's the future
 use/x11/amdgpu: use/x11 use/firmware
 	@$(call set,RADEON_PACKAGES,xorg-drv-amdgpu)
 
@@ -60,35 +62,31 @@ use/x11/nvidia/optimus: use/x11/nvidia
 	@$(call add,THE_KMODULES,bbswitch)
 	@$(call add,THE_PACKAGES,bumblebee primus)
 
-# oftenly broken with current xorg-server, use radeon then
-use/x11/fglrx: use/x11
-	@$(call set,RADEON_KMODULES,fglrx)
-	@$(call set,RADEON_PACKAGES,fglrx_glx fglrx-tools)
-
 use/x11/wacom: use/x11
 	@$(call add,THE_PACKAGES,xorg-drv-wacom xorg-drv-wizardpen)
 
-### xdm: see also #23108
-use/x11/xdm: use/x11-autostart
-	@$(call add,THE_PACKAGES,xdm installer-feature-no-xconsole-stage3)
+## display managers
+use/x11/dm: use/x11-autostart
+	@$(call try,THE_DISPLAY_MANAGER,xdm)
+	@$(call add,THE_PACKAGES,$$(THE_DISPLAY_MANAGER))
 
-### : some set()-like thing might be better?
-use/x11/lightdm/gtk use/x11/lightdm/qt use/x11/lightdm/lxqt \
-	use/x11/lightdm/kde: use/x11/lightdm/%: use/x11-autostart
-	@$(call add,THE_PACKAGES,lightdm-$*-greeter)
+use/x11/lightdm/gtk use/x11/lightdm/slick \
+	use/x11/lightdm/qt use/x11/lightdm/lxqt use/x11/lightdm/kde: \
+	use/x11/lightdm/%: use/x11/dm
+	@$(call set,THE_DISPLAY_MANAGER,lightdm-$*-greeter)
 
-use/x11/kdm: use/x11-autostart
-	@$(call add,THE_PACKAGES,kdebase-kdm<4)
+use/x11/sddm use/x11/lxdm use/x11/gdm2.20 use/x11/gdm: \
+	use/x11/%: use/x11/dm
+	@$(call set,THE_DISPLAY_MANAGER,$*)
 
-use/x11/kdm4: use/x11-autostart
-	@$(call add,THE_PACKAGES,kde4base-workspace-kdm)
+use/x11/kdm4: use/x11/dm
+	@$(call set,THE_DISPLAY_MANAGER,kde4base-workspace-kdm)
 
-use/x11/gdm2.20: use/x11-autostart
-	@$(call add,THE_PACKAGES,gdm2.20)
+use/x11/xdm: use/x11/dm
+	@$(call set,THE_DISPLAY_MANAGER,xdm)
+	@$(call add,THE_PACKAGES,installer-feature-no-xconsole-stage3)
 
-use/x11/sddm: use/x11-autostart
-	@$(call add,THE_PACKAGES,sddm)
-
+## window managers and desktop environments
 use/x11/icewm: use/x11
 	@$(call add,THE_LISTS,$(call tags,icewm desktop))
 
@@ -105,10 +103,8 @@ use/x11/kde4: use/x11 use/x11/kde/synaptic
 	@$(call add,THE_PACKAGES,kde4-default)
 	@$(call add,IM_PACKAGES,imsettings-qt)
 
-# handle both p7/t7 (p-a-nm) and sisyphus (k-p-nm) cases
 use/x11/kde4/nm: use/x11/kde4 use/net/nm
-	@$(call add,THE_PACKAGES_REGEXP,^kde4-plasma-nm.*)
-	@$(call add,THE_PACKAGES_REGEXP,^plasma-applet-networkmanager.*)
+	@$(call add,THE_PACKAGES,kde4-plasma-nm)
 
 use/x11/gtk/nm: use/net/nm
 	@$(call add,THE_LISTS,$(call tags,desktop nm))
@@ -124,12 +120,9 @@ use/x11/cinnamon: use/x11/xorg +pulse
 	@$(call add,THE_LISTS,$(call tags,cinnamon desktop))
 	@$(call add,IM_PACKAGES,imsettings-cinnamon)
 
-use/x11/gnome3: use/x11/xorg +pulse
+use/x11/gnome3: use/x11/xorg use/x11/gdm +pulse
 	@$(call add,THE_PACKAGES,gnome3-default)
 	@$(call add,IM_PACKAGES,imsettings-gsettings)
-
-use/x11/e17: use/x11 use/net/connman
-	@$(call add,THE_LISTS,$(call tags,e17 desktop))
 
 use/x11/enlightenment: use/x11 use/net/connman +pulse
 	@$(call add,THE_LISTS,$(call tags,enlightenment desktop))
@@ -139,8 +132,8 @@ use/x11/lxde: use/x11
 	@$(call add,THE_LISTS,$(call tags,lxde desktop))
 	@$(call add,IM_PACKAGES,imsettings-lxde)
 
-use/x11/lxqt: use/x11
-	@$(call add,THE_LISTS,$(call tags,lxqt desktop))
+use/x11/lxqt: use/x11 +pulse
+	@$(call add,THE_LISTS,$(call tags,desktop && lxqt && !extra))
 	@$(call add,IM_PACKAGES,imsettings-qt)
 
 use/x11/fvwm: use/x11

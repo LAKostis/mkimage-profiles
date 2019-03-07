@@ -2,16 +2,11 @@ pam-config
 pam_mount
 pam_ccreds
 
-samba4-client
+samba-client
 cifs-utils
 keyutils
 nfs-clients
 autofs
-installer-feature-auto-domain
-installer-feature-nfs-client-stage3
-installer-feature-start-avahi
-installer-feature-network-shares-client-stage3
-installer-feature-weak-passwd
 libnss-fallback
 libnss-mdns
 nss-ldapd

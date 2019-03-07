@@ -2,11 +2,10 @@
 
 ### desktop.mk
 mixin/desktop-installer: +net-eth +vmguest \
-	use/x11-autostart use/fonts/install2 use/sound
+	use/bootloader/os-prober use/x11-autostart use/fonts/install2 use/sound
 	@$(call add,BASE_LISTS, \
 		$(call tags,(base || desktop) && (l10n || network)))
 	@$(call add,INSTALL2_PACKAGES,ntfs-3g)
-	@$(call add,BASE_PACKAGES,os-prober)
 
 ### e2k.mk
 mixin/e2k-base: use/tty/S0 use/net-eth/dhcp; @:
@@ -23,7 +22,8 @@ mixin/e2k-livecd-install: use/e2k/x11
 	@$(call add,THE_PACKAGES,apt-repo)
 
 mixin/e2k-mate: use/e2k/x11 use/x11/xorg use/fonts/install2 \
-	use/deflogin/live use/x11/mate use/x11/lightdm/gtk \
+	use/deflogin/live use/deflogin/xgrp \
+	use/x11/mate use/x11/lightdm/slick \
 	use/fonts/otf/adobe use/fonts/otf/mozilla \
 	use/fonts/ttf/google use/fonts/ttf/redhat
 	@$(call set,INSTALLER,altlinux-desktop)
@@ -31,20 +31,35 @@ mixin/e2k-mate: use/e2k/x11 use/x11/xorg use/fonts/install2 \
 	@$(call add,THE_BRANDING,alterator)
 	@$(call add,THE_BRANDING,graphics)
 	@$(call add,THE_PACKAGES,setup-mate-terminal)
+	@$(call add,THE_PACKAGES,setup-mate-nocomposite)
 	@$(call add,THE_PACKAGES,alterator-standalone)
 	@$(call add,THE_PACKAGES,terminfo-extra)
 	@$(call add,THE_PACKAGES,ethtool net-tools ifplugd)
 	@$(call add,THE_PACKAGES,zsh bash-completion)
 
 ### regular.mk
+mixin/regular-x11: use/luks use/volumes/regular \
+	use/browser/firefox/i18n use/browser/firefox/h264 \
+	use/branding use/ntp/client use/services/lvm2-disable
+	@$(call add,THE_LISTS,$(call tags,(base || desktop) && regular))
+	@$(call add,THE_PACKAGES,disable-usb-autosuspend)
+	@$(call add,THE_PACKAGES,btrfs-progs)
+	@$(call add,THE_PACKAGES,gpm)
+	@$(call add,DEFAULT_SERVICES_DISABLE,gpm powertop)
+
 # common WM live/installer bits
 mixin/regular-desktop: use/x11/xorg +alsa use/xdg-user-dirs
-	@$(call add,THE_PACKAGES,pam-limits-desktop beesu)
-	@$(call add,THE_PACKAGES,installer-feature-desktop-other-fs-stage2)
+	@$(call add,THE_PACKAGES,pam-limits-desktop beesu polkit)
 	@$(call add,THE_PACKAGES,alterator-notes dvd+rw-tools)
 	@$(call add,THE_BRANDING,alterator graphics indexhtml notes)
 	@$(call add,THE_PACKAGES,$$(THE_IMAGEWRITER))
 	@$(call set,THE_IMAGEWRITER,imagewriter)
+	@$(call add,THE_PACKAGES,upower bluez)
+	@$(call add,DEFAULT_SERVICES_DISABLE,gssd idmapd krb5kdc rpcbind)
+	@$(call add,DEFAULT_SERVICES_ENABLE,bluetoothd)
+
+mixin/desktop-extra:
+	@$(call add,BASE_LISTS,$(call tags,(archive || base) && extra))
 
 mixin/regular-wmaker: use/efi/refind use/syslinux/ui/gfxboot \
 	use/fonts/ttf/redhat use/x11/wmaker
@@ -52,23 +67,30 @@ mixin/regular-wmaker: use/efi/refind use/syslinux/ui/gfxboot \
 	@$(call add,LIVE_PACKAGES,installer-feature-no-xconsole-stage3)
 	@$(call add,MAIN_PACKAGES,wmgtemp wmhdaps wmpomme wmxkbru xxkb)
 
+mixin/regular-icewm: use/fonts/ttf/redhat use/deflogin/sysv/nm +icewm +nm
+	@$(call add,THE_LISTS,$(call tags,regular icewm))
+	@$(call add,THE_LISTS,$(call tags,desktop nm))
+	@$(call add,THE_PACKAGES,icewm-startup-networkmanager)
+	@$(call add,THE_PACKAGES,mnt)
+
 # gdm2.20 can reboot/halt with both sysvinit and systemd, and is slim
 mixin/regular-gnustep: use/x11/gnustep use/x11/gdm2.20 use/mediacheck \
 	use/browser/firefox/classic
 	@$(call add,THE_BRANDING,graphics)
 
-mixin/regular-xfce: use/x11/xfce use/fonts/ttf/redhat use/x11/gtk/nm +nm; @:
+mixin/regular-xfce: use/x11/xfce use/x11/gtk/nm +nm \
+	use/fonts/ttf/redhat use/fonts/ttf/google/extra
 
 mixin/regular-xfce-sysv: use/init/sysv/polkit use/deflogin/sysv/nm \
 	use/x11/lightdm/gtk \
-	use/browser/palemoon/suggested \
+	use/browser/palemoon/i18n \
 	use/fonts/otf/adobe use/fonts/otf/mozilla
 	@$(call add,THE_PACKAGES,pnmixer pm-utils elinks mpg123)
 	@$(call add,THE_PACKAGES,alsa-oss ossp whdd wget cdrkit)
+	@$(call add,THE_PACKAGES,xfce4-screensaver)
 
-mixin/regular-lxde: use/x11/lxde use/x11/gtk/nm use/im \
-	use/browser/palemoon/i18n +nm
-	@$(call add,LIVE_LISTS,$(call tags,desktop gvfs))
+mixin/regular-lxde: use/x11/lxde use/x11/gtk/nm use/im +nm
+	@$(call add,THE_LISTS,$(call tags,desktop gvfs))
 	@$(call add,THE_PACKAGES,qasmixer qpdfview)
 	@$(call set,THE_IMAGEWRITER,rosa-imagewriter)
 
@@ -77,9 +99,15 @@ mixin/regular-tde: +tde \
 	@$(call add,THE_PACKAGES_REGEXP,kdeedu-kalzium.* kdeedu-ktouch.*)
 	@$(call add,DEFAULT_SERVICES_DISABLE,upower bluetoothd)
 
-mixin/regular-lxqt: use/x11/lxqt use/x11/sddm \
-	use/browser/falkon use/x11/gtk/nm +nm +plymouth
+mixin/regular-lxqt: use/x11/lxqt use/x11/sddm use/x11/gtk/nm +nm
 	@$(call set,THE_IMAGEWRITER,rosa-imagewriter)
+
+mixin/regular-mate: use/x11/mate use/fonts/ttf/google use/x11/gtk/nm +nm
+	@$(call add,THE_LISTS,$(call tags,mobile mate))
+
+mixin/office: use/fonts/ttf/google use/fonts/ttf/xo
+	@$(call add,THE_LISTS,$(call tags,desktop && (cups || office)))
+	@$(call add,THE_PACKAGES,apt-indicator)
 
 # NB: never ever use/syslinux/ui/gfxboot here as gfxboot mangles
 #     kernel cmdline resulting in method:disk instead of method:cdrom

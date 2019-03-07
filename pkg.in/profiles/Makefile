@@ -9,13 +9,28 @@ include $(BUILDDIR)/distcfg.mk
 SUFFIX := pkg/profiles
 TARGET := $(BUILDDIR)/$(SUFFIX)
 
-all: $(GLOBAL_DEBUG)
-	@if [ -n "$(PKG_PROFILES)" ]; then \
-		mkdir -p $(TARGET) && \
+all: | $(TARGET) $(GLOBAL_DEBUG) copy-profiles grep-archdep
+	@mp-commit "$(TARGET)" "requested $(SUFFIX) copied over"
+
+copy-profiles:
+	@if [ -n "$(THE_PROFILES)" ]; then \
 		cp -at $(TARGET) -- \
-			$(addsuffix .directory,$(PKG_PROFILES)); \
-		mp-commit "$(TARGET)" "requested $(SUFFIX) copied over"; \
+			$(addsuffix .directory,$(THE_PROFILES)); \
 	fi
 
+### exact copy of a snippet from ../lists/Makefile
+grep-archdep: a = $(ARCH)
+grep-archdep:
+	@# xargs -L 1024 -n 1024 ? -- breaks -I
+	@find $(TARGET) -type f \
+	| xargs -I '__' sh -c '\
+		sed -ri  "s/\\<([^@ ]*)@X86\\>/\\1@i586 \\1@x86_64/g" __; \
+		sed -ri  "s/\\<([^@ ]*)@IA32\\>/\\1@i586 i586-\\1@x86_64/g" __;\
+		sed -rni "s/\\<([^@ ]*)\\>|\\<([^@ ]*)@$a\\>/\\1\\2/pg" __; \
+		sed -ri  "s/\\<([^@ ]*)@[^@ ]+\\> *//g" __'
+
+$(TARGET):
+	@mkdir -p $(TARGET)
+
 debug:
-	@echo "** PKG_PROFILES: $(PKG_PROFILES)"
+	@echo "** THE_PROFILES: $(THE_PROFILES)"

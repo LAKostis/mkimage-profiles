@@ -4,7 +4,6 @@ x86info
 
 # Disk utils
 aff-tools
-aimage
 altquire
 bonnie++
 cfdisk
@@ -41,11 +40,11 @@ smartmontools
 stress
 testdisk
 mtools
-partimage
 gdisk
 cgdisk
 fixparts
 whdd
+bcache-tools
 
 # Applications
 binutils
@@ -95,8 +94,6 @@ xfsprogs
 clicfs-utils
 cloop-utils
 squashfsprogs
-squashfsprogs3
-squashfsprogs-xz
 
 # Foreign filesystems
 afpfs-ng
@@ -110,6 +107,7 @@ fuse-chironfs
 fuse-chunkfs
 fuse-ciopfs
 fuse-compFUSEd
+fuse-exfat
 fuse-funion
 fuse-zfs
 hfsprogs
@@ -120,14 +118,13 @@ liblnk-tools
 libpff-tools
 libregf-tools
 libuna-tools
-libvshadow-tools
+#libvshadow-tools
 libwrc-tools
 ntfs-3g
 ocfs2-tools
 vmfs-tools
 
 # Filesystem recovery/cleanup
-ext3grep
 extundelete
 foremost
 ftimes
@@ -150,6 +147,7 @@ fuse-7z
 adcfw-log
 arpwatch
 cifs-utils
+curl
 davfs2
 dhcpdump
 dsniff
@@ -198,7 +196,6 @@ tcpdump
 tcpreen
 tcpreplay
 tcptrace
-tcptraceroute
 tcputils
 tcpxtract
 telnet
@@ -243,3 +240,6 @@ usbmuxd
 
 # l10n
 glibc-locales
+
+# Misc
+rescue-launcher

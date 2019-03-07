@@ -9,13 +9,29 @@ BOOT_VOLI := $(shell echo $(META_VOL_ID) | cut -c1-32)
 BOOT_VOLS := $(META_VOL_SET)
 BOOT_BIBL := $(META_BIBLIO)
 BOOT_ABST := $(META_ABSTRACT)
+BOOT_COPY := $(META_LICENSE_FILE)
+
+ISODATA_SYSI = $(BOOT_SYSI)
+ISODATA_PUBL = $(BOOT_PUBL)
+ISODATA_PREP = $(BOOT_PREP)
+ISODATA_APPI = $(BOOT_APPI)
+ISODATA_VOLI = $(BOOT_VOLI)
+ISODATA_VOLS = $(BOOT_VOLS)
+ISODATA_BIBL = $(BOOT_BIBL)
+ISODATA_ABST = $(BOOT_ABST)
+ISODATA_COPY = $(BOOT_COPY)
+
 DATE_F    := $(shell date +%F)
 
-### we might want a e2k data iso too
+ifeq (isodata,$(IMAGE_PACKTYPE))
+BOOT_TYPE :=
+else
 ifeq (,$(filter-out e2k%,$(ARCH)))
 BOOT_TYPE := e2kboot
-else
+endif
+ifeq (,$(filter-out i586 x86_64,$(ARCH)))
 BOOT_TYPE := isolinux
+endif
 endif
 
 all: | $(GLOBAL_DEBUG) prep copy-subdirs copy-tree run-scripts pack-image \
