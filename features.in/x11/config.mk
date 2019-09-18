@@ -37,20 +37,20 @@ use/x11/3d: use/x11/intel use/x11/nvidia/optimus use/x11/radeon; @:
 # somewhat lacking compared to radeon but still
 use/x11/nouveau: use/x11 use/firmware
 	@$(call set,NVIDIA_KMODULES,drm-nouveau)
-	@$(call set,NVIDIA_PACKAGES,xorg-drv-nouveau)
+	@$(call set,NVIDIA_PACKAGES,xorg-drv-nouveau mesa-gallium-drivers)
 
 # has performance problems but is getting better, just not there yet
 use/x11/radeon: use/x11 use/firmware
 	@$(call set,RADEON_KMODULES,drm-radeon)
-	@$(call set,RADEON_PACKAGES,xorg-drv-ati xorg-drv-radeon)
+	@$(call set,RADEON_PACKAGES,xorg-drv-ati xorg-drv-radeon mesa-dri-drivers mesa-gallium-drivers)
 
 # here's the future
 use/x11/amdgpu: use/x11 use/firmware
-	@$(call set,RADEON_PACKAGES,xorg-drv-amdgpu)
+	@$(call set,RADEON_PACKAGES,xorg-drv-amdgpu mesa-gallium-drivers)
 
 # Vulkan is new and bleeding edge, only intel and amgpu(pro?)
 use/x11/vulkan: use/x11/intel use/x11/amdgpu
-	@$(call add,THE_PACKAGES,libvulkan1 vulkan-demos vulkan-examples)
+	@$(call add,THE_PACKAGES,libvulkan1 vulkan-tools)
 	@$(call add,THE_PACKAGES,vulkan-radeon vulkan-intel)
 
 # sometimes broken with current xorg-server
