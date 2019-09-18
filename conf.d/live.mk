@@ -65,14 +65,14 @@ distro/live-lakostis: distro/.live-desktop use/docs/license \
 distro/live-lakostis-elogind: distro/.live-x11 use/docs/license \
 	use/x11/vulkan use/x11/lightdm/gtk use/x11/lxde +efi \
 	+wireless +sysvinit use/init/sysv/polkit use/fonts/ttf/google \
-	use/browser/chromium use/net-ssh \
+	use/browser/chromium use/net-ssh use/ntp/client \
 	use/firmware/laptop use/x11-neatterm use/x11/gtk/nm +power
 	@$(call set,KFLAVOURS,lks-wks)
 	@$(call add,THE_PACKAGES,pam-limits-desktop)
 	@$(call add,LIVE_LISTS,$(call tags,live desktop))
 	@$(call add,LIVE_LISTS,$(call tags,desktop lakostis))
 	@$(call add,DEFAULT_SERVICES_DISABLE,gpm powertop lvm2-lvmpolld)
-	@$(call add,DEFAULT_SERVICES_ENABLE,bluetoothd)
+	@$(call add,DEFAULT_SERVICES_ENABLE,bluetoothd elogind messagebus)
 
 
 distro/live-lakostis-oldmac: distro/.live-x11 use/x11/lightdm/gtk use/x11/lxde +efi \
