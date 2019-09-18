@@ -2,11 +2,10 @@ bluez
 btrfs-progs
 driconf
 gpomme
-i586-libGL-mesa
+i586-libGLX-mesa
+i586-mesa-dri-drivers
+i586-mesa-gallium-drivers
 i586-nvidia_glx
-i586-xorg-dri-intel
-i586-xorg-dri-nouveau
-i586-xorg-dri-radeon
 #installer-common-stage3
 #installer-feature-no-xconsole-stage3
 kodi
