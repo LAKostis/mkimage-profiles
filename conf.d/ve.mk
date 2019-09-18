@@ -14,7 +14,8 @@ ve/ldv: ve/bare use/control/server/ldv
 	@$(call add,BASE_PACKAGES,openssh-blacklist openssh-server)
 	@$(call add,BASE_PACKAGES,shadow-edit shadow-groups)
 
-ve/docker: ve/.base use/repo; @:
+ve/docker: ve/.apt use/repo
+	@$(call add,BASE_PACKAGES,iproute2)
 
 # build environment
 ve/builder: ve/base use/dev/builder/base use/repo
@@ -36,8 +37,11 @@ ve/pgsql94: ve/generic
 ve/samba-DC: ve/generic
 	@$(call add,BASE_PACKAGES,task-samba-dc glibc-locales net-tools)
 
-ve/systemd-bare: ve/.base use/net/networkd +systemd \
+ve/systemd-bare: ve/.apt use/net/networkd +systemd \
 	use/control/sudo-su use/repo use/net-ssh
 	@$(call add,BASE_PACKAGES,interactivesystem su)
+
+ve/systemd-base: ve/systemd-bare
+	@$(call add,BASE_PACKAGES,glibc-gconv-modules glibc-locales tzdata)
 
 endif

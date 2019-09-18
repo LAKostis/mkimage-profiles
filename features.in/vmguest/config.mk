@@ -1,5 +1,5 @@
 # various VM guest modules/tools
-ifeq (,$(filter-out i586 x86_64 aarch64,$(ARCH)))
+ifeq (,$(filter-out i586 x86_64 aarch64 armh ppc64le,$(ARCH)))
 
 use/vmguest:
 	@$(call add_feature)
@@ -9,15 +9,13 @@ use/vmguest:
 use/vmguest/kvm: use/vmguest
 	@$(call add,THE_PACKAGES,qemu-guest-agent)
 
-ifeq (,$(filter-out aarch64,$(ARCH)))
-+vmguest: use/vmguest/kvm; @:
-endif
+use/vmguest/kvm/x11: use/vmguest/kvm
+	@$(call add,THE_PACKAGES,spice-vdagent xorg-drv-qxl)
 
 ifeq (,$(filter-out i586 x86_64,$(ARCH)))
 
-+vmguest: use/vmguest/complete; @:
-
-use/vmguest/base: use/vmguest/vbox use/vmguest/vmware use/vmguest/kvm; @:
+use/vmguest/bare: use/vmguest/vbox use/vmguest/kvm; @:
+use/vmguest/base: use/vmguest/bare use/vmguest/vmware; @:
 use/vmguest/complete: use/vmguest/base \
 	use/vmguest/vbox/x11 use/vmguest/vmware/x11 use/vmguest/kvm/x11; @:
 
@@ -27,9 +25,6 @@ use/vmguest/vbox: use/vmguest
 use/vmguest/vbox/x11: use/vmguest/vbox
 	@$(call add,THE_KMODULES,drm)
 	@$(call add,THE_PACKAGES,virtualbox-guest-additions)
-
-use/vmguest/kvm/x11: use/vmguest/kvm
-	@$(call add,THE_PACKAGES,spice-vdagent xorg-drv-qxl)
 
 # see also use/install2/vmware
 use/vmguest/vmware:
@@ -42,8 +37,20 @@ use/vmguest/vmware/x11: use/vmguest/vmware
 
 else
 
-# kvm-unsupported guest arch
-+vmguest: ;@:
+# non-x86
+use/vmguest/bare: use/vmguest/kvm; @:
+use/vmguest/base: use/vmguest/bare; @:
+use/vmguest/complete: use/vmguest/base use/vmguest/kvm/x11; @:
 
 endif
+
+else
+
+# kvm-unsupported guest arch
+use/vmguest/bare: ; @:
+use/vmguest/base: ; @:
+use/vmguest/complete: ; @:
+
 endif
+
++vmguest: use/vmguest/complete; @:

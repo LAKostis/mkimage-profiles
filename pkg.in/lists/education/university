@@ -1,0 +1,23 @@
+codeblocks
+lazarus
+qt-creator
+qt-creator-doc
+cmake
+ninja-build
+qt5-base-devel
+# Eclipse
+gambas-full
+swi-prolog
+monodevelop
+# Texmacs
+wxMaxima
+octave
+freecad
+qcad
+openscad
+projectlibre
+qgis
+qgis-grass
+qgis-python
+openmpi
+fritzing

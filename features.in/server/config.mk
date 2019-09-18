@@ -44,14 +44,9 @@ use/server/groups/services: use/server
 	@$(call add,MAIN_GROUPS,server/dhcp server/dns server/mail)
 	@$(call add,MAIN_GROUPS,server/apache2 server/nginx)
 	@$(call add,MAIN_GROUPS,server/mariadb server/pgsql)
-	@$(call add,MAIN_GROUPS,server/php5 server/php7)
+	@$(call add,MAIN_GROUPS,server/php7)
 	@$(call add,MAIN_GROUPS,server/ftp server/rsync)
 	@$(call add,MAIN_GROUPS,server/kvm)
 	@$(call add,DEFAULT_SERVICES_DISABLE,php7-fpm)
 
 use/server/groups/base: use/server/groups/tools use/server/groups/services; @:
-
-use/server/groups/openstack: use/server
-	@$(call add,MAIN_GROUPS,openstack/block openstack/compute)
-	@$(call add,MAIN_GROUPS,openstack/controller openstack/network)
-	@$(call add,MAIN_GROUPS,openstack/storage)

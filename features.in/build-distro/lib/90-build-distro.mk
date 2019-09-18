@@ -32,6 +32,12 @@ endif
 ifeq (,$(filter-out i586 x86_64,$(ARCH)))
 BOOT_TYPE := isolinux
 endif
+ifeq (,$(filter-out aarch64,$(ARCH)))
+BOOT_TYPE := grubaa64boot
+endif
+ifeq (,$(filter-out ppc64le,$(ARCH)))
+BOOT_TYPE := ieee1275boot
+endif
 endif
 
 all: | $(GLOBAL_DEBUG) prep copy-subdirs copy-tree run-scripts pack-image \
@@ -42,7 +48,11 @@ prep: | $(GLOBAL_DEBUG) dot-disk $(WHATEVER)
 # can't use mp-showref which belongs to the metaprofile
 dot-disk:
 	@mkdir -p files/.disk
-	@echo "$(META_VOL_ID) $(DATE_F)" >files/.disk/info
+	@if [ -n "$(META_DISK_INFO)" ]; then \
+		echo "$(META_DISK_INFO)" >files/.disk/info; \
+	else \
+		echo "$(META_VOL_ID) build $(DATE_F)" >files/.disk/info; \
+	fi
 	@echo "$(ARCH)" >files/.disk/arch
 	@echo "$(DATE)" >files/.disk/date
 	@if type -t git >&/dev/null; then \

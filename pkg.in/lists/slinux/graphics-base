@@ -1,0 +1,14 @@
+gimp2
+gimp-plugin-gutenprint
+xsane-gimp2
+# inkscape
+gphoto2
+sane
+hplip-sane
+xsane
+
+ristretto
+gimagereader-qt5
+tesseract
+tesseract-langpack-ru
+tesseract-langpack-en

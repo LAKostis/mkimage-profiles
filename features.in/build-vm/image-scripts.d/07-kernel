@@ -11,7 +11,13 @@ kver="$(rpm -qa 'kernel-image*' \
 [ -n "$kver" ] || { echo "** unable to deduce kernel version" >&2; exit 1; }
 
 cd /boot
-echo "$kver" > .origver	# for tar2fs
+
+for KVER in $kver; do
+	make-initrd -N -k "$KVER" AUTODETECT= \
+	  FEATURES+="$GLOBAL_VM_INITRDFEATURES" \
+	  MODULES_TRY_ADD+="$GLOBAL_VM_INITRDMODULES" \
+	  || { echo "** Error: make-initrd failed" >&2; exit 1; }
+done
 
 # NB: e2k kernel builds "image" instead of "vmlinuz"
 [ -f vmlinuz-$kver ] && ln -s vmlinuz-$kver vmlinuz ||:

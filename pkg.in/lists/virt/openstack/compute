@@ -1,0 +1,4 @@
+openstack-nova-compute
+openstack-neutron-openvswitch-agent
+openstack-neutron-linuxbridge-agent
+openstack-ceilometer-compute

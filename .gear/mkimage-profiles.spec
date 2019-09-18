@@ -1,5 +1,5 @@
 Name: mkimage-profiles
-Version: 1.3.5
+Version: 1.3.13
 Release: alt1
 
 Summary: ALT based distribution metaprofile
@@ -128,6 +128,48 @@ mv %buildroot%mpdir/doc/mkimage-profiles.7 %buildroot%_man7dir/
 %endif
 
 %changelog
+* Mon Sep 16 2019 Michael Shigorin <mike@altlinux.org> 1.3.13-alt1
+- recovery.tar support (iv@)
+- mixin/mixin deps, aarch64 EFI, mcom02 & jetson nano support,
+  multikernel & portability fixes, refactoring & cleanups (antohami@)
+- document STAGE1_MODLISTS (me)
+
+* Mon Aug 19 2019 Michael Shigorin <mike@altlinux.org> 1.3.12-alt1
+- ppc64le support (glebfm@)
+- build-vm hacked to build tarballs too (iv@ et al)
+- p8.mk: dropped; along with other cleanups/fixups (antohami@)
+
+* Tue Jul 09 2019 Michael Shigorin <mike@altlinux.org> 1.3.11.1-alt1
+- x11: reverted vulkan changes (need more testing)
+
+* Mon Jul 08 2019 Michael Shigorin <mike@altlinux.org> 1.3.11-alt1
+- pkg.in/profiles subdirs support (shaba@)
+- repo fixup regarding target arch (obirvalger@)
+- switch back to yandex mirror by default,
+  portability fixes, refactoring, cleanups (antohami@)
+- x11 amdgpu/radeon and dm fixups, vmguest refactoring (me)
+
+* Mon Jun 17 2019 Michael Shigorin <mike@altlinux.org> 1.3.10-alt1
+- add server-v profile, drop groups/openstack (shaba@)
+
+* Mon Jun 10 2019 Michael Shigorin <mike@altlinux.org> 1.3.9-alt1
+- uboot feature, bootloader refactoring, etc (antohami@)
+- cleanlog factored out from reports.mk (me)
+
+* Mon Jun 03 2019 Michael Shigorin <mike@altlinux.org> 1.3.8-alt1
+- p9.mk, office feature and other enhancements/fixes (antohami@)
+- education (cas@)
+- simply (sem@)
+- minor tidbits and major merge-up (me)
+
+* Mon May 06 2019 Michael Shigorin <mike@altlinux.org> 1.3.7-alt1
+- docker, vm, browser fixups (obirvalger@)
+- elogind support, refactoring, cleanups (antohami@)
+- a couple more improvements (me)
+
+* Mon Apr 01 2019 Michael Shigorin <mike@altlinux.org> 1.3.6-alt1
+- no joke!
+
 * Mon Mar 04 2019 Michael Shigorin <mike@altlinux.org> 1.3.5-alt1
 - Spring 2019 patch queue cleanup
   + antohami@, jqt4@, iv@, obirvalger@, zerg@, me

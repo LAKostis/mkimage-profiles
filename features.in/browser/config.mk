@@ -26,7 +26,7 @@ use/browser/palemoon/i18n: use/browser/palemoon; @:
 endif
 
 # the complete lack of dependencies is intentional
-use/browser/firefox/esr: use/browser
+use/browser/firefox/esr:
 	@$(call set,FX_FLAVOUR,-esr)
 
 use/browser/firefox/h264: use/browser/firefox
@@ -41,10 +41,6 @@ use/browser/firefox/i18n: use/browser/firefox
 	@$(call add,THE_BROWSER,firefox$$(FX_FLAVOUR)-kk)
 	@$(call add,THE_BROWSER,firefox$$(FX_FLAVOUR)-ru)
 	@$(call add,THE_BROWSER,firefox$$(FX_FLAVOUR)-uk)
-
-# fx29+
-use/browser/firefox/classic: use/browser/firefox
-	@$(call add,THE_BROWSER,firefox-classic_theme_restorer)
 
 use/browser/seamonkey/i18n: use/browser/seamonkey
 	@$(call add,THE_BROWSER,seamonkey-ru)

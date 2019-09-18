@@ -40,7 +40,7 @@ mixin/e2k-mate: use/e2k/x11 use/x11/xorg use/fonts/install2 \
 ### regular.mk
 mixin/regular-x11: use/luks use/volumes/regular \
 	use/browser/firefox/i18n use/browser/firefox/h264 \
-	use/branding use/ntp/client use/services/lvm2-disable
+	use/branding use/ntp/chrony use/services/lvm2-disable
 	@$(call add,THE_LISTS,$(call tags,(base || desktop) && regular))
 	@$(call add,THE_PACKAGES,disable-usb-autosuspend)
 	@$(call add,THE_PACKAGES,btrfs-progs)
@@ -48,7 +48,8 @@ mixin/regular-x11: use/luks use/volumes/regular \
 	@$(call add,DEFAULT_SERVICES_DISABLE,gpm powertop)
 
 # common WM live/installer bits
-mixin/regular-desktop: use/x11/xorg +alsa use/xdg-user-dirs
+mixin/regular-desktop: use/x11/xorg +alsa use/xdg-user-dirs \
+	use/fonts/otf/adobe use/fonts/otf/mozilla
 	@$(call add,THE_PACKAGES,pam-limits-desktop beesu polkit)
 	@$(call add,THE_PACKAGES,alterator-notes dvd+rw-tools)
 	@$(call add,THE_BRANDING,alterator graphics indexhtml notes)
@@ -57,6 +58,7 @@ mixin/regular-desktop: use/x11/xorg +alsa use/xdg-user-dirs
 	@$(call add,THE_PACKAGES,upower bluez)
 	@$(call add,DEFAULT_SERVICES_DISABLE,gssd idmapd krb5kdc rpcbind)
 	@$(call add,DEFAULT_SERVICES_ENABLE,bluetoothd)
+	@$(call add,DEFAULT_SERVICES_ENABLE,cups)
 
 mixin/desktop-extra:
 	@$(call add,BASE_LISTS,$(call tags,(archive || base) && extra))
@@ -66,44 +68,58 @@ mixin/regular-wmaker: use/efi/refind use/syslinux/ui/gfxboot \
 	@$(call add,LIVE_PACKAGES,livecd-install-wmaker)
 	@$(call add,LIVE_PACKAGES,installer-feature-no-xconsole-stage3)
 	@$(call add,MAIN_PACKAGES,wmgtemp wmhdaps wmpomme wmxkbru xxkb)
+	@$(call add,THE_PACKAGES,wmaker-autostart-polkit-gnome)
 
-mixin/regular-icewm: use/fonts/ttf/redhat use/deflogin/sysv/nm +icewm +nm
+mixin/regular-icewm: use/fonts/ttf/redhat +icewm +nm-gtk
 	@$(call add,THE_LISTS,$(call tags,regular icewm))
 	@$(call add,THE_LISTS,$(call tags,desktop nm))
 	@$(call add,THE_PACKAGES,icewm-startup-networkmanager)
-	@$(call add,THE_PACKAGES,mnt)
+	@$(call add,THE_PACKAGES,mnt polkit-gnome)
 
 # gdm2.20 can reboot/halt with both sysvinit and systemd, and is slim
-mixin/regular-gnustep: use/x11/gnustep use/x11/gdm2.20 use/mediacheck \
-	use/browser/firefox/classic
+mixin/regular-gnustep: use/x11/gnustep use/x11/gdm2.20 use/mediacheck
 	@$(call add,THE_BRANDING,graphics)
 
-mixin/regular-xfce: use/x11/xfce use/x11/gtk/nm +nm \
-	use/fonts/ttf/redhat use/fonts/ttf/google/extra
+mixin/regular-cinnamon: use/x11/cinnamon +nm-gtk \
+	use/fonts/ttf/google use/net/nm/mmgui use/im; @:
 
-mixin/regular-xfce-sysv: use/init/sysv/polkit use/deflogin/sysv/nm \
-	use/x11/lightdm/gtk \
-	use/browser/palemoon/i18n \
+mixin/regular-kde5: use/x11/kde5 use/browser/falkon \
+	use/fonts/ttf/google use/fonts/ttf/redhat use/fonts/zerg \
+	+nm +pulse
+	@$(call add,THE_PACKAGES,kde5-telepathy falkon-kde5)
+	@$(call set,THE_IMAGEWRITER,rosa-imagewriter)
+
+mixin/xfce-base: use/x11/xfce +nm-gtk \
+	use/fonts/ttf/redhat use/fonts/ttf/google/extra
+	@$(call add,THE_PACKAGES,xfce-polkit)
+	@$(call add,THE_BRANDING,xfce-settings)
+
+mixin/regular-xfce: mixin/xfce-base use/x11/xfce/full \
+	use/domain-client; @:
+
+mixin/regular-xfce-sysv: mixin/xfce-base \
 	use/fonts/otf/adobe use/fonts/otf/mozilla
 	@$(call add,THE_PACKAGES,pnmixer pm-utils elinks mpg123)
 	@$(call add,THE_PACKAGES,alsa-oss ossp whdd wget cdrkit)
+	@$(call add,THE_PACKAGES,qasmixer)
 	@$(call add,THE_PACKAGES,xfce4-screensaver)
+	@$(call add,THE_PACKAGES,sysstat leafpad)
+	@$(call add,THE_PACKAGES,nload)
+	@$(call add,THE_PACKAGES,NetworkManager-tui)
 
-mixin/regular-lxde: use/x11/lxde use/x11/gtk/nm use/im +nm
+mixin/regular-lxde: use/x11/lxde use/im +nm-gtk
 	@$(call add,THE_LISTS,$(call tags,desktop gvfs))
 	@$(call add,THE_PACKAGES,qasmixer qpdfview)
 	@$(call set,THE_IMAGEWRITER,rosa-imagewriter)
 
-mixin/regular-tde: +tde \
-	use/syslinux/ui/gfxboot use/browser/firefox/classic use/fonts/ttf/redhat
-	@$(call add,THE_PACKAGES_REGEXP,kdeedu-kalzium.* kdeedu-ktouch.*)
-	@$(call add,DEFAULT_SERVICES_DISABLE,upower bluetoothd)
-
-mixin/regular-lxqt: use/x11/lxqt use/x11/sddm use/x11/gtk/nm +nm
+mixin/regular-lxqt: use/x11/lxqt +nm-gtk
 	@$(call set,THE_IMAGEWRITER,rosa-imagewriter)
 
-mixin/regular-mate: use/x11/mate use/fonts/ttf/google use/x11/gtk/nm +nm
+mixin/mate-base: use/x11/mate use/fonts/ttf/google +nm-gtk
 	@$(call add,THE_LISTS,$(call tags,mobile mate))
+
+mixin/regular-mate: mixin/mate-base use/domain-client
+	@$(call add,THE_LISTS,$(call tags,base smartcard))
 
 mixin/office: use/fonts/ttf/google use/fonts/ttf/xo
 	@$(call add,THE_LISTS,$(call tags,desktop && (cups || office)))
@@ -117,6 +133,11 @@ mixin/office: use/fonts/ttf/google use/fonts/ttf/xo
 mixin/regular-rescue: use/rescue use/isohybrid use/luks use/branding \
 	use/syslinux/ui/menu use/syslinux/timeout/600 \
 	use/firmware/qlogic test/rescue/no-x11 +sysvinit; @:
+
+mixin/regular-builder: use/dev/builder/base use/net-eth/dhcp
+	@$(call add,THE_PACKAGES,bash-completion elinks gpm lftp openssh)
+	@$(call add,THE_PACKAGES,rpm-utils screen tmux wget zsh)
+	@$(call add,DEFAULT_SERVICES_ENABLE,gpm)
 
 ### vm.mk
 mixin/cloud-init:

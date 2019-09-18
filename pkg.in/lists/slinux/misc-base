@@ -1,0 +1,200 @@
+# Basic packages
+tzdata
+vim-console
+openssh-server
+openssh-clients
+rsync
+strace
+anacron
+os-prober
+make-initrd-lvm
+dhcp-client
+shadow-change
+
+pam-limits-desktop
+bash-completion
+mc-full
+inxi
+fvwm-
+fvwm-full-
+#kernel-modules-staging-@KERNEL_MOD@
+altlinux-freedesktop-menu-shallow-menu
+altlinux-freedesktop-menu-icon-theme-default
+installer-distro-simply-linux-stage3
+#altlinux-freedesktop-menu-common
+#branding-@BRANDING@-xfce-settings
+#branding-@BRANDING@-system-settings
+#branding-@BRANDING@-menu
+branding-simply-linux-backgrounds-vladstudio
+branding-simply-linux-backgrounds8
+#docs-linux_intro
+fonts-ttf-google-droid-.*
+fonts-ttf-ubuntu-font-family
+fonts-ttf-liberation
+fonts-ttf-dejavu
+gnome-icon-theme
+gnome-icon-theme-symbolic
+gnome-keyring
+gcr
+gparted
+#tango-icon-theme
+#tango-icon-theme-extras
+#ntfsprogs-
+driconf-
+aspell-ru-lebedev
+
+kde4libs-
+kde-common-
+kde4-menu-common-
+kde4-menu-resources-
+
+# browser
+chromium
+chromium-gnome
+ppapi-plugin-adobe-flash
+
+xarchiver
+unzip
+unrar
+unarj
+p7zip-standalone
+dbus-tools-gui
+brasero
+medit
+mate-calc
+synaptic
+synaptic-usermode
+apt-indicator
+gksu
+cups
+cups-filters
+cups-pdf
+avahi-daemon
+blueberry
+update-kernel
+printer-drivers-base
+udev-extras
+hostname-hook-hosts
+libnss-mdns
+i586-glibc-nss@x86_64
+i586-libnss-mdns@x86_64
+i586-libnss-myhostname@x86_64
+
+pulseaudio-daemon
+pulseaudio-utils
+pavucontrol
+alsa-plugins-pulse
+
+# gstreamer plugins
+gst-plugins-base1.0
+gst-plugins-good1.0
+gst-plugins-bad1.0
+gst-plugins-ugly1.0
+
+fdisk
+cpufreq-simple
+attr
+rfkill
+cifs-utils
+
+# dm
+#gdm2.20
+#gdm-theme-simply
+#gdm2.20-help
+lightdm-gtk-greeter
+#gtk3-themes-xfce4
+gnome-themes-standard-data
+
+# Alterator
+alterator-browser-qt
+alterator-standalone
+
+alterator-auth
+alterator-datetime
+alterator-net-pppoe
+alterator-net-pptp
+alterator-net-openvpn
+alterator-packages
+alterator-pkg
+alterator-services
+alterator-sysconfig
+alterator-users
+alterator-x11
+alterator-xkb
+
+#additional
+tracker
+yelp
+rosa-imagewriter
+
+#compiz
+#python-module-fusion-icon-gtk
+#compiz-gtk
+
+#aen
+#elinks-
+rpminstall
+system-config-printer
+system-config-printer-udev
+alterator-printers
+#krb5-ticket-watcher-
+apt-repo
+#krb5-ticket-watcher-
+rekonq-
+xdg-user-dirs
+x-cursor-theme-jimmac
+
+plymouth
+#branding-simply-linux-bootsplash
+
+# Office
+java-1.8.0-openjdk
+LibreOffice-still
+LibreOffice-still-gnome
+LibreOffice-still-langpack-ru
+LibreOffice-still-langpack-uk
+LibreOffice-still-langpack-es
+LibreOffice-still-langpack-kk
+LibreOffice-still-langpack-pt-BR
+atril-gtk
+atril-gtk-djvu
+atril-gtk-dvi
+atril-gtk-pixbuf
+atril-gtk-xps
+stardict-gtk
+stardict-mueller7
+
+# *cloud
+nextcloud-client
+
+# For work as guest in the virtualbox
+virtualbox-guest-additions
+xorg-drv-vboxvideo
+
+#For ALT domain
+settime-rfc867
+
+# Dirty hackaround for #28753
+alsa-set-initial-options
+udev-alsa
+
+# Console fonts workaround
+vconsole-setup-kludge
+
+# askpass
+gtk2-ssh-askpass
+
+# Systemd-specific
+systemd-analyze
+
+# Enable left mouse button by tapping by default
+xorg-conf-libinput-touchpad
+
+# Otherwise hunspell-ru  will be replace by it
+# during dist-upgrade
+hunspell-ru-lebedev
+
+# xkill is present in the live anyway somehow.
+# So explicitly add it for both live and install
+# versions.
+xkill

@@ -24,35 +24,32 @@ MB=1048576		# a parted's "megabyte" in bytes is *broken*
 
 SIZE_FACTOR=2		# multiply the sizes found by this value
 BOOT_SIZE_FACTOR=2	# multiply /boot size by this value additionally
+BOOTLOADERPARTSIZEM=0	# PReP partition size (ppc*)
 
 CUR_BOUNDARY=0		# align first partition at 1MB for performance (+1)
 
-INITRD_MODULES=
 BOOTFSTYPE=
 BOOTPART=
+
+BOOTLOADER="$5"
 
 ARCH="$(arch)"		# NB: sudo => no GLOBAL_ will do either; mind qemu-*
 
 case "$ARCH" in
-*86*)
-	# NB: different storage modules might be needed for non-kvm
-	INITRD_MODULES="sd_mod ata_piix ahci virtio-scsi virtio-blk"
-	BLOCKDEV="/dev/sda"	# might be /dev/vda for virtio
-	ROOTPART="1"
-	;;
-arm*)
-	BOOTFSTYPE="ext2"	# support expected in every sane target uboot
-	BLOCKDEV="/dev/mmcblk0p"	# ...hopefully...
-	BOOTPART="1"
-	ROOTPART="2"
-	;;
 e2k)
 	BOOTFSTYPE="ext2"       # firmware knows it
 	BLOCKDEV="/dev/sda"     # ...hopefully...
 	BOOTPART="1"
 	ROOTPART="2"
 	;;
-mips*)
+ppc*)
+	BOOTFSTYPE="ext4"
+	BLOCKDEV="/dev/sda"
+	BOOTLOADERPART="1"
+	BOOTLOADERPARTSIZEM="8"
+	ROOTPART="2"
+	;;
+*)
 	ROOTPART="1"
 	BLOCKDEV="/dev/sda"
 	;;
@@ -160,11 +157,23 @@ trap exit_handler EXIT ERR
 
 # prepare disk image and a filesystem inside it
 rm -f -- "$IMG"
-OFFSET="$(($CUR_BOUNDARY + $BOOTSIZEM + $ROOTSIZEM - 1))"
+
+OFFSET="$(($CUR_BOUNDARY + $BOOTLOADERPARTSIZEM + $BOOTSIZEM + $ROOTSIZEM - 1))"
 dd if=/dev/zero of="$IMG" conv=notrunc bs=$MB count=1 seek="$OFFSET"
 losetup "$LOOPDEV" "$IMG"
 
 parting mklabel msdos
+
+if [ -n "$BOOTLOADERPART" ] && [ -n "$BOOTLOADERPARTSIZEM" ]; then
+	case "$ARCH" in
+		ppc*)
+			parting mkpart primary ext2 2048s ${BOOTLOADERPARTSIZEM}M
+			CUR_BOUNDARY="$(($CUR_BOUNDARY + $BOOTLOADERPARTSIZEM))"
+			parting set 1 prep on
+			parting set 1 boot on
+			;;
+	esac
+fi
 
 if [ -n "$BOOTPART" ]; then
 	BOOTDEV="$BLOCKDEV$BOOTPART"
@@ -182,6 +191,10 @@ mkfs."$ROOTFSTYPE" "$LOOPROOT"
 if [ -n "$BOOTPART" ]; then
 	LOOPBOOT="/dev/mapper/$(basename "$LOOPDEV")p$BOOTPART"
 	mkfs."$BOOTFSTYPE" "$LOOPBOOT"
+fi
+
+if [ -n "$BOOTLOADERPART" ] && [ -n "$BOOTLOADERPARTSIZEM" ]; then
+	LOOPBOOTLOADER="/dev/mapper/$(basename "$LOOPDEV")p$BOOTLOADERPART"
 fi
 
 ROOTUUID="$(blkid -s UUID -o value -c /dev/null "$LOOPROOT")"
@@ -221,24 +234,6 @@ fi
 # Query ARCH in chroot and redefine arch-dependent variable
 ARCH="$(chroot "$ROOTFS" rpm --eval '%_host_cpu')"
 
-if [[ $ARCH = *86* ]]
-	then 	# NB: different storage modules might be needed for non-kvm
-		INITRD_MODULES="sd_mod ata_piix ahci virtio-scsi virtio-blk"
-else
-	INITRD_MODULES=
-fi
-
-echo "MODULES_PRELOAD += $INITRD_MODULES $ROOTFSTYPE" >> "$ROOTFS/etc/initrd.mk"
-
-case "$ARCH" in
-*86*)
-	echo "FEATURES += qemu" >> "$ROOTFS/etc/initrd.mk"
-	;;
-e2k)
-	echo "FEATURES += usb"  >> "$ROOTFS/etc/initrd.mk"
-	;;
-esac
-
 # NB: don't stick BOOTFS here, it has slightly different semantics
 pushd $ROOTFS/boot
 
@@ -246,15 +241,16 @@ pushd $ROOTFS/boot
 get_label() { echo "${1# *}" | sed -r 's,.*elbrus-([0-9a-z]+)-.*$,\1,'; }
 
 KVERSIONS=
-if [ -s .origver ]; then
-	while read kver; do
-		chroot "$ROOTFS" make-initrd -k "$kver"
-		KVERSIONS="$KVERSIONS $kver"
-	done < .origver
-fi
+KVERSIONS="$(chroot "$ROOTFS" rpm -qa 'kernel-image*' \
+            --qf '%{installtime} %{version}-%{name}-%{release}\n' \
+        | sort -n \
+        | cut -f 2 -d ' ' \
+        | sed 's/kernel-image-//')"
 [ -n "$KVERSIONS" ] || fatal "unable to deduce kernel version"
 rm -f .origver
 
+# clean fstab
+sed -i "/LABEL=ROOT/d" "$ROOTFS/etc/fstab"
 # ...target device too
 sed -i "s,$LOOPROOT,$ROOTDEV," "$ROOTFS/etc/fstab"
 
@@ -283,7 +279,13 @@ echo "** end of boot.conf"
 
 popd
 
-if [ -x "$ROOTFS"/sbin/lilo ]; then
+# Setup bootloader
+case "$BOOTLOADER" in
+uboot)
+	EXTLINUX_CONF="$ROOTFS/boot/extlinux/extlinux.conf"
+	sed -i "s/LABEL=ROOT/$ROOTDEV/g" "$EXTLINUX_CONF"
+	;;
+lilo)
 	# configure and install bootloader
 	REGEXP='^.*: ([0-9]+) cylinders, ([0-9]+) heads, ([0-9]+) sectors/track*$'
 	set -- $(sfdisk -g "$LOOPDEV" | grep -E "$REGEXP" | sed -r "s@$REGEXP@\1 \2 \3@")
@@ -314,13 +316,25 @@ image=/boot/vmlinuz
 	boot=$BLOCKDEV
 	$LILO_COMMON
 	EOF
-elif [ -x "$ROOTFS"/usr/sbin/grub-efi-autoupdate ]; then
+	;;
+grub-efi)
 	chroot "$ROOTFS" grub-mkconfig -o /boot/grub/grub.cfg
 	chroot "$ROOTFS" grub-install
-elif [ -x "$ROOTFS"/usr/sbin/grub-autoupdate ]; then
+	;;
+grub)
 	chroot "$ROOTFS" grub-mkconfig -o /boot/grub/grub.cfg
-	chroot "$ROOTFS" grub-install --target=i386-pc "$LOOPDEV"
-fi
+	case "$ARCH" in
+		*86*)
+			chroot "$ROOTFS" grub-install --target=i386-pc "$LOOPDEV"
+			;;
+		ppc*)
+			[ -z "$LOOPBOOTLOADER" ] ||
+				chroot "$ROOTFS" grub-install --target=powerpc-ieee1275 \
+				--no-nvram "$LOOPBOOTLOADER"
+			;;
+	esac
+	;;
+esac
 
 if [ -n "$SUDO_USER" ]; then
 	chown "$SUDO_USER:$(id -g "$SUDO_USER")" "$IMG" ||:

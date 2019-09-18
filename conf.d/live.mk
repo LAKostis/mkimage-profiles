@@ -43,8 +43,6 @@ distro/live-install: distro/.live-base use/live/textinstall; @:
 distro/.livecd-install: distro/.live-base use/live/install; @:
 
 distro/live-icewm: distro/.live-desktop use/x11/lightdm/gtk +icewm; @:
-distro/live-razorqt: distro/.live-desktop +razorqt; @:
-distro/live-tde: distro/.live-desktop-ru use/live/install +tde; @:
 distro/live-fvwm: distro/.live-desktop-ru use/x11/lightdm/gtk use/x11/fvwm; @:
 
 distro/live-lakostis: distro/.live-desktop use/docs/license \
@@ -66,7 +64,7 @@ distro/live-lakostis-elogind: distro/.live-x11 use/docs/license \
 	use/x11/vulkan use/x11/lightdm/gtk use/x11/lxde +efi \
 	+wireless +sysvinit use/init/sysv/polkit use/fonts/ttf/google \
 	use/browser/chromium use/net-ssh use/ntp/client \
-	use/firmware/laptop use/x11-neatterm use/x11/gtk/nm +power
+	use/firmware/laptop use/x11-neatterm +nm-gtk +power
 	@$(call set,KFLAVOURS,lks-wks)
 	@$(call add,THE_PACKAGES,pam-limits-desktop)
 	@$(call add,LIVE_LISTS,$(call tags,live desktop))
