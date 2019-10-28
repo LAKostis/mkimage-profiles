@@ -164,9 +164,22 @@ distro/lakostis-gnome3: distro/.regular-desktop +plymouth +nm-gtk \
 	use/x11/vulkan use/x11/nvidia
 	@$(call set,KFLAVOURS,lks-wks)
 	@$(call add,SERVICES_ENABLE,sshd)
+	@$(call add,LIVE_LISTS,$(call tags,desktop lakostis))
 	@$(call add,LIVE_PACKAGES,livecd-gnome3-setup-done)
 	@$(call add,LIVE_PACKAGES,gnome3-regular xcalib templates)
-	@$(call add,LIVE_PACKAGES,gnome-flashback screenpen)
+	@$(call add,LIVE_PACKAGES,gnome-flashback screenpen bolt)
+	@$(call add,LIVE_PACKAGES,cups-pk-helper system-config-printer)
+
+distro/lakostis-gnome3-nonvidia: distro/.regular-desktop +plymouth +nm-gtk \
+	use/x11/gnome3 use/browser/epiphany use/fonts/ttf/redhat \
+	use/x11/vulkan
+	@$(call set,KFLAVOURS,lks-wks)
+	@$(call add,SERVICES_ENABLE,sshd)
+	@$(call add,LIVE_LISTS,$(call tags,desktop lakostis))
+	@$(call add,LIVE_PACKAGES,livecd-gnome3-setup-done)
+	@$(call add,LIVE_PACKAGES,gnome3-regular xcalib templates)
+	@$(call add,LIVE_PACKAGES,gnome-flashback screenpen bolt)
+	@$(call add,LIVE_PACKAGES,cups-pk-helper system-config-printer)
 
 distro/regular-lxqt: distro/.regular-desktop mixin/regular-lxqt +plymouth \
 	use/browser/falkon use/x11/sddm
