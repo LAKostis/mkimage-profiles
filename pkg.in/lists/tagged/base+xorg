@@ -1,7 +1,7 @@
 xorg-server
 
 xorg-drv-evdev
-xorg-drv-synaptics
+#xorg-drv-synaptics
 xorg-drv-libinput
 
 xorg-drv-vesa
