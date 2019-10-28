@@ -19,7 +19,7 @@ use/init/sysv/polkit: use/init/sysv
 	@$(call add,THE_PACKAGES,polkit-sysvinit)
 
 use/init/sysv/elogind: use/init/sysv
-	@$(call add,THE_PACKAGES,elogind bash-completion-elogind)
+	@$(call add,THE_PACKAGES,elogind)
 	@$(call add,DEFAULT_SERVICES_ENABLE,elogind)
 
 ### i-f should be dropped as soon as rootfs scripts are effective there
@@ -28,7 +28,7 @@ use/init/systemd: use/init
 	@$(call add,INSTALL2_PACKAGES,installer-feature-journald-tty)
 
 use/init/systemd/full: use/init/systemd
-	@$(call add,THE_PACKAGES,bash-completion-systemd chkconfig)
+	@$(call add,THE_PACKAGES,chkconfig)
 ifeq (,$(filter-out i586 x86_64,$(ARCH)))
 	@$(call add,THE_PACKAGES,vconsole-setup-kludge)
 endif

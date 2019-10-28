@@ -41,10 +41,47 @@ vm/alt-p9-cloud: vm/cloud-systemd mixin/p9; @:
 vm/alt-p9-opennebula: vm/opennebula-systemd mixin/p9; @:
 
 # universal builds rootfs and image for all platforms
-vm/alt-p9-jeos-systemd vm/alt-p9-jeos-sysv \
+vm/alt-p9-jeos-systemd vm/alt-p9-jeos-sysv vm/alt-p9-builder \
+	vm/alt-p9-cinnamon vm/alt-p9-kde5 \
 	vm/alt-p9-icewm vm/alt-p9-lxde \
 	vm/alt-p9-lxqt vm/alt-p9-mate \
 	vm/alt-p9-xfce: \
 	vm/alt-p9-%: vm/regular-% mixin/p9; @:
+
+ifeq (,$(filter-out aarch64,$(ARCH)))
+vm/alt-p9-cinnamon-tegra vm/alt-p9-kde5-tegra \
+	vm/alt-p9-lxde-tegra vm/alt-p9-lxqt-tegra \
+	vm/alt-p9-mate-tegra vm/alt-p9-xfce-tegra: \
+	vm/alt-p9-%-tegra: vm/regular-%-tegra mixin/p9; @:
+endif
+
+ifeq (,$(filter-out armh,$(ARCH)))
+vm/alt-p9-lxde-mcom02 vm/alt-p9-lxqt-mcom02 \
+	vm/alt-p9-mate-mcom02 vm/alt-p9-xfce-mcom02: \
+	vm/alt-p9-%-mcom02: vm/regular-%-mcom02 mixin/p9; @:
+
+vm/alt-p9-lxde-mcom02-mali vm/alt-p9-lxqt-mcom02-mali \
+	vm/alt-p9-mate-mcom02-mali vm/alt-p9-xfce-mcom02-mali: \
+	vm/alt-p9-%-mcom02-mali: vm/regular-%-mcom02-mali mixin/p9; @:
+endif
+
+ifeq (,$(filter-out mipsel,$(ARCH)))
+vm/tavolga-alt-p9-jeos-systemd vm/tavolga-alt-p9-jeos-sysv \
+	vm/tavolga-alt-p9-builder: \
+	vm/tavolga-alt-p9-%: vm/tavolga-regular-% mixin/p9; @:
+
+vm/tavolga-alt-p9-lxde vm/tavolga-alt-p9-lxqt \
+	vm/tavolga-alt-p9-mate vm/tavolga-alt-p9-xfce \
+	vm/tavolga-alt-p9-icewm: \
+	vm/tavolga-alt-p9-%: vm/tavolga-regular-% mixin/p9; @:
+
+vm/bfk3-alt-p9-jeos-systemd vm/bfk3-alt-p9-jeos-sysv \
+	vm/bfk3-alt-p9-builder: \
+	vm/bfk3-alt-p9-%: vm/bfk3-regular-% mixin/p9; @:
+
+vm/bfk3-alt-p9-lxde vm/bfk3-alt-p9-lxqt vm/bfk3-alt-p9-mate \
+	vm/bfk3-alt-p9-xfce vm/bfk3-alt-p9-icewm: \
+	vm/bfk3-alt-p9-%: vm/bfk3-regular-% mixin/p9; @:
+endif
 
 endif
