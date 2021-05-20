@@ -1,6 +1,0 @@
-#!/bin/sh -x
-
-# remove DRI modules on stage1
-rm -rf /lib/modules/*/kernel/drivers/gpu/drm
-
-:
