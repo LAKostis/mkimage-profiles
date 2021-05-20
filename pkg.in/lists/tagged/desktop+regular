@@ -27,7 +27,8 @@ alterator-x11@X86
 alterator-xkb
 
 glxgears
-xorg-conf-synaptics@X86
+glxinfo
+#xorg-conf-synaptics@X86
 
 cpu-x@X86
 fuse-exfat
