@@ -20,7 +20,8 @@ endif
 	@$(call add,THE_PACKAGES,vim-console)
 	@$(call add,THE_LISTS,$(call tags,base regular))
 
-mixin/regular-vm-jeos: mixin/regular-vm-base use/deflogin/root; @:
+mixin/regular-vm-jeos: mixin/regular-vm-base use/deflogin/root
+	@$(call add,DEFAULT_SERVICES_ENABLE,getty@tty1)
 
 mixin/regular-vm-x11: mixin/regular-vm-base mixin/regular-x11 \
 	mixin/regular-desktop use/browser/firefox/esr use/oem
@@ -33,7 +34,7 @@ endif
 vm/.regular-desktop: vm/systemd mixin/regular-vm-x11 +systemd-optimal; @:
 
 vm/.regular-desktop-sysv: vm/bare mixin/regular-vm-x11 use/x11/gdm2.20 \
-	+elogind +power; @:
+	use/init/sysv/polkit +power; @:
 
 vm/.regular-gtk: vm/.regular-desktop use/x11/lightdm/gtk
 	@$(call add,THE_PACKAGES,blueberry)
@@ -58,7 +59,8 @@ vm/regular-lxde: vm/.regular-gtk mixin/regular-lxde mixin/vm-archdep; @:
 vm/regular-mate: vm/.regular-gtk mixin/mate-base mixin/vm-archdep
 	@$(call add,THE_PACKAGES,mate-reduced-resource)
 
-vm/regular-xfce: vm/.regular-gtk mixin/regular-xfce mixin/vm-archdep; @:
+vm/regular-xfce: vm/.regular-gtk mixin/regular-xfce mixin/vm-archdep
+	@$(call add,THE_PACKAGES,xfce-reduced-resource)
 
 vm/regular-kde5: vm/.regular-gtk mixin/regular-kde5 mixin/vm-archdep; @:
 
@@ -76,6 +78,9 @@ vm/regular-lxqt-tegra: vm/.regular-gtk mixin/regular-lxqt use/aarch64-tegra; @:
 vm/regular-mate-tegra: vm/.regular-gtk mixin/regular-mate use/aarch64-tegra; @:
 
 vm/regular-xfce-tegra: vm/.regular-gtk mixin/regular-xfce use/aarch64-tegra; @:
+
+# DBM BE-M1000
+vm/regular-xfce-dbm: vm/.regular-gtk mixin/regular-xfce use/aarch64-dbm; @:
 endif
 
 ifeq (,$(filter-out armh,$(ARCH)))

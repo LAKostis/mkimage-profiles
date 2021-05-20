@@ -34,7 +34,7 @@ distro/.regular-desktop: distro/.regular-wm \
 	@$(call set,KFLAVOURS,std-def)
 
 distro/.regular-gtk: distro/.regular-desktop use/x11/lightdm/slick +plymouth; @:
-distro/.regular-sysv: distro/.regular-wm +elogind; @:
+distro/.regular-sysv: distro/.regular-wm use/init/sysv/polkit; @:
 
 distro/.regular-sysv-gtk: distro/.regular-sysv use/syslinux/ui/gfxboot \
 	use/x11/gdm2.20; @:
@@ -105,8 +105,7 @@ distro/.regular-install-x11-full: distro/.regular-install-x11 \
 	mixin/desktop-installer mixin/regular-desktop use/install2/fs \
 	use/fonts/otf/adobe use/fonts/otf/mozilla use/fonts/chinese \
 	use/branding/complete use/branding/slideshow/once \
-	use/net-eth/dhcp use/efi/shell use/rescue/base \
-	use/init/sysv/elogind
+	use/net-eth/dhcp use/efi/shell use/rescue/base
 	@$(call add,RESCUE_LISTS,$(call tags,rescue misc))
 	@$(call add,MAIN_PACKAGES,anacron man-whatis usb-modeswitch)
 	@$(call add,DEFAULT_SERVICES_ENABLE,alteratord)
@@ -153,11 +152,13 @@ distro/regular-cinnamon: distro/.regular-gtk mixin/regular-cinnamon; @:
 
 # not .regular-gtk due to gdm vs lightdm
 distro/regular-gnome3: distro/.regular-desktop +plymouth +nm-gtk \
-	use/x11/gnome3 use/browser/epiphany use/fonts/ttf/redhat
+	use/x11/gnome3 use/fonts/ttf/redhat
 	@$(call set,KFLAVOURS,un-def)
 	@$(call add,LIVE_PACKAGES,livecd-gnome3-setup-done)
 	@$(call add,LIVE_PACKAGES,gnome3-regular xcalib templates)
 	@$(call add,LIVE_PACKAGES,gnome-flashback screenpen)
+	@$(call add,LIVE_PACKAGES,chrome-gnome-shell)
+	@$(call add,LIVE_PACKAGES,firefox-gnome_shell_integration)
 
 distro/lakostis-gnome3: distro/.regular-desktop +plymouth +nm-gtk \
 	use/x11/gnome3 use/browser/epiphany use/fonts/ttf/redhat \
