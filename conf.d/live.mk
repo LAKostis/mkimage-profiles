@@ -46,42 +46,45 @@ distro/live-icewm: distro/.live-desktop use/x11/lightdm/gtk +icewm; @:
 distro/live-fvwm: distro/.live-desktop-ru use/x11/lightdm/gtk use/x11/fvwm; @:
 
 distro/live-lakostis: distro/.live-desktop use/docs/license \
-	use/x11/vulkan use/x11/nvidia use/x11/lightdm/gtk use/x11/lxde +efi \
+	use/x11/vulkan use/x11/nvidia use/nvidia/uvm use/x11/lightdm/gtk use/x11/lxde +efi \
 	+wireless +systemd use/fonts/ttf/google use/browser/chromium use/net/nm/nodelay use/net-ssh \
 	use/firmware/laptop use/x11-neatterm use/x11/gtk/nm +power +vmguest
 	@$(call set,KFLAVOURS,lks-wks)
 	@$(call add,THE_PACKAGES,pam-limits-desktop)
-	@$(call add,THE_PACKAGES,disable-usb-autosuspend)
-	@$(call add,THE_PACKAGES,vconsole-setup-kludge) #28805
-	@$(call add,THE_PACKAGES,installer-feature-desktop-other-fs-stage2)
 	@$(call add,LIVE_LISTS,$(call tags,(base || desktop) && regular))
 	@$(call add,LIVE_LISTS,$(call tags,base rescue))
 	@$(call add,LIVE_LISTS,$(call tags,desktop lakostis))
 	@$(call add,DEFAULT_SERVICES_DISABLE,gpm powertop lvm2-lvmpolld)
-	@$(call add,DEFAULT_SERVICES_ENABLE,bluetoothd)
-
-distro/live-lakostis-elogind: distro/.live-x11 use/docs/license \
-	use/x11/vulkan use/x11/lightdm/gtk use/x11/lxde +efi \
-	+wireless +sysvinit use/init/sysv/polkit use/fonts/ttf/google \
-	use/browser/chromium use/net-ssh use/ntp/client \
-	use/firmware/laptop use/x11-neatterm +nm-gtk +power
-	@$(call set,KFLAVOURS,lks-wks)
-	@$(call add,THE_PACKAGES,pam-limits-desktop)
-	@$(call add,LIVE_LISTS,$(call tags,live desktop))
-	@$(call add,LIVE_LISTS,$(call tags,desktop lakostis))
-	@$(call add,DEFAULT_SERVICES_DISABLE,gpm powertop lvm2-lvmpolld)
-	@$(call add,DEFAULT_SERVICES_ENABLE,bluetoothd elogind messagebus)
-
+	@$(call add,DEFAULT_SERVICES_ENABLE,bluetoothd sshd NetworkManager)
 
 distro/live-lakostis-oldmac: distro/.live-x11 use/x11/lightdm/gtk use/x11/lxde +efi \
-	+wireless +systemd use/fonts/ttf/google use/net/nm/nodelay use/net-ssh \
-	use/firmware/laptop use/x11-neatterm use/x11/gtk/nm +power use/hw-quirks/apple
+	+wireless +systemd use/fonts/ttf/google use/net-ssh use/stage2/net-eth \
+	use/firmware/laptop use/x11-neatterm +power +pulse use/live/install use/nvidia/uvm
 	@$(call set,KFLAVOURS,lks-wks)
 	@$(call add,STAGE2_BOOTARGS,nomodeset video=vesa:off vga=normal)
-	@$(call set,NVIDIA_KMODULES,nvidia_legacy_340.xx)
-	@$(call set,NVIDIA_PACKAGES,nvidia_glx_legacy_340.xx nvidia-settings nvidia-xconfig)
-	@$(call add,LIVE_PACKAGES,nvdock udev-extras kodi pavucontrol bluez \
-	pulseaudio-bluez pommed gpomme xorg-conf-synaptics usbutils)
+	@$(call add,THE_PACKAGES,pam-limits-desktop)
+	@$(call add,LIVE_LISTS,$(call tags,(base || desktop) && regular))
+	@$(call add,LIVE_LISTS,$(call tags,desktop lakostis))
+	@$(call add,LIVE_LISTS,$(call tags,base nm))
+	@$(call add,LIVE_LISTS,$(call tags,desktop nm))
+	@$(call add,THE_KMODULES,media)
+	@$(call set,NVIDIA_KMODULES,nvidia_legacy_418.xx)
+	@$(call set,NVIDIA_PACKAGES,nvidia_glx_legacy_418.xx nvidia-settings nvidia-xconfig cuda-libs=418.113 nvidia-tools=418.113)
+	@$(call add,DEFAULT_SERVICES_DISABLE,gpm powertop lvm2-lvmpolld)
+	@$(call add,DEFAULT_SERVICES_ENABLE,bluetoothd sshd NetworkManager)
+
+distro/live-lakostis-oldmac-free: distro/.live-x11 use/x11/lightdm/gtk use/x11/lxde +efi \
+	+wireless +systemd use/fonts/ttf/google use/net-ssh use/stage2/net-eth use/x11/xorg \
+	use/firmware/laptop use/x11-neatterm +power +pulse use/live/install
+	@$(call set,KFLAVOURS,lks-wks)
+	@$(call add,THE_PACKAGES,pam-limits-desktop)
+	@$(call add,LIVE_LISTS,$(call tags,(base || desktop) && regular))
+	@$(call add,LIVE_LISTS,$(call tags,desktop lakostis))
+	@$(call add,LIVE_LISTS,$(call tags,base nm))
+	@$(call add,LIVE_LISTS,$(call tags,desktop nm))
+	@$(call add,THE_KMODULES,media)
+	@$(call add,DEFAULT_SERVICES_DISABLE,gpm powertop lvm2-lvmpolld)
+	@$(call add,DEFAULT_SERVICES_ENABLE,bluetoothd sshd NetworkManager)
 
 distro/live-rescue: distro/live-icewm +efi
 	@$(call add,LIVE_LISTS,$(call tags,rescue && (fs || live || x11)))
