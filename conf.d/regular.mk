@@ -160,27 +160,15 @@ distro/regular-gnome3: distro/.regular-desktop +plymouth +nm-gtk \
 	@$(call add,LIVE_PACKAGES,chrome-gnome-shell)
 	@$(call add,LIVE_PACKAGES,firefox-gnome_shell_integration)
 
-distro/lakostis-gnome3: distro/.regular-desktop +plymouth +nm-gtk \
-	use/x11/gnome3 use/browser/epiphany use/fonts/ttf/redhat \
-	use/x11/vulkan use/x11/nvidia
+distro/lakostis-gnome3: distro/regular-gnome3 use/x11/vulkan
 	@$(call set,KFLAVOURS,lks-wks)
-	@$(call add,SERVICES_ENABLE,sshd)
+	@$(call add,THE_KMODULES,media)
+	@$(call add,SERVICES_ENABLE,sshd NetworkManager bluetoothd)
 	@$(call add,LIVE_LISTS,$(call tags,desktop lakostis))
-	@$(call add,LIVE_PACKAGES,livecd-gnome3-setup-done)
-	@$(call add,LIVE_PACKAGES,gnome3-regular xcalib templates)
-	@$(call add,LIVE_PACKAGES,gnome-flashback screenpen bolt)
 	@$(call add,LIVE_PACKAGES,cups-pk-helper system-config-printer)
 
-distro/lakostis-gnome3-nonvidia: distro/.regular-desktop +plymouth +nm-gtk \
-	use/x11/gnome3 use/browser/epiphany use/fonts/ttf/redhat \
-	use/x11/vulkan
-	@$(call set,KFLAVOURS,lks-wks)
-	@$(call add,SERVICES_ENABLE,sshd)
-	@$(call add,LIVE_LISTS,$(call tags,desktop lakostis))
-	@$(call add,LIVE_PACKAGES,livecd-gnome3-setup-done)
-	@$(call add,LIVE_PACKAGES,gnome3-regular xcalib templates)
-	@$(call add,LIVE_PACKAGES,gnome-flashback screenpen bolt)
-	@$(call add,LIVE_PACKAGES,cups-pk-helper system-config-printer)
+distro/lakostis-gnome3-nvidia: distro/lakostis-gnome3 \
+	use/x11/nvidia use/nvidia/uvm
 
 distro/regular-lxqt: distro/.regular-desktop mixin/regular-lxqt +plymouth \
 	use/browser/falkon use/x11/sddm
