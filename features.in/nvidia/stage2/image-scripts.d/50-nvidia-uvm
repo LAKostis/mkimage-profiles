@@ -1,0 +1,3 @@
+#!/bin/sh
+
+grep -q nvidia-uvm /etc/modules || echo nvidia-uvm >> /etc/modules
