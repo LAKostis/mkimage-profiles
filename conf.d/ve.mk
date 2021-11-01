@@ -37,11 +37,34 @@ ve/pgsql94: ve/generic
 ve/samba-DC: ve/generic
 	@$(call add,BASE_PACKAGES,task-samba-dc glibc-locales net-tools)
 
-ve/systemd-bare: ve/.apt use/net/networkd +systemd \
+ve/sysvinit-etcnet: ve/base use/net/etcnet \
+        use/control/sudo-su use/repo use/net-ssh
+	@$(call add,BASE_PACKAGES,glibc-gconv-modules glibc-locales tzdata bash-completion iptables curl)
+
+ve/systemd-bare: ve/.apt use/init/systemd \
 	use/control/sudo-su use/repo use/net-ssh
 	@$(call add,BASE_PACKAGES,interactivesystem su)
 
-ve/systemd-base: ve/systemd-bare
-	@$(call add,BASE_PACKAGES,glibc-gconv-modules glibc-locales tzdata)
+ve/systemd-networkd: ve/systemd-bare use/net/networkd/resolved
+	@$(call add,BASE_PACKAGES,apt-scripts)
+	@$(call add,BASE_PACKAGES,systemd-settings-disable-kill-user-processes)
+	@$(call add,BASE_PACKAGES,glibc-gconv-modules glibc-locales tzdata bash-completion iptables curl)
+
+ve/systemd-etcnet: ve/systemd-bare use/net/etcnet
+	@$(call add,BASE_PACKAGES,apt-scripts)
+	@$(call add,BASE_PACKAGES,systemd-settings-disable-kill-user-processes)
+	@$(call add,BASE_PACKAGES,glibc-gconv-modules glibc-locales tzdata bash-completion iptables curl)
+
+ve/lxc-sysvinit-etcnet: ve/sysvinit-etcnet use/net-eth use/lxc-guest
+	@$(call add,BASE_PACKAGES,vim-console)
+	@$(call add,NET_ETH,eth0:dhcp)
+
+ve/lxc-systemd-networkd: ve/systemd-networkd use/net-eth/networkd use/lxc-guest
+	@$(call add,BASE_PACKAGES,vim-console)
+	@$(call add,NET_ETH,eth0:dhcp)
+
+ve/lxc-systemd-etcnet: ve/systemd-etcnet use/net-eth use/lxc-guest
+	@$(call add,BASE_PACKAGES,vim-console)
+	@$(call add,NET_ETH,eth0:dhcp)
 
 endif

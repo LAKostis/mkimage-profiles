@@ -8,25 +8,31 @@ strace
 anacron
 os-prober
 make-initrd-lvm
-dhcp-client
 shadow-change
+dhcpcd
+test-audio
+
+telnet
+b43-fwcutter
+#bcm43xx-fwcutter
 
 pam-limits-desktop
 bash-completion
 mc-full
 inxi
+glxinfo
 fvwm-
 fvwm-full-
 #kernel-modules-staging-@KERNEL_MOD@
 altlinux-freedesktop-menu-shallow-menu
+altlinux-freedesktop-menu-mate-like-menu@!riscv64
 altlinux-freedesktop-menu-icon-theme-default
-installer-distro-simply-linux-stage3
 #altlinux-freedesktop-menu-common
 #branding-@BRANDING@-xfce-settings
 #branding-@BRANDING@-system-settings
 #branding-@BRANDING@-menu
 branding-simply-linux-backgrounds-vladstudio
-branding-simply-linux-backgrounds8
+branding-simply-linux-backgrounds9
 #docs-linux_intro
 fonts-ttf-google-droid-.*
 fonts-ttf-ubuntu-font-family
@@ -36,43 +42,40 @@ gnome-icon-theme
 gnome-icon-theme-symbolic
 gnome-keyring
 gcr
+pinentry-gnome3
+pinentry-qt5-
 gparted
 #tango-icon-theme
 #tango-icon-theme-extras
 #ntfsprogs-
 driconf-
 aspell-ru-lebedev
+vulkan-amdgpu@X86
 
-kde4libs-
-kde-common-
-kde4-menu-common-
-kde4-menu-resources-
-
-# browser
-chromium
-chromium-gnome
-ppapi-plugin-adobe-flash
-
-xarchiver
+mate-file-archiver
 unzip
 unrar
 unarj
 p7zip-standalone
 dbus-tools-gui
-brasero
-medit
+xfburn
+mousepad
 mate-calc
 synaptic
 synaptic-usermode
 apt-indicator
-gksu
+gnome-software@!riscv64
+gnome-software-disable-updates@!riscv64
+
+alt-rootfs-installer
+beesu
 cups
 cups-filters
 cups-pdf
 avahi-daemon
 blueberry
 update-kernel
-printer-drivers-base
+printer-drivers-base@!riscv64
 udev-extras
 hostname-hook-hosts
 libnss-mdns
@@ -92,7 +95,7 @@ gst-plugins-bad1.0
 gst-plugins-ugly1.0
 
 fdisk
-cpufreq-simple
+cpufreq-simple@X86
 attr
 rfkill
 cifs-utils
@@ -103,27 +106,32 @@ cifs-utils
 #gdm2.20-help
 lightdm-gtk-greeter
 #gtk3-themes-xfce4
-gnome-themes-standard-data
+gnome-themes-extra-data
 
 # Alterator
 alterator-browser-qt
 alterator-standalone
+alterator-notes
 
 alterator-auth
 alterator-datetime
+alterator-net-eth
 alterator-net-pppoe
-alterator-net-pptp
 alterator-net-openvpn
+alterator-net-pptp
 alterator-packages
 alterator-pkg
 alterator-services
 alterator-sysconfig
+alterator-update-kernel
 alterator-users
+alterator-root
 alterator-x11
 alterator-xkb
 
 #additional
-tracker
+mate-search-tool
+libmate-desktop
 yelp
 rosa-imagewriter
 
@@ -140,43 +148,34 @@ alterator-printers
 #krb5-ticket-watcher-
 apt-repo
 #krb5-ticket-watcher-
-rekonq-
+rekonq-@X86
+rekonq-@ARM
 xdg-user-dirs
 x-cursor-theme-jimmac
 
-plymouth
+plymouth@!E2K
 #branding-simply-linux-bootsplash
 
 # Office
-java-1.8.0-openjdk
-LibreOffice-still
-LibreOffice-still-gnome
-LibreOffice-still-langpack-ru
-LibreOffice-still-langpack-uk
-LibreOffice-still-langpack-es
-LibreOffice-still-langpack-kk
-LibreOffice-still-langpack-pt-BR
+java-1.8.0-openjdk@!mipsel
 atril-gtk
 atril-gtk-djvu
-atril-gtk-dvi
 atril-gtk-pixbuf
 atril-gtk-xps
-stardict-gtk
+stardict
 stardict-mueller7
-
-# *cloud
-nextcloud-client
+stardict-quick_en-ru@!riscv64
+stardict-quick_ru-en@!riscv64
 
 # For work as guest in the virtualbox
-virtualbox-guest-additions
-xorg-drv-vboxvideo
+virtualbox-guest-additions@X86
+xorg-drv-vboxvideo@X86
 
 #For ALT domain
 settime-rfc867
 
 # Dirty hackaround for #28753
 alsa-set-initial-options
-udev-alsa
 
 # Console fonts workaround
 vconsole-setup-kludge
@@ -188,7 +187,7 @@ gtk2-ssh-askpass
 systemd-analyze
 
 # Enable left mouse button by tapping by default
-xorg-conf-libinput-touchpad
+xorg-conf-libinput-touchpad@X86
 
 # Otherwise hunspell-ru  will be replace by it
 # during dist-upgrade
@@ -198,3 +197,8 @@ hunspell-ru-lebedev
 # So explicitly add it for both live and install
 # versions.
 xkill
+
+fwupd@x86_64
+
+#https://bugzilla.altlinux.org/39067
+eepm

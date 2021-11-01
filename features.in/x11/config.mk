@@ -8,29 +8,48 @@
 use/x11:
 	@$(call add_feature)
 	@$(call add,THE_LISTS,$(call tags,base xorg))
-	@$(call add,THE_KMODULES,drm)	# required by recent nvidia.ko as well
-	@$(call add,THE_KMODULES,$$(NVIDIA_KMODULES) $$(RADEON_KMODULES))
-	@$(call add,THE_PACKAGES,$$(NVIDIA_PACKAGES) $$(RADEON_PACKAGES))
+
+use/x11/xorg:: use/x11 use/x11/armsoc; @:
 
 # x86: free drivers for various hardware (might lack acceleration)
-ifeq (,$(filter-out i586 x86_64,$(ARCH)))
-use/x11/xorg: use/x11/intel use/x11/nouveau use/x11/amdgpu use/x11/radeon
+ifeq (,$(filter-out i586 x86_64 aarch64,$(ARCH)))
+use/x11/xorg:: use/x11/intel use/x11/nouveau use/x11/amdgpu use/x11/radeon \
+	use/drm/full
 	@$(call add,THE_LISTS,$(call tags,desktop xorg))
-else
-use/x11/xorg: use/x11; @:
 endif
 
 # both free and excellent
 # use modesetting + glamor instead of DDX driver
+ifeq (,$(filter-out i586 x86_64,$(ARCH)))
 use/x11/intel: use/x11
 	@$(call add,THE_PACKAGES,xorg-drv-modesetting)
 	@$(call add,THE_PACKAGES,mesa-dri-drivers)	### #25044
+else
+use/x11/intel: use/x11; @:
+endif
 
 ifeq (,$(filter-out armh aarch64,$(ARCH)))
-use/x11/armsoc: use/x11 use/firmware
+use/x11/armsoc: use/x11 use/firmware use/drm
 	@$(call add,THE_PACKAGES,xorg-dri-armsoc)
 else
 use/x11/armsoc: use/x11; @:
+endif
+
+ifeq (,$(filter-out e2k%,$(ARCH)))
+# e2k: mostly radeon, 101 got mga2/vivante
+use/x11/xorg:: use/x11/radeon use/x11/amdgpu use/x11/nouveau use/drm/full
+
+ifeq (,$(filter-out e2kv4,$(ARCH)))
+use/x11/mga2: use/x11 use/drm
+	@$(call add,THE_PACKAGES,xorg-drv-mga2)
+else
+use/x11/mga2: use/x11; @:
+endif
+
+use/x11/smi: use/x11 use/drm
+	@$(call add,THE_PACKAGES,xorg-drv-smi)
+else
+use/x11/smi: use/x11; @:
 endif
 
 # for those cases when no 3D means no use at all
@@ -58,24 +77,25 @@ use/x11/vulkan: use/x11/intel use/x11/amdgpu
 	@$(call add,THE_PACKAGES,vulkan-radeon vulkan-intel)
 
 # sometimes broken with current xorg-server
-use/x11/nvidia: use/x11
-	@$(call set,NVIDIA_KMODULES,nvidia)
+use/x11/nvidia:: use/x11/nouveau; @:
+use/x11/nvidia/optimus:: use/x11/nvidia; @:
+
+ifeq (,$(filter-out i586 x86_64 aarch64,$(ARCH)))
+use/x11/nvidia:: use/drm/nvidia
 	@$(call set,NVIDIA_PACKAGES,nvidia-settings nvidia-xconfig)
 
-use/x11/nvidia/optimus: use/x11/nvidia
-	@$(call add,THE_KMODULES,bbswitch)
-	@$(call add,THE_PACKAGES,bumblebee primus)
+use/x11/nvidia/optimus:: use/drm/nvidia/optimus
+	@$(call add,NVIDIA_PACKAGES,bumblebee)
+endif
 
 use/x11/wacom: use/x11
 	@$(call add,THE_PACKAGES,xorg-drv-wacom)
-#ifeq (,$(filter-out x86_64 i586,$(ARCH)))
-#	@$(call add,THE_PACKAGES,xorg-drv-wizardpen)
-#endif
 
 ## display managers
-use/x11/dm: use/x11-autostart
+use/x11/dm: use/x11-autostart use/pkgpriorities
 	@$(call try,THE_DISPLAY_MANAGER,xdm)
 	@$(call add,THE_PACKAGES,$$(THE_DISPLAY_MANAGER))
+	@$(call add,PINNED_PACKAGES,$$(THE_DISPLAY_MANAGER))
 	@$(call add,DEFAULT_SERVICES_ENABLE,$$(THE_DM_SERVICE))
 
 use/x11/lightdm/gtk use/x11/lightdm/slick \
@@ -84,9 +104,16 @@ use/x11/lightdm/gtk use/x11/lightdm/slick \
 	@$(call set,THE_DISPLAY_MANAGER,lightdm-$*-greeter)
 	@$(call set,THE_DM_SERVICE,lightdm)
 
-use/x11/lxdm use/x11/gdm2.20 use/x11/sddm: \
+use/x11/lxdm use/x11/gdm2.20 use/x11/sddm \
+	use/x11/kde5-display-manager-sddm: \
 	use/x11/%: use/x11/dm
 	@$(call set,THE_DISPLAY_MANAGER,$*)
+
+use/x11/kde5-display-manager-lightdm: \
+	use/x11/%: use/x11/dm
+	@$(call set,THE_DISPLAY_MANAGER,$*)
+	@$(call set,THE_DM_SERVICE,lightdm)
+	@$(call add,PINNED_PACKAGES,kde5-display-manager-sddm:Extra)
 
 use/x11/gdm: \
 	use/x11/%: use/x11/dm
@@ -108,7 +135,7 @@ use/x11/gtk/nm: use/net/nm
 	@$(call add,THE_LISTS,$(call tags,desktop nm))
 
 use/x11/xfce: use/x11
-	@$(call add,THE_PACKAGES,xfce4-regular)
+	@$(call add,THE_PACKAGES,xfce4-minimal xfce4-default)
 	@$(call add,IM_PACKAGES,imsettings-xfce)
 
 use/x11/xfce/full: use/x11/xfce +pulse
@@ -118,8 +145,11 @@ use/x11/cinnamon: use/x11/xorg +pulse
 	@$(call add,THE_LISTS,$(call tags,cinnamon desktop))
 	@$(call add,IM_PACKAGES,imsettings-cinnamon)
 
+use/x11/deepin: use/x11/xorg +pulse
+	@$(call add,THE_LISTS,$(call tags,deepin desktop))
+
 use/x11/gnome3: use/x11/xorg use/x11/gdm +pulse
-	@$(call add,THE_PACKAGES,gnome3-default)
+	@$(call add,THE_PACKAGES,gnome3-minimal gnome3-default)
 	@$(call add,IM_PACKAGES,imsettings-gsettings)
 
 use/x11/enlightenment: use/x11 use/net/connman +pulse
@@ -136,17 +166,11 @@ use/x11/lxqt: use/x11 +pulse
 use/x11/fvwm: use/x11
 	@$(call add,THE_LISTS,$(call tags,fvwm desktop))
 
-use/x11/sugar: use/x11
-	@$(call add,THE_LISTS,$(call tags,sugar desktop))
-
 use/x11/wmaker: use/x11
 	@$(call add,THE_LISTS,$(call tags,wmaker desktop))
 
 use/x11/gnustep: use/x11
 	@$(call add,THE_LISTS,$(call tags,gnustep desktop))
-
-use/x11/xmonad: use/x11
-	@$(call add,THE_LISTS,$(call tags,xmonad desktop))
 
 use/x11/mate: use/x11 +pulse
 	@$(call add,THE_LISTS,$(call tags,mate desktop))
@@ -159,4 +183,4 @@ use/x11/leechcraft: use/x11
 	@$(call add,THE_PACKAGES,leechcraft)
 
 use/x11/kde5: use/x11/xorg use/x11/kde/synaptic
-	@$(call add,THE_PACKAGES,kde5-maxi)
+	@$(call add,THE_PACKAGES,kde5-big)

@@ -1,9 +1,5 @@
 easytag
-#gnome-mplayer
-#gecko-mediaplayer #it needed gnome-mplayer
-smplayer
-mplayer
 audacious
 audacious-plugins
-libva-driver-intel
-libva-driver-vdpau
+libva-driver-intel@X86
+libva-intel-media-driver@x86_64

@@ -1,11 +1,23 @@
 # "1" is not a typo
-use/stage2: sub/stage1
+use/stage2:: sub/stage1
 	@$(call add_feature)
 	@$(call add,STAGE1_PACKAGES,make-initrd file iproute2)
-	@$(call add,STAGE1_PACKAGES,make-initrd-propagator propagator)
 	@$(call add,STAGE1_MODLISTS,$$(FEATURES))
 	@$(call xport,STAGE1_PACKAGES)
 	@$(call xport,STAGE1_KCONFIG)
+	@$(call set,GLOBAL_HSH_PROC,1)
+
+ifneq (,$(filter-out e2k%,$(ARCH)))
+ifeq (,$(BRANCH))
+use/stage2:: use/initrd-bootchain; @:
+else ifneq (,$(filter-out p10 p9 p8 p7 p6 p5,$(BRANCH)))
+use/stage2:: use/initrd-bootchain; @:
+else
+use/stage2:: use/initrd-propagator; @:
+endif
+else
+use/stage2:: use/initrd-propagator; @:
+endif
 
 # building blocks for propagator's module cove
 use/stage2/ata use/stage2/drm use/stage2/fs use/stage2/hid use/stage2/md \
@@ -15,13 +27,25 @@ use/stage2/ata use/stage2/drm use/stage2/fs use/stage2/hid use/stage2/md \
 	use/stage2/%: use/stage2
 	@$(call add,STAGE1_MODLISTS,stage2-$*)
 
-use/stage2/kms: use/stage2/drm
-	@$(call add,STAGE1_KMODULES_REGEXP,drm.*)
+use/stage2/sbc: use/stage2
+ifeq (,$(filter-out aarch64,$(ARCH)))
+	@$(call add,STAGE1_MODLISTS,stage2-sbc-aarch64)
+endif
+	@:
+
+use/stage2/kms: use/stage2/drm use/drm/stage2/full; @:
+
+use/stage2/kms/nvidia: use/stage2/kms \
+	use/drm/stage2/nvidia; @:
 
 # install mount.cifs to stage1
 # NB: there's builtin nfsmount there, no reason for nfs-utils
 use/stage2/cifs: use/stage2/net-cifs
 	@$(call add,STAGE1_PACKAGES,cifs-utils)
+
+# grub submenu 'Network installation'
+use/stage2/net-install: use/stage2/net use/stage2/cifs \
+	use/stage2/net-nfs use/grub/netinstall.cfg; @:
 
 # eth0 instead of enp0s3
 use/stage2/net-eth: use/stage2

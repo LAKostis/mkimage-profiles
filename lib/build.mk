@@ -47,6 +47,7 @@ endif
 
 
 # to be passed into distcfg.mk; suggestions are welcome
+ifneq (,$(filter-out $(DIRECT_TARGETS),$(MAKECMDGOALS)))
 IMAGEDIR ?= $(shell \
 	if [ -d "$$HOME/out" -a -w "$$HOME/out" ]; then \
 		echo "$$HOME/out"; \
@@ -55,12 +56,22 @@ IMAGEDIR ?= $(shell \
 		mkdir -p "$$dir" && echo "$$dir" || echo "/tmp"; \
 	fi; \
 )
+endif
 
 LOGDIR ?= $(wildcard $(IMAGEDIR))
 
+make-aptbox: ; @:
+ifneq (0,$(CHECK))
+	@mkdir -p $(BUILDDIR)/.work/pkgbox; \
+	mkdir -p $(BUILDDIR)/.work/.cache; \
+	mkdir -p $(BUILDDIR)/.work/.out; \
+	APTCONF=$(wildcard $(APTCONF)); \
+	mkaptbox --without-stuff --target=$(ARCH) $${APTCONF:+--apt-config=$$APTCONF} -- $(BUILDDIR)/.work/pkgbox
+endif
+
 # actual build starter
 # NB: our output MUST go into stderr to escape POSTPROC
-build-image: profile/populate
+build-image: make-aptbox profile/populate
 	@{ \
 	if [ -n "$(CHECK)" ]; then \
 		echo "$(TIME) skipping actual image build (CHECK is set)"; \
@@ -103,7 +114,6 @@ build-image: profile/populate
 		df -P $(BUILDDIR) | awk 'END { if ($$4 < $(LOWSPACE)) \
 			{ print "NB: low space on "$$6" ("$$5" used)"}}'; \
 	fi; \
-	if [ -n "$(AUTOCLEAN)" -a $$RETVAL = 0 ]; then $(MAKE) distclean; fi; \
 	if [ -n "$(BELL)" ]; then echo -ne '\a'; fi; \
 	exit $$RETVAL; \
 	} >&2

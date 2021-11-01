@@ -1,0 +1,15 @@
+#!/bin/sh
+# postprocess grub configuration
+# to add rescue image hash, if any
+# (for propagator in forensic mode)
+
+cd "$WORKDIR"
+cfg='boot/grub/grub.cfg'
+
+[ -f "$cfg" ] || exit 0
+
+find -maxdepth 1 -type f -name rescue \
+| while read image; do
+	rescue_hash="$(sha256sum -b "$image" | cut -f1 -d' ')"
+	sed -i "s,@rescue_hash@,$rescue_hash," $cfg
+done

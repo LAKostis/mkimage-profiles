@@ -11,7 +11,6 @@ xfconf-utils
 xfce4-power-manager
 thunar
 xfce4-terminal
-libexo
 xfce4-default
 #xfce4-full
 
@@ -23,17 +22,22 @@ thunar-volman-plugin
 thunar-archive-plugin
 
 #screensaver
-xfce4-screensaver
+xfce4-screensaver@X86
+desktop-screensaver-modules-xscreensaver@X86
+desktop-screensaver-modules-xscreensaver-gl@X86
+
+light-locker@!X86
+light-locker-settings@!X86
+
 
 #samba
 thunar-shares-plugin
 
 xfwm4-themes
 #xfce4-dict
-orage
 xfce4-screenshooter
 xfce4-clipman-plugin
-xfce4-cpufreq-plugin
+xfce4-cpufreq-plugin@!riscv64
 #xfce4-globalmenu-plugin
 xfce4-xkb-plugin
 xfce4-timer-plugin

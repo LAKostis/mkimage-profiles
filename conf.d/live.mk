@@ -1,21 +1,44 @@
 # live images
 ifeq (distro,$(IMAGE_CLASS))
 
+ifeq (,$(filter-out i586 x86_64,$(ARCH)))
 distro/dos: distro/.boot use/dos use/syslinux/ui/menu
 	@$(call set,RELNAME,ALT FreeDOS)
 
+distro/syslinux: distro/.boot \
+	use/syslinux/localboot.cfg use/syslinux/ui/vesamenu use/hdt
+	@$(call set,BOOTLOADER,isolinux)
+endif
+
+ifeq (,$(filter-out i586 x86_64 aarch64 ppc64le riscv64,$(ARCH)))
+distro/grub: distro/.boot use/grub use/hdt +efi \
+	use/grub/localboot_bios.cfg use/grub/sdab_bios.cfg; @:
+ifeq (,$(filter-out i586 x86_64,$(ARCH)))
+	@$(call set,BOOTLOADER,grubpcboot)
+endif
+
+distro/grub-ui: distro/grub use/branding use/grub/ui/gfxboot; @:
+ifeq (,$(filter-out i586 x86_64 aarch64,$(ARCH)))
+	@$(call add,STAGE1_BRANDING,bootloader)
+endif
+
+distro/grub-net-install: distro/.base use/stage2/net-install +efi \
+	use/firmware use/grub/sdab_bios.cfg
+ifeq (,$(filter-out i586 x86_64,$(ARCH)))
+	@$(call set,BOOTLOADER,grubpcboot)
+endif
+	@$(call set,KFLAVOURS,un-def std-def)
+endif
+
 distro/rescue: distro/.base use/rescue use/syslinux/ui/menu use/stage2/cifs \
-	use/efi/signed use/efi/refind use/efi/shell; @:
+	use/efi/shell +efi; @:
 
 distro/rescue-remote: distro/.base use/rescue/base use/stage2/net-eth
 	@$(call set,SYSLINUX_CFG,rescue_remote)
 	@$(call set,SYSLINUX_DIRECT,1)
 	@$(call add,RESCUE_PACKAGES,livecd-net-eth)
 
-distro/syslinux: distro/.boot \
-	use/syslinux/localboot.cfg use/syslinux/ui/vesamenu use/hdt; @:
-
-distro/.live-base: distro/.base use/live/base use/power/acpi/button; @:
+distro/.live-base: distro/.base use/live/base; @:
 distro/.live-x11: distro/.live-base use/live/x11; @:
 
 distro/.live-desktop: distro/.base +live use/live/install use/stage2/net-eth \
@@ -24,7 +47,7 @@ distro/.live-desktop-ru: distro/.live-desktop use/live/ru; @:
 
 distro/.live-kiosk: distro/.base use/live/base use/live/autologin \
 	use/syslinux/timeout/1 use/cleanup use/stage2/net-eth \
-	use/fonts/otf/adobe +power
+	use/fonts/otf/adobe
 	@$(call add,CLEANUP_PACKAGES,'alterator*' 'guile*' 'vim-common')
 	@$(call set,SYSLINUX_UI,none)
 	@$(call set,SYSLINUX_CFG,live)
@@ -106,8 +129,7 @@ distro/live-webkiosk-mini: distro/.live-webkiosk-gtk \
 	@$(call add,LIVE_PACKAGES,livecd-webkiosk-firefox)
 
 # NB: flash/java plugins are predictable security holes
-distro/live-webkiosk-flash: distro/live-webkiosk-mini use/plymouth/live \
-	use/browser/plugin/flash use/browser/plugin/java +vmguest; @:
+distro/live-webkiosk-flash: distro/live-webkiosk-mini use/plymouth/live +vmguest; @:
 
 distro/live-webkiosk: distro/live-webkiosk-mini use/live/desktop; @:
 
@@ -156,10 +178,10 @@ distro/live-gimp: distro/live-icewm use/live/ru
 	@$(call add,LIVE_PACKAGES,design-graphics-sisyphus2)
 
 # NB: use/browser won't do as it provides a *single* browser ATM
-distro/live-privacy: distro/.base +power +efi +systemd +vmguest \
+distro/live-privacy: distro/.base +efi +systemd +vmguest \
 	use/live/base use/live/privacy use/live/ru \
 	use/x11/xorg use/x11/lightdm/gtk use/x11/mate use/x11-autologin \
-	use/browser/firefox/esr use/browser/firefox/i18n use/sound \
+	use/browser/firefox/esr use/browser/firefox use/sound \
 	use/fonts/otf/adobe use/fonts/otf/mozilla \
 	use/fonts/ttf/google use/fonts/ttf/redhat
 	@$(call set,KFLAVOURS,un-def)

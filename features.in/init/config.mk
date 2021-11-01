@@ -12,7 +12,13 @@ use/init: use/pkgpriorities
 # the wrong syslogd-daemon provider already
 use/init/sysv: use/init
 	@$(call set,INIT_TYPE,sysvinit)
-	@$(call add,BASE_PACKAGES,rsyslog-classic)
+	@$(call add,THE_PACKAGES,rsyslog-classic startup)
+	@$(call add,THE_PACKAGES,udev-rule-generator)
+	@$(call add,DEFAULT_SERVICES_ENABLE,udevd-final)
+	@$(call add,PINNED_PACKAGES,rsyslog-classic)
+ifeq (,$(filter-out x86_64 aarch64,$(ARCH)))
+	@$(call add,THE_PACKAGES,mount-efivars)
+endif
 
 use/init/sysv/polkit: use/init/sysv
 	@$(call add,THE_PACKAGES,polkit-sysvinit)
@@ -20,7 +26,6 @@ use/init/sysv/polkit: use/init/sysv
 ### i-f should be dropped as soon as rootfs scripts are effective there
 use/init/systemd: use/init
 	@$(call set,INIT_TYPE,systemd)
-	@$(call add,INSTALL2_PACKAGES,installer-feature-journald-tty)
 
 use/init/systemd/full: use/init/systemd
 	@$(call add,THE_PACKAGES,chkconfig)
@@ -47,7 +52,7 @@ use/init/systemd/settings/disable-dumpcore \
 	use/init/systemd/settings/%: use/init/systemd
 	@$(call add,THE_PACKAGES,systemd-settings-$*)
 
-use/init/systemd/settings/optimal: use/init/systemd/full \
+use/init/systemd/settings/optimal: use/init/systemd \
 	use/init/systemd/settings/disable-dumpcore \
 	use/init/systemd/settings/enable-log-to-tty12 \
 	use/init/systemd/settings/enable-showstatus; @:

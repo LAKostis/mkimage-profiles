@@ -1,8 +1,10 @@
 +nm: use/net/nm; @:
++nm-native: use/net/nm/native; @:
 
-use/net: use/services
+use/net: use/services use/pkgpriorities
 	@$(call add_feature)
 	@$(call add,THE_PACKAGES,$$(THE_NET_SUBSYS))
+	@$(call add,PINNED_PACKAGES,$$(THE_NET_SUBSYS))
 	@$(call set,THE_NET_SUBSYS,network-config-subsystem)
 
 use/net/etcnet: use/net
@@ -20,6 +22,11 @@ use/net/nm: use/net
 	@$(call add,DEFAULT_SERVICES_ENABLE,network) # need for NM?
 	@$(call add,DEFAULT_SERVICES_ENABLE,NetworkManager ModemManager)
 	@$(call add,DEFAULT_SERVICES_ENABLE,livecd-save-nfs) # keep interface up
+	@$(call xport,NM_native)
+
+# use NetworkManager(native)
+use/net/nm/native:
+	@$(call set,NM_Native,yes)
 
 # NOT recommended unless you know what you're doing
 # (e.g. dnsmasq can win a race against dhcpcd)
@@ -36,3 +43,12 @@ use/net/connman: use/net
 use/net/networkd: use/net
 	@$(call set,THE_NET_SUBSYS,systemd-networkd)
 	@$(call add,DEFAULT_SERVICES_ENABLE,systemd-networkd)
+	@$(call xport,SYSTEMD_RESOLVED)
+
+use/net/networkd/resolved: use/net/networkd
+	@$(call add,DEFAULT_SERVICES_ENABLE,systemd-resolved)
+	@$(call set,SYSTEMD_RESOLVED,yes)
+
+use/net/networkd/resolved-stub: use/net/networkd
+	@$(call add,DEFAULT_SERVICES_ENABLE,systemd-resolved)
+	@$(call set,SYSTEMD_RESOLVED,stub)

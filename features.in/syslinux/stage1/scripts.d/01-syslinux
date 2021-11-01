@@ -3,16 +3,42 @@
 # copy modules; see also this feature's generate.mk
 
 MODDIR="/usr/lib/syslinux"
-CFG="$GLOBAL_BOOTLOADER.cfg"
 
-mkdir -p "$WORKDIR/syslinux"
+case "$GLOBAL_BOOTLOADER" in
+	isolinux|syslinux) CFG="$GLOBAL_BOOTLOADER.cfg";;
+	*) CFG="isolinux.cfg";;
+esac
+
 cd "$WORKDIR/syslinux"
+
+# number ordering sponsored by shell's pathname expansion
+grep -hv '^#' .in/[0-9][0-9]*.cfg > "$CFG"
+
+# there should be DEFAULT directive there (at least for alterator-netinst)
+if [ -n "$GLOBAL_SYSLINUX_DEFAULT" ]; then
+	if [ -n "$(grep -i "^label $GLOBAL_SYSLINUX_DEFAULT" "$CFG")" ]; then
+		DEFAULT="$GLOBAL_SYSLINUX_DEFAULT"
+		sed -i '/^default/d'
+		echo "default $DEFAULT" >> "$CFG"
+	else
+		echo "error: $GLOBAL_SYSLINUX_DEFAULT missing in $CFG" >&2
+		exit 1
+	fi
+fi
+if ! grep -i '^default' "$CFG"; then
+	DEFAULT="$(grep -i '^label ' "$CFG" | head -1 | cut -f2 -d' ')"
+	if [ -n "$DEFAULT" ]; then
+		echo "default $DEFAULT" >> "$CFG"
+	else
+		echo "error: no DEFAULT or UI directive and cannot guess" >&2
+		exit 1
+	fi
+fi
 
 # validate just in case (see also stage1 Makefile)
 case "$GLOBAL_BOOTLOADER" in
-	isolinux|syslinux|ieee1275boot|grubaa64boot) ;;
-	*) echo "error: weird GLOBAL_BOOTLOADER: \`$GLOBAL_BOOTLOADER'" >&2;
-	   exit 1;;
+	isolinux|syslinux) ;;
+	*) exit 0;;
 esac
 
 # copy extra files, if any
@@ -28,20 +54,6 @@ if [ -n "$SYSLINUX_MODULES" ]; then
 		if [ "$modules" == "prompt" ]; then continue; fi
 		cp -a $MODDIR/$module.c?? . || rm .in/[0-9][0-9]$module.cfg
 	done
-fi
-
-# number ordering sponsored by shell's pathname expansion
-grep -hv '^#' .in/[0-9][0-9]*.cfg > "$CFG"
-
-# there should be DEFAULT directive there (at least for alterator-netinst)
-if ! grep -i '^default' "$CFG"; then
-	DEFAULT="$(grep -i '^label ' "$CFG" | head -1 | cut -f2 -d' ')"
-	if [ -n "$DEFAULT" ]; then
-		echo "default $DEFAULT" >> "$CFG"
-	else
-		echo "error: no DEFAULT or UI directive and cannot guess" >&2
-		exit 1
-	fi
 fi
 
 # snippets are not going into the actual image

@@ -1,7 +1,7 @@
 = mkimage-profiles =
-Michael Shigorin <mike@altlinux.org>
-:DocVersion: v1.0
-:DocDate: Jun 2013
+Michael Shigorin <mike@altlinux.org>, Anton Midyukov <antohami@altlinux.org>
+:DocVersion: v1.1
+:DocDate: Aug 2021
 
 = Введение =
 
@@ -37,6 +37,8 @@ mkimage-profiles, или _m-p_ — результат осмысления и о
 include::../README[]
 
 include::params.txt[]
+
+include::branch.txt[]
 
 include::features.txt[]
 
@@ -81,3 +83,5 @@ include::vm.txt[]
 include::qemu.txt[]
 
 include::archdep.txt[]
+
+include::metadep.txt[]

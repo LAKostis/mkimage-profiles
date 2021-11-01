@@ -41,8 +41,8 @@ IMAGE_VERSION := -$(DISTRO_VERSION)
 IMAGE_VER_LINK := $(IMAGE_NAME)$(IMAGE_VERSION)-latest-$(ARCH).$(IMAGE_TYPE)
 endif
 
-IMAGE_OUTFILE  := \
-	$(IMAGE_NAME)$(IMAGE_VERSION)-$(STATUS)$(DATE)-$(ARCH).$(IMAGE_TYPE)
+IMAGE_OUTNAME  := $(IMAGE_NAME)$(IMAGE_VERSION)-$(STATUS)$(DATE)-$(ARCH)
+IMAGE_OUTFILE  := $(IMAGE_OUTNAME).$(IMAGE_TYPE)
 IMAGE_OUTDIR   := $(IMAGEDIR)$(IMAGE_SORTDIR:%=/%)
 IMAGE_OUTPATH  := $(IMAGE_OUTDIR)/$(IMAGE_OUTFILE)
 IMAGE_RELPATH  := $(IMAGE_SORTDIR:%=%/)$(IMAGE_OUTFILE)
@@ -65,7 +65,7 @@ GLOBAL_HSH_APT_CONFIG := $(wildcard $(APTCONF))
 
 # take the latter part for complex-specified subprofiles like stage2@live;
 # care to exclude non-directories holding no makefiles like rootfs
-SUBDIRS = $(sort $(dir $(wildcard $(addsuffix /Makefile,$(SUBPROFILE_DIRS)))))
+SUBDIRS = $(dir $(wildcard $(addsuffix /Makefile,$(SUBPROFILE_DIRS))))
 
 # the lib/build-*.mk comes from features.in/build-*/lib
 include $(sort $(wildcard lib/*.mk))
@@ -79,7 +79,7 @@ copy-tree: $(SAVE_PROFILE:%=save-profile)
 
 save-profile:
 	@mkdir -p files/.disk; \
-	git archive --prefix=mkimage-profile/ HEAD \
+	git archive --prefix=mkimage-profile/ HEAD ":!.work" \
 	| gzip -9 > files/.disk/profile.tgz
 
 .PHONY: imagedir postprocess debug
@@ -95,14 +95,19 @@ postprocess: | $(addprefix postprocess-,$(sort $(POSTPROCESS_TARGETS)))
 		echo "** error: $(IMAGE_OUTPATH) missing" >&2; \
 		exit 1; \
 	fi; \
+	if [ -n "$(VM_SAVE_TARBALL)" ]; then \
+		echo "** tarball saved: $(IMAGE_OUTPATH)/$(IMAGE_OUTNAME).$(VM_SAVE_TARBALL)" >&2; \
+	fi; \
 	echo "** image: $(IMAGE_OUTPATH) [$$OUTSIZE]" >&2 && \
 	echo "IMAGE_OUTPATH = $(IMAGE_OUTPATH)" && \
 	echo "IMAGE_OUTFILE = $(IMAGE_OUTFILE)" && \
-	ln -sf "$(IMAGE_RELPATH)" "$(IMAGE_LINKPATH)" && \
-	ln -sf "$(IMAGE_RELDIR)" "$(OUT_LINK)" && \
-	ln -sf "$(IMAGE_LINK)" "$(IMAGEDIR)/$(CURRENT_LINK).$(IMAGE_TYPE)"; \
-	if [ -n "$(IMAGE_VER_LINK)" ]; then \
-		ln -sf "$(IMAGE_RELPATH)" "$(IMAGEDIR)/$(IMAGE_VER_LINK)"; \
+	if [ ! -n "$(NO_SYMLINK)" ]; then \
+		ln -sf "$(IMAGE_RELPATH)" "$(IMAGE_LINKPATH)" && \
+		ln -sf "$(IMAGE_RELDIR)" "$(OUT_LINK)" && \
+		ln -sf "$(IMAGE_LINK)" "$(IMAGEDIR)/$(CURRENT_LINK).$(IMAGE_TYPE)"; \
+		if [ -n "$(IMAGE_VER_LINK)" ]; then \
+			ln -sf "$(IMAGE_RELPATH)" "$(IMAGEDIR)/$(IMAGE_VER_LINK)"; \
+		fi; \
 	fi; \
 	if [ -n "$(GLOBAL_DEBUG)" ]; then \
 		mkdir -p "$(LOGDIR)"; \

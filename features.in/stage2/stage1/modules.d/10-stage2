@@ -46,6 +46,7 @@ cciss.ko
 cdrom.ko
 ch.ko
 cifs.ko
+cmac.ko.
 DAC960.ko
 dc395x.ko
 de4x5.ko
@@ -62,7 +63,7 @@ ehci-hcd.ko
 ehci_marvell.ko
 epic100.ko
 eql.ko
-ext2
+ext2.ko
 ext3.ko
 ext4.ko
 fat.ko

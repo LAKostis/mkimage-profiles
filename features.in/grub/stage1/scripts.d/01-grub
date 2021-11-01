@@ -1,0 +1,88 @@
+#!/bin/sh
+# gather grub configuration from snippets;
+# copy modules; see also this feature's generate.mk
+
+CFG="$WORKDIR/boot/grub/grub.cfg"
+
+if [ "$GLOBAL_EFI_BOOTLOADER" != 'grub-efi' ]; then
+	case "$GLOBAL_BOOTLOADER" in
+		ieee1275boot|grubpcboot) ;;
+		*) rm -fr "$WORKDIR/boot"
+		   exit 0;;
+	esac
+fi
+
+cd "$WORKDIR/boot/grub"
+
+# copy extra files, if any
+GRUB_FILES="$(cat .in/grub.list)"
+if [ -n "${GRUB_FILES% }" ]; then
+	cp -a $GRUB_FILES .
+fi
+
+# number ordering sponsored by shell's pathname expansion
+grep -hv '^#' $(find .in/*.cfg) > "$CFG"
+
+# there should be DEFAULT directive there (at least for alterator-netinst)
+default_change() {
+local CFG=$1
+if [ -n "$GLOBAL_GRUB_DEFAULT" ]; then
+	if [ -n "$(grep -i "$GLOBAL_GRUB_DEFAULT" "$CFG")" ]; then
+		DEFAULT="$GLOBAL_GRUB_DEFAULT"
+	else
+		echo "error: $GLOBAL_GRUB_DEFAULT missing in $CFG" >&2
+		exit 1
+	fi
+else
+	grep -i '\-\-id ' "$CFG" | grep 'linux' && DEFAULT=linux
+fi
+sed -i "s/@default_id@/$DEFAULT/" "$CFG"
+}
+
+default_change "$CFG"
+
+# snippets are not going into the actual image
+if [ "$DEBUG" != 2 ]; then
+	rm -r .in/
+fi
+
+# change kernels version for multiple kernels only
+if [ $(echo "$GLOBAL_KFLAVOURS" | wc -w) -gt 1 ]; then
+	kver=
+	echo $GLOBAL_KFLAVOURS
+	for KFLAVOUR in $GLOBAL_KFLAVOURS; do
+		kver+=" $(rpm -qa 'kernel-image*' \
+			--qf '%{version}-%{name}-%{release}\n' \
+			| grep "$KFLAVOUR" \
+			| sed 's/kernel-image-//')"
+	done
+
+	sed -i "s,@KFLAVOUR@,$kver,g" $CFG
+fi
+
+# copy grub theme
+mkdir -p themes
+GRUBTHEME="$(grep -m1 '/theme.txt;' "$CFG" |rev | cut -f2 -d '/' |rev)"
+if [ -n "$GRUBTHEME" ]; then
+	if [ -d "/boot/grub/themes/$GRUBTHEME" ]; then
+		cp -r /boot/grub/themes/$GRUBTHEME themes/
+	else
+		echo "Error: Directory /boot/grub/themes/$GRUBTHEME not exist"
+		exit 1
+	fi
+fi
+
+# copy grub locale
+mkdir -p locale
+if [ ! -e "$boot/locale" -a -f "$CFG" ]; then
+	langs=$(grep -oP "([a-z]{2})(?=_[A-Z]{2})" "$CFG" | sort | uniq)
+	for i in $langs; do
+		fp="/usr/share/locale/$i/LC_MESSAGES/grub.mo"
+		[ -f $fp ] && cp -arf "$fp" "locale/$i.mo"
+	done
+fi
+
+exit 0
+
+# NB: there will be final macro expansion based on actual image sizes
+#     done by features.in/grub/scripts.d/20-propagator-ramdisk-grub

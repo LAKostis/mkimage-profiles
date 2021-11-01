@@ -41,7 +41,7 @@ gnustep-easydiff
 gnustep-EdenMath
 gnustep-Expense
 #gnustep-FisicaLab
-gnustep-FlexiSheet
+#gnustep-FlexiSheet
 gnustep-FreeTar
 gnustep-FTP
 gnustep-Gemas
@@ -53,7 +53,7 @@ gnustep-GNUWash
 gnustep-Gomoku
 gnustep-gorm
 gnustep-Graphos
-gnustep-Grouch
+#gnustep-Grouch
 gnustep-Grr
 gnustep-GRubik
 #gnustep-GSBench
@@ -81,8 +81,8 @@ gnustep-Localize
 gnustep-Lynkeos
 #gnustep-Mixer
 gnustep-Money
-gnustep-MPDCon
-gnustep-MusicBox
+#gnustep-MPDCon
+#gnustep-MusicBox
 #gnustep-MusicKit
 gnustep-MyWiki
 #gnustep-NeXTGo
@@ -107,7 +107,7 @@ gnustep-Stepbill
 gnustep-Stepulator
 gnustep-sudoku
 gnustep-systempreferences
-gnustep-TalkSoup
+#gnustep-TalkSoup
 gnustep-terminal
 gnustep-TextEdit
 #gnustep-thematic
@@ -122,3 +122,6 @@ gnustep-Waiho
 #gnustep-Yap
 #gnustep-Zillion
 gnustep-Zipper
+
+# fonts for unicode symbol support
+fonts-ttf-dejavu

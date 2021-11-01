@@ -1,17 +1,15 @@
-#gzrt
+gzip-utils
 lzip
 lzop
 p7zip
 pax
 rzip
-star
 unrar
 unzip
 xbiso
 zpaq
 
 # parallel (de)compression
-lbzip2
 pbzip2
 pigz
 plzip
@@ -20,7 +18,6 @@ pxz
 # legacy
 arj
 cabextract
-ha
 lha
 mdbtools
 mscompress
@@ -28,8 +25,9 @@ nomarch
 ncompress
 unace
 unarj
-unzoo
+#unzoo
 uudeview
 
 # recovery
+#gzrt
 lziprecover

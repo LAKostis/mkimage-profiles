@@ -1,7 +1,7 @@
 ifdef BUILDDIR
 
 # in deciseconds
-DEFAULT_TIMEOUT = 90
+DEFAULT_TIMEOUT = 600
 
 # prepare data for syslinux installation;
 # see also stage1/scripts.d/01-syslinux
@@ -11,6 +11,8 @@ include $(BUILDDIR)/distcfg.mk
 ifndef BOOTLOADER
 $(error syslinux feature enabled but BOOTLOADER undefined)
 endif
+
+STAGE1_INITRD_BOOTARGS := $(STAGE1_INITRD_TYPEARGS)=$(STAGE1_INITRD_BOOTMETHOD)
 
 # UI is backed by modules in modern syslinux
 # (except for built-in text prompt)
@@ -90,6 +92,15 @@ bootargs: clean
 		sed -i "s,@bootvga@,$(BOOTVGA)," $(DSTCFGS); \
 	fi; \
 	sed -i "s,@bootvga@,,;s,vga= ,," $(DSTCFGS)
+	@if [ "$(STAGE1_INITRD)" = initrd-propagator ]; then \
+		sed -i "s,@initrd@,full.cz," $(DSTCFGS); \
+	else \
+		sed -i "s,@initrd@,initrd.img," $(DSTCFGS); \
+	fi
+	@sed -i "s|@initrd_bootargs@|$(STAGE1_INITRD_BOOTARGS)|g" $(DSTCFGS)
+	@sed -i "s|@initrd_bootmethod@|$(STAGE1_INITRD_BOOTMETHOD)|g" $(DSTCFGS)
+	@sed -i "s|@initrd_typeargs@|$(STAGE1_INITRD_TYPEARGS)|g" $(DSTCFGS)
+	@sed -i "s,@stagename@,$(STAGE1_INITRD_STAGE2_OPTION),g" $(DSTCFGS)
 
 clean: copy
 	@if [ "$(SYSLINUX_UI)" = gfxboot ]; then \

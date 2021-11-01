@@ -1,0 +1,43 @@
+#!/bin/sh -ef
+
+cd /.image
+mkdir -p boot
+
+case "`arch`" in
+	e2k)
+		kname=image
+		;;
+	*)
+		kname=vmlinuz
+		;;
+esac
+
+if [ -L "/boot/$kname" ]; then
+	kimage="$(readlink -ev /boot/$kname)"
+	kverdef="${kimage#/boot/$kname-}"
+fi
+
+kimage="$(find /boot -type f -name "$kname-*")"
+propagator="$(find /boot -type f -name 'full-*.cz')"
+[ -n "$propagator" ] ||
+	initrd="$(find /boot -type f -name 'initrd-*.img')"
+
+cp $verbose -af $kimage boot/
+mv boot/$kname-$kverdef boot/$kname
+if [ -n "$propagator" ]; then
+	cp $verbose -af $propagator boot/
+	mv boot/full-$kverdef.cz boot/full.cz
+else
+	cp $verbose -af $initrd boot/
+	mv boot/initrd-$kverdef.img boot/initrd.img
+fi
+
+# config is generated in mkimage
+case "$GLOBAL_EFI_BOOTLOADER" in
+	refind|elilo)
+		mkdir -p EFI/BOOT
+		cp -lpLft EFI/BOOT -- boot/vmlinuz
+		[ ! -f boot/full.cz ] ||
+			cp -lpLft EFI/BOOT -- boot/full.cz
+	;;
+esac

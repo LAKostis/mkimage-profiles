@@ -1,17 +1,12 @@
 # mostly X11 counterparts/GUIs to some rescue+extra packages
-autopsy
 binwalk
-dissy@X86
 dsniff-X11@X86
 dvdisaster
 extract
-gksu
 gparted
-gsmartcontrol
 jhead
 hardinfo@X86
 ht
 libpst-tools
 qt-fsarchiver@X86
-recoll-full@X86
 recoverjpeg

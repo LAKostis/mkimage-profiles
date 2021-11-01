@@ -1,10 +1,16 @@
-LibreOffice-still
-libreoffice-languagetool
-LibreOffice-still-langpack-ru
-LibreOffice-still-gnome@X86
-LibreOffice-still-common
+LibreOffice-still@!E2K
+LibreOffice-still-langpack-ru@!E2K
+LibreOffice-still-gtk3@!E2K
+LibreOffice-still-common@!E2K
+
+LibreOffice@E2K
+LibreOffice-langpack-ru@E2K
+LibreOffice-common@E2K
+
+java-1.8.0-openjdk@!mipsel
+libreoffice-languagetool@!mipsel
 libcmis
 libwps
 
-projectlibre
+projectlibre@!mipsel
 dia

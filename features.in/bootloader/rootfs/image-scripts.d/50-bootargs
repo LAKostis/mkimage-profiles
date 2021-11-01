@@ -1,0 +1,11 @@
+#!/bin/sh -eu
+
+if [ -s /etc/sysconfig/grub2 ]; then
+    # Cleanup
+    sed -i "s/ splash//g" /etc/sysconfig/grub2
+    if [ -n "${GLOBAL_BASE_BOOTARGS-}" ]; then
+        sed -Ei \
+            "s/(GRUB_CMDLINE_LINUX_DEFAULT=)(.*)(['\"])/\1\2 $GLOBAL_BASE_BOOTARGS\3/" \
+            /etc/sysconfig/grub2
+    fi
+fi

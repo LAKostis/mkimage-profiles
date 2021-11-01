@@ -4,23 +4,26 @@ use/branding:
 
 # license notes, if any
 use/branding/notes: use/branding
+ifneq (,$(filter-out e2k%,$(ARCH)))
 	@$(call add,THE_BRANDING,notes)
+endif
 
 # NB: not every distro might have all the branding of its own
-ifeq (,$(filter-out i586 x86_64,$(ARCH)))
-use/branding/full: use/branding/notes use/syslinux/ui/gfxboot
-	@$(call add,THE_BRANDING,alterator bootloader bootsplash graphics)
-	@$(call add,THE_BRANDING,indexhtml slideshow)
-
-use/branding/complete: use/branding/full use/plymouth/full
-	@$(call add,INSTALL2_BRANDING,notes slideshow)
-else
-use/branding/full: use/branding/notes
+use/branding/full: use/branding/notes use/syslinux/ui/gfxboot \
+	use/grub/ui/gfxboot
 	@$(call add,THE_BRANDING,alterator graphics)
 	@$(call add,THE_BRANDING,indexhtml slideshow)
+ifeq (,$(filter-out i586 x86_64 aarch64,$(ARCH)))
+	@$(call add,THE_BRANDING,bootloader)
+endif
+ifeq (,$(filter-out i586 x86_64,$(ARCH)))
+	@$(call add,THE_BRANDING,bootsplash)
+endif
 
-use/branding/complete: use/branding/full
-	@$(call add,INSTALL2_BRANDING,notes slideshow)
+use/branding/complete: use/branding/full use/plymouth/full
+	@$(call add,INSTALL2_BRANDING,slideshow)
+ifneq (,$(filter-out e2k%,$(ARCH)))
+	@$(call add,INSTALL2_BRANDING,notes)
 endif
 
 # http://altlinux.org/branding/slideshow

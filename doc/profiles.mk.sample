@@ -2,7 +2,14 @@
 # NB: REPORT doesn't work here, it's somewhat special
 
 # where to look for apt.conf; system one used by default
-#APTCONF = ~/apt/apt.conf.$(ARCH)
+ifneq (,$(BRANCH))
+APTCONF = ~/apt/apt.conf.$(BRANCH).$(ARCH)
+else
+APTCONF = ~/apt/apt.conf.sisyphus.$(ARCH)
+endif
+
+# path to save out image
+IMAGEDIR = ~/out/$(BRANCH)/$(shell date +%Y%m%d)
 
 # turns on GLOBAL_VERBOSE and prettier output
 #DEBUG = 1

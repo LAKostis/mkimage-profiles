@@ -2,7 +2,9 @@
 # drop extra drivers et al, purge kernel image(s)
 
 # xorg-dri-*
-rm -r /usr/lib*/X11/modules/dri
+if [ "$GLOBAL_INSTALL2_CLEANUP_DRI" = 'yes' ]; then
+	rm -r /usr/lib*/X11/modules/dri
+fi
 
 # no movies during installation so far
 rm -rf /usr/lib*/vdpau/ /usr/lib*/libXv*
@@ -31,13 +33,13 @@ rm -rf /lib/modules/*/kernel/drivers/cpufreq
 rm -rf /lib/modules/*/kernel/drivers/edac
 rm -rf /lib/modules/*/kernel/drivers/gpio
 # NB: leave hwmon.ko
-rm -rf /lib/modules/*/kernel/drivers/hwmon/[^h]
+rm -rf /lib/modules/*/kernel/drivers/hwmon/[^h]*
 rm -rf /lib/modules/*/kernel/drivers/infiniband	###
 rm -rf /lib/modules/*/kernel/drivers/input/{gameport,joy*}
 rm -rf /lib/modules/*/kernel/drivers/isdn
 rm -rf /lib/modules/*/kernel/drivers/leds
-rm -rf /lib/modules/*/kernel/drivers/media
-rm -rf /lib/modules/*/kernel/drivers/mmc
+# amdgpu require cec and rc
+#rm -rf /lib/modules/*/kernel/drivers/media/[^cec]*
 rm -rf /lib/modules/*/kernel/drivers/mtd*
 rm -rf /lib/modules/*/kernel/drivers/net/can
 rm -rf /lib/modules/*/kernel/drivers/net/hamradio
@@ -65,7 +67,6 @@ rm -rf /lib/modules/*/kernel/fs/autofs
 rm -rf /lib/modules/*/kernel/fs/autofs4
 rm -rf /lib/modules/*/kernel/fs/befs
 rm -rf /lib/modules/*/kernel/fs/bfs
-rm -rf /lib/modules/*/kernel/fs/btrfs
 rm -rf /lib/modules/*/kernel/fs/ceph
 rm -rf /lib/modules/*/kernel/fs/cifs
 rm -rf /lib/modules/*/kernel/fs/coda
@@ -76,7 +77,6 @@ rm -rf /lib/modules/*/kernel/fs/efs
 rm -rf /lib/modules/*/kernel/fs/exofs
 rm -rf /lib/modules/*/kernel/fs/freevxfs
 rm -rf /lib/modules/*/kernel/fs/fscache
-rm -rf /lib/modules/*/kernel/fs/fuse
 rm -rf /lib/modules/*/kernel/fs/hfs
 rm -rf /lib/modules/*/kernel/fs/hfsplus
 rm -rf /lib/modules/*/kernel/fs/hpfs
@@ -107,7 +107,6 @@ rm -rf /lib/modules/*/kernel/net/bluetooth
 rm -rf /lib/modules/*/kernel/net/dccp
 rm -rf /lib/modules/*/kernel/net/decnet
 rm -rf /lib/modules/*/kernel/net/econet
-rm -rf /lib/modules/*/kernel/net/ipv6
 rm -rf /lib/modules/*/kernel/net/ipx
 rm -rf /lib/modules/*/kernel/net/irda
 rm -rf /lib/modules/*/kernel/net/netfilter
@@ -116,6 +115,6 @@ rm -rf /lib/modules/*/kernel/net/rds
 rm -rf /lib/modules/*/kernel/net/rose
 rm -rf /lib/modules/*/kernel/net/sctp
 rm -rf /lib/modules/*/kernel/net/tipc
-rm -rf /lib/modules/*/kernel/net/{wimax,wireless,mac80211}
+rm -rf /lib/modules/*/kernel/net/{wimax}
 rm -rf /lib/modules/*/kernel/net/x25
 rm -rf /lib/modules/*/kernel/sound

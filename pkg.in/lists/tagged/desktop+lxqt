@@ -1,15 +1,23 @@
 # metapackage
-lxqt-regular
+lxqt-mini@META
+lxqt-regular@META
 
 # media-player
 mpv
 qmmp1
 
+# graphics
+easypaint
+
 # text-editor
 featherpad
+
+gvfs-shares
+gvfs-backend-mtp
 
 icon-theme-oxygen
 x-cursor-theme-jimmac
 
-xscreensaver-frontend
+light-locker
 
+xdg-user-dirs-gtk

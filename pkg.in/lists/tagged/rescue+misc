@@ -64,7 +64,3 @@ fdupes
 jdupes
 hardlinkpy
 hardlink
-
-# Bootable FAT images
-makebootfat
-make-freedos-floppy

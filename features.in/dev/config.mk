@@ -19,10 +19,15 @@ use/dev/builder/live: use/dev/builder/base
 	@$(call add,LIVE_PACKAGES,livecd-qemu-arch qemu-user-binfmt_misc)
 
 use/dev/builder/full: use/dev use/dev/builder/live use/dev/repo
+ifdef BIGRAM
 	@$(call set,KFLAVOURS,$(BIGRAM))
+endif
 	@$(call add,THE_LISTS,$(call tags,server extra))
 	@$(call add,MAIN_LISTS,$(call tags,live builder))
-	@$(call add,MAIN_PACKAGES,syslinux pciids memtest86+ xorriso)
+ifeq (,$(filter-out i586 x86_64 ,$(ARCH)))
+	@$(call add,MAIN_PACKAGES,syslinux memtest86+)
+endif
+	@$(call add,MAIN_PACKAGES,pciids xorriso)
 	@$(call add,LIVE_PACKAGES,sudo perl-Gear-Remotes)
 
 use/dev/groups/builder: use/dev/repo

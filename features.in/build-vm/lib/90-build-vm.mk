@@ -5,7 +5,7 @@ IMAGE_PACKAGES = $(DOT_BASE) \
 		 $(COMMON_PACKAGES) \
 		 $(BASE_PACKAGES) \
 		 $(THE_PACKAGES) \
-		 $(call list,$(BASE_LISTS) $(THE_LISTS))
+		 $(call list,$(BASE_LISTS) $(THE_LISTS) $(COMMON_LISTS))
 
 IMAGE_PACKAGES_REGEXP = $(THE_PACKAGES_REGEXP) \
                         $(BASE_PACKAGES_REGEXP)
@@ -18,15 +18,25 @@ endif
 
 # intermediate chroot archive
 VM_TARBALL := $(IMAGE_OUTDIR)/$(IMAGE_NAME).tar
+VM_OUT_TARBALL := $(IMAGE_OUTDIR)/$(IMAGE_OUTNAME).tar
 VM_RAWDISK := $(IMAGE_OUTDIR)/$(IMAGE_NAME).raw
 VM_FSTYPE ?= ext4
 VM_SIZE ?= 0
 
-VM_GZIP_COMMAND ?= gzip
-VM_XZ_COMMAND ?= xz -T0
+VM_GZIP_COMMAND ?= gzip -f
+VM_XZ_COMMAND ?= xz -T0 -f
 
 # tavolga
 RECOVERY_LINE ?= Press ENTER to start
+
+# tarball save
+ifdef VM_SAVE_TARBALL
+ifeq (,$(filter-out img img.xz qcow2 qcow2c vdi vmdk vhd,$(IMAGE_TYPE)))
+ifeq (,$(filter-out tar tar.gz tar.xz,$(VM_SAVE_TARBALL)))
+SAVE_TARBALL := convert-image/$(VM_SAVE_TARBALL)
+endif
+endif
+endif
 
 check-sudo:
 	@if ! type -t sudo >&/dev/null; then \
@@ -39,13 +49,14 @@ check-qemu:
 		exit 1; \
 	fi
 
-tar2fs: check-sudo prepare-tarball-qemu
+tar2fs: $(SAVE_TARBALL) check-sudo prepare-tarball-qemu
 	@if [ -x /usr/share/mkimage-profiles/bin/tar2fs ]; then \
 		TOPDIR=/usr/share/mkimage-profiles; \
 	fi; \
 	if ! sudo $$TOPDIR/bin/tar2fs \
 		"$(VM_TARBALL)" "$(VM_RAWDISK)" "$(VM_SIZE)" "$(VM_FSTYPE)" \
-			"$(VM_BOOTLOADER)"; then \
+			"$(VM_BOOTLOADER)" "$(ARCH)" "$(VM_PARTTABLE)" \
+			"$(VM_BOOTTYPE)"; then \
 		echo "** error: sudo tar2fs failed, see build log" >&2; \
 		exit 1; \
 	fi
@@ -56,16 +67,23 @@ prepare-tarball-qemu:
 		tar -rf "$(VM_TARBALL)" ./.host/qemu*) ||:
 
 convert-image/tar:
-	mv "$(VM_TARBALL)" "$(IMAGE_OUTPATH)"
+ifdef SAVE_TARBALL
+	cp "$(VM_TARBALL)" "$(VM_OUT_TARBALL)"
+else
+	mv "$(VM_TARBALL)" "$(VM_OUT_TARBALL)"
+endif
 
-convert-image/tar.gz:
-	$(VM_GZIP_COMMAND) < "$(VM_TARBALL)" > "$(IMAGE_OUTPATH)"
+convert-image/tar.gz: convert-image/tar
+	$(VM_GZIP_COMMAND) "$(VM_OUT_TARBALL)"
 
-convert-image/tar.xz:
-	$(VM_XZ_COMMAND) < "$(VM_TARBALL)" > "$(IMAGE_OUTPATH)"
+convert-image/tar.xz: convert-image/tar
+	$(VM_XZ_COMMAND) "$(VM_OUT_TARBALL)"
 
 convert-image/img: tar2fs
 	mv "$(VM_RAWDISK)" "$(IMAGE_OUTPATH)"
+
+convert-image/img.xz: tar2fs
+	$(VM_XZ_COMMAND) < "$(VM_RAWDISK)" > "$(IMAGE_OUTPATH)"
 
 convert-image/qcow2 convert-image/qcow2c convert-image/vmdk \
 	convert-image/vdi convert-image/vhd: check-qemu tar2fs

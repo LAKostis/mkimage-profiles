@@ -1,0 +1,55 @@
+#!/bin/sh -efu
+# predictable file locations make bootloader configuration simple;
+# this script relates to features.in/stage2/stage1/scripts.d/81-make-initfs
+
+[ -n "$GLOBAL_KFLAVOURS" ] ||
+  { echo "** KFLAVOURS is empty" >&2; exit 0; }
+
+kver=
+echo $GLOBAL_KFLAVOURS
+for KFLAVOUR in $GLOBAL_KFLAVOURS; do
+	kver+=" $(rpm -qa 'kernel-image*' \
+		--qf '%{version}-%{name}-%{release}\n' \
+	| grep "$KFLAVOUR" \
+	| sed 's/kernel-image-//')"
+done
+
+[ ! -z "${kver#"${kver%%[! ]*}"}" ] ||
+  { echo "** unable to deduce kernel version" >&2; exit 1; }
+
+cd /boot
+
+# creating a special initrd.mk
+cp /etc/initrd.mk /etc/initrd.mk.oem
+echo 'FEATURES += add-modules compress cleanup kbd rdshell rootfs' \
+	>> /etc/initrd.mk.oem
+
+if [ -n "$GLOBAL_VM_INITRDFEATURES" ]; then
+	for INITRDFEATURE in $GLOBAL_VM_INITRDFEATURES; do
+		echo "FEATURES += $INITRDFEATURE" >> /etc/initrd.mk.oem
+	done
+fi
+
+if [ -n "$GLOBAL_VM_INITRDMODULES" ]; then
+	for INITRDMODULE in $GLOBAL_VM_INITRDMODULES; do
+		echo "MODULES_TRY_ADD += $INITRDMODULE" >> /etc/initrd.mk.oem
+	done
+fi
+
+for KVER in $kver; do
+	make-initrd -N -v -k "$KVER" AUTODETECT= -c /etc/initrd.mk.oem \
+	  || { echo "** Error: make-initrd failed" >&2; exit 1; }
+done
+
+case "$GLOBAL_ARCH" in
+e2k)
+	kname=image;;
+*)
+	kname=vmlinuz;;
+esac
+
+rm -f $kname initrd.img
+ln -s $kname-$KVER $kname ||:
+ln -s initrd-$KVER.img initrd.img
+
+:

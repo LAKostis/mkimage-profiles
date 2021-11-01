@@ -1,28 +1,2 @@
 installer-feature-centaurus-keyring
-systemd-udev-console-fb@X86
-
-alterator-x11
-alterator-logs
-alterator-updates
-alterator-net-iptables
-
-task-auth-ad-sssd
-task-auth-ldap-sssd
-
-apt-indicator@X86
-recoll-extras
-
-# compat libs
-libusb-compat@IA32
-
-screen
-
-# Console fonts workaround
-vconsole-setup-kludge@X86
-
-# Support Chinese characters
-fonts-bitmap-wqy
-
-make-initrd-ucode@X86
-iucode_tool@X86
-firmware-intel-ucode@X86
+installer-feature-lightdm-stage3

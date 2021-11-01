@@ -1,12 +1,12 @@
-use/server: use/power/acpi/button
+use/server: sub/rootfs use/services
 	@$(call add_feature)
 
 use/server/base: use/server use/firmware/server \
-	use/net-ssh use/syslinux/timeout/600
+	use/net-ssh use/syslinux/timeout/600 use/grub/timeout/60
 	@$(call set,BOOTVGA,)
 	@$(call add,THE_LISTS,server-base)
 	@$(call add,THE_KMODULES,e1000e igb)
-	@$(call add,STAGE1_KMODULES,e1000e igb)
+	@$(call add,STAGE1_KMODULES,e1000e)
 	@$(call add,INSTALL2_PACKAGES,installer-feature-server-raid-fixup-stage2)
 
 use/server/mini: use/server/base use/services/lvm2-disable
@@ -17,17 +17,23 @@ use/server/mini: use/server/base use/services/lvm2-disable
 	@$(call add,DEFAULT_SERVICES_DISABLE,messagebus)
 
 use/server/ovz-base: use/server
-	@$(call set,STAGE1_KFLAVOUR,std-def)
+	@$(call set,STAGE1_KFLAVOURS,std-def)
 	@$(call set,KFLAVOURS,std-def ovz-el)
 	@$(call add,BASE_PACKAGES,lftp wget hdparm)
 	@$(call add,BASE_LISTS,$(call tags,base openvz))
 
 use/server/ovz: use/server/ovz-base
-	@$(call add,MAIN_KMODULES,ipset ipt-netflow opendpi pf_ring)
+	@$(call add,MAIN_KMODULES,ipset ipt-netflow)
 	@$(call add,MAIN_KMODULES,xtables-addons)	# t6/branch
-	@$(call add,MAIN_KMODULES,drbd kvm)
+	@$(call add,MAIN_KMODULES,drbd9 kvm)
 	@$(call add,MAIN_KMODULES,staging)
 	@$(call add,BASE_LISTS,$(call tags,server openvz))
+
+use/server/virt: use/server use/kernel
+	@$(call add,BASE_PACKAGES,openssh)
+	@$(call set,STAGE1_KFLAVOURS,std-def)
+	@$(call set,KFLAVOURS,std-def)
+	@$(call add,THE_KMODULES,kvm)
 
 # NB: examine zabbix-preinstall package, initialization is NOT automatic!
 use/server/zabbix: use/server use/services use/control
@@ -48,6 +54,7 @@ use/server/groups/services: use/server
 	@$(call add,MAIN_GROUPS,server/php7)
 	@$(call add,MAIN_GROUPS,server/ftp server/rsync)
 	@$(call add,MAIN_GROUPS,server/kvm)
+	@$(call add,DEFAULT_SERVICES_ENABLE,libvirtd)
 	@$(call add,DEFAULT_SERVICES_DISABLE,php7-fpm)
 
 use/server/groups/base: use/server/groups/tools use/server/groups/services; @:

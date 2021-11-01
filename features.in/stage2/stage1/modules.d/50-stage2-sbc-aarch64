@@ -1,0 +1,9 @@
+kernel/drivers/dma
+kernel/drivers/mmc/host
+kernel/drivers/regulator
+kernel/drivers/soc
+kernel/drivers/usb/dwc2
+kernel/drivers/usb/dwc3
+kernel/drivers/usb/phy
+kernel/drivers/usb/host
+kernel/drivers/usb/musb

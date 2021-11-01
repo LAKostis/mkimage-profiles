@@ -2,6 +2,7 @@ ifndef MKIMAGE_PROFILES
 $(error this makefile is designed to be included in toplevel one)
 endif
 
+ifneq (,$(filter-out $(DIRECT_TARGETS),$(MAKECMDGOALS)))
 # this could have come from env; or could be symlinked; or is made anew
 # (the reuse rationale is avoiding extra tmpdir lookups)
 # NB: immediate assignment matters
@@ -19,6 +20,7 @@ endif
 
 ifeq (,$(BUILDDIR))
 $(error suitable BUILDDIR unavailable)
+endif
 endif
 
 # even smart caching only hurts when every build goes from scratch
@@ -40,7 +42,7 @@ profile/init: distclean
 	if [ -z $(QUIET) ]; then \
 		echo -n "$(TIME) initializing BUILDDIR: "; \
 	fi; \
-	rsync -qaxH --delete-after image.in/ "$(BUILDDIR)"/; \
+	rsync -qaxH --exclude .gitignore --delete-after image.in/ "$(BUILDDIR)"/; \
 	mkdir "$(BUILDDIR)"/.mki; \
 	} >&2
 	@$(call put,ifndef DISTCFG_MK)
@@ -66,7 +68,7 @@ profile/init: distclean
 			else \
 				echo; \
 			fi >&2; \
-			exit 1; \
+			[ "$(CHECK)" = 0 ] || exit 1; \
 		fi; \
 	fi; \
 	mp-commit -i "$(BUILDDIR)" "derivative profile initialized"; \
@@ -83,7 +85,7 @@ profile/init: distclean
 	fi $(SHORTEN); \
 	} >&2
 
-profile/bare: profile/init
+profile/bare: profile/init use/pkgpriorities
 	@{ \
 	NOTE="$${GLOBAL_VERBOSE:+: $(CONFIG)}"; \
 	if [ -z "$(QUIET)" ]; then \
@@ -91,11 +93,25 @@ profile/bare: profile/init
 	fi; \
 	} >&2
 	@$(call try,MKIMAGE_PREFIX,/usr/share/mkimage)
+	@$(call try,GLOBAL_PREFIX,$(MKIMAGE_PREFIX))
 	@$(call try,GLOBAL_VERBOSE,)
 	@$(call try,IMAGEDIR,$(wildcard $(IMAGEDIR)))
 	@$(call try,LOGDIR,$(wildcard $(LOGDIR)))
+ifeq (,$(BRANCH))
 	@$(call try,BRANDING,alt-sisyphus)
+else
+	@$(call try,BRANDING,alt-starterkit)
+endif
+	@$(call add,PINNED_PACKAGES,branding-$$(BRANDING)-alterator:Essential)
+	@$(call add,PINNED_PACKAGES,branding-$$(BRANDING)-bootsplash:Essential)
+	@$(call add,PINNED_PACKAGES,branding-$$(BRANDING)-bootloader:Essential)
+	@$(call add,PINNED_PACKAGES,branding-$$(BRANDING)-graphics:Essential)
+	@$(call add,PINNED_PACKAGES,branding-$$(BRANDING)-indexhtml:Essential)
+	@$(call add,PINNED_PACKAGES,branding-$$(BRANDING)-notes:Essential)
+	@$(call add,PINNED_PACKAGES,branding-$$(BRANDING)-release:Essential)
+	@$(call add,PINNED_PACKAGES,branding-$$(BRANDING)-slideshow:Essential)
 ifeq (,$(REPO:altlinux%=))
+	@$(call set,WORK_INIT_LIST,+branding-$$(BRANDING)-release)
 	@$(call set,IMAGE_INIT_LIST,+branding-$$(BRANDING)-release)
 endif
 	@$(call xport,ARCH)

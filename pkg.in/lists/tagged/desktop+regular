@@ -23,26 +23,31 @@ alterator-datetime
 alterator-proxy@X86
 alterator-services
 
-alterator-x11@X86
+alterator-x11@!E2K
 alterator-xkb
 
+alterator-update-kernel
+
+glxinfo
 glxgears
 glxinfo
 #xorg-conf-synaptics@X86
 
 cpu-x@X86
-fuse-exfat
+exfatprogs
 hdparm
-inxi@X86
+inxi
 lcdtest
 lm_sensors3
 lsblk
 sdparm
 
+ntpdate
+
 fonts-bitmap-terminus
 
 ldd-requires@X86
-arm-rootfs-installer
+alt-rootfs-installer
 
 gparted@X86
 gpart
@@ -53,11 +58,15 @@ sysfsutils
 
 mc
 
-apf@X86
+apf
 
 udev-extras
 
 librsvg
+
+# icons
+gnome-icon-theme
+gnome-icon-theme-symbolic
 
 # unicode fonts
 fonts-ttf-gnu-freefont-mono
@@ -65,3 +74,8 @@ fonts-ttf-gnu-freefont-sans
 fonts-ttf-gnu-freefont-serif
 
 htop
+
+# firmware update utils
+#fwupd@x86_64
+
+blacklist-pcspkr@X86

@@ -1,11 +1,34 @@
 # GOST encryption
 openssl-engines
 
+# for AltHa
+alterator-secsetup
+
 # just in case
 kernel-headers-modules-std-def
 kernel-headers-std-def
+#kernel-image-un-def
+#kernel-modules-drm-ancient-un-def
+#kernel-modules-drm-radeon-un-def
+#kernel-modules-v4l-un-def
+#kernel-modules-drm-un-def
+#kernel-modules-staging-un-def
+#kernel-modules-drm-nouveau-un-def@X86
+#kernel-modules-virtualbox-un-def@x86_64
+#kernel-headers-modules-un-def
+#kernel-headers-un-def
 
-chromium@X86
-chromium@aarch64
-chromium-gnome@X86
-chromium-gnome@aarch64
+chromium
+
+chromium-gost
+
+# gostcrypo repo component is needed
+openvpn-gostcrypto openvpn-plugins-gostcrypto
+alterator-openvpn-server
+
+openssh-gostcrypto
+openssh-common-gostcrypto
+openssh-askpass-common-gostcrypto
+openssh-clients-gostcrypto
+openssh-server-control-gostcrypto
+openssh-server-gostcrypto

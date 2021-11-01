@@ -1,0 +1,47 @@
+#!/bin/sh -efux
+# NB: /etc/initrd.mk carefully prepared by earlier scripts
+
+fatal() { echo "** error: $@" >&1; exit 1; }
+
+kver=
+for KFLAVOUR in $GLOBAL_KFLAVOURS; do
+	kver+=" $(rpm -qa 'kernel-image*' \
+		--qf '%{version}-%{name}-%{release}\n' \
+	| grep "$KFLAVOUR" \
+	| sed 's/kernel-image-//')"
+done
+
+[ -n "$kver" ] ||
+	fatal "no kernel version identified"
+
+# FIXME: large storage systems can get that tmpfs filled up
+# with debug data as of make-initrd 2.2.12
+rm -vf  /usr/share/make-initrd/data/etc/udev/rules.d/00-debug.rules \
+	/usr/share/make-initrd/data/lib/uevent/filters/debug
+
+MAKE_INITRD_OPTS="--no-checks --no-depmod AUTODETECT= "
+MAKE_INITRD_VER="`make-initrd -V \
+	| sed -rn 's/^make-initrd version ([0-9.]+)/\1/p'`"
+
+[ -z "$GLOBAL_VERBOSE" ] ||
+	MAKE_INITRD_OPTS="$MAKE_INITRD_OPTS -v"
+
+cd /boot
+
+for KVER in $kver; do
+	make-initrd $MAKE_INITRD_OPTS -k "$KVER" ||
+		fatal "make-initrd failed"
+done
+
+case `arch` in
+e2k)
+	kname=image;;
+*)
+	kname=vmlinuz;;
+esac
+
+rm -f $kname initrd.img
+ln -s $kname-$KVER $kname
+ln -s initrd-$KVER.img initrd.img
+
+:

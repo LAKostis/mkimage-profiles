@@ -61,9 +61,7 @@ time
 openssl
 
 # Applications/Editors
-biew@X86
 hexedit
-lde
 nano
 tweak
 vim-console
@@ -83,7 +81,6 @@ btrfs-progs
 e2fsprogs
 f2fs-tools
 jfsprogs
-logfsprogs
 nilfs-utils
 mtd-utils
 reiser4progs
@@ -93,24 +90,17 @@ xfsprogs
 
 # Compressed filesystem image
 clicfs-utils
-cloop-utils
 squashfs-tools
 
 # Foreign filesystems
 afpfs-ng
 bindfs
 dosfstools
-exfat-utils
-exofs-utils
+exfatprogs
 fatback
 fatresize
-fuse-chironfs
 fuse-chunkfs
 fuse-ciopfs
-fuse-compFUSEd
-fuse-exfat
-fuse-funion
-fuse-zfs@X86
 hfsprogs
 ifuse
 libevt-tools@X86
@@ -123,7 +113,6 @@ libuna-tools
 libwrc-tools@X86
 ntfs-3g
 ocfs2-tools
-vmfs-tools
 
 # Filesystem recovery/cleanup
 extundelete
@@ -132,7 +121,6 @@ ftimes@X86
 fuse-convmvfs
 magicrescue
 photorec
-recover
 scalpel
 sleuthkit
 srm
@@ -145,7 +133,6 @@ archivemount
 fuse-7z
 
 # Applications/Networking
-adcfw-log
 arpwatch
 cifs-utils
 curl
@@ -159,7 +146,6 @@ fuse-curlftpfs
 fuse-lftpfs
 fuse-sshfs
 hostinfo
-hping2
 hping3@X86
 httpry
 httpry-scripts
@@ -175,7 +161,6 @@ lft
 lftp
 mailx
 mtr
-ncpfs
 netcat
 netlist
 nfs-server
@@ -233,8 +218,3 @@ wabread@X86
 
 # Mobile
 android-tools
-jmtpfs
-fuse-obexfs
-fuse-siefs
-gammu
-usbmuxd

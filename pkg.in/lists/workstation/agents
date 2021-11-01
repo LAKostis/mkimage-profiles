@@ -1,5 +1,7 @@
-bacula9-client
+bacula11-client
 #alterator-bacula-client
+
+urbackup-client
 
 zabbix-agent
 alterator-zabbix-agent

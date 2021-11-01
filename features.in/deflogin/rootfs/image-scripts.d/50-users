@@ -34,3 +34,13 @@ set_sudo() {
 		[ -z "$admin" ] || set_admin "$login"
 		[ -z "$sudo" ] || set_sudo "$login"
 	done
+
+# create special user
+[ -z "$GLOBAL_SPEC_USER" ] ||
+	echo "$GLOBAL_SPEC_USER" \
+	| tr ' ' '\n' \
+	| while IFS=':' read login group uid gid homedir shell; do
+	groupadd -g $gid $group >/dev/null 2>&1 || :
+	useradd -g $gid -u $uid -d $homedir -s $shell $login >/dev/null 2>&1 || :
+	usermod -G $group $login || :
+	done

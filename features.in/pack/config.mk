@@ -3,15 +3,19 @@
 # distributions
 DISTRO_EXTS := .iso
 
-use/pack:
+use/pack::
 	@$(call add_feature)
+
+ifeq (,$(filter-out e2k%,$(ARCH)))
+use/pack:: use/e2k; @:
+endif
 
 # fallback type is isodata, might get set elsewhere to produce bootable iso
 use/pack/iso: use/pack
 	@$(call try,IMAGE_PACKTYPE,isodata)
 
 # virtual environments
-VE_ARCHIVES := tar cpio ubifs
+VE_ARCHIVES := squash tar cpio ubifs
 VE_COMPRESSORS := gz xz# there's no sense in bzip2 by now
 VE_ZIPS := $(call addsuffices, \
 		$(addprefix .,$(VE_COMPRESSORS)), \
@@ -37,7 +41,7 @@ $(foreach c,$(VE_ARCHIVES), \
 endif
 
 # extensions for buld-vm
-VM_EXTS := .tar .tar.gz .tar.xz .img .qcow2 .qcow2c .vdi .vmdk .vhd
+VM_EXTS := .tar .tar.gz .tar.xz .img .img.xz .qcow2 .qcow2c .vdi .vmdk .vhd
 VM_TAVOLGA_EXTS := .recovery.tar
 
 ifeq (vm,$(IMAGE_CLASS))

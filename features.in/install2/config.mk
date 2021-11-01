@@ -3,15 +3,16 @@
 +installer: use/install2/full; @:
 
 use/install2: use/stage2 sub/stage2@install2 use/metadata \
-	use/cleanup/installer use/install2/autoinstall
+	use/cleanup/installer use/install2/autoinstall use/grub/install2.cfg
 	@$(call add_feature)
 	@$(call try,INSTALLER,altlinux-generic)	# might be replaced later
 	@$(call add,INSTALL2_PACKAGES,installer-distro-$$(INSTALLER)-stage2)
 	@$(call add,INSTALL2_PACKAGES,branding-$$(BRANDING)-alterator)
 	@$(call add,BASE_PACKAGES,branding-$$(BRANDING)-release)
+	@$(call add,BASE_PACKAGES,installer-distro-$$(INSTALLER)-stage3)
 	@$(call add,BASE_PACKAGES,installer-common-stage3)
 	@$(call add,BASE_PACKAGES,glibc-gconv-modules)	# for guile22
-	@$(call add,BASE_LISTS,$(call tags,basesystem))
+	@$(call add,BASE_LISTS,$(call tags,basesystem && !alterator))
 	@$(call xport,BASE_BOOTLOADER)
 	@$(call xport,INSTALL2_CLEANUP_PACKAGES)
 	@$(call xport,INSTALL2_CLEANUP_KDRIVERS)
@@ -19,7 +20,8 @@ use/install2: use/stage2 sub/stage2@install2 use/metadata \
 # doesn't use/install2/fs on purpose (at least so far)
 use/install2/full: \
 	use/install2/packages use/install2/vmguest use/install2/tools \
-	use/syslinux/localboot.cfg use/syslinux/ui/menu use/bootloader
+	use/syslinux/localboot.cfg use/grub/localboot_bios.cfg \
+	use/syslinux/ui/menu use/bootloader
 	@$(call add,INSTALL2_PACKAGES,xorg-drv-synaptics)
 	@$(call add,INSTALL2_PACKAGES,xorg-drv-libinput)
 
@@ -84,12 +86,12 @@ use/install2/vnc:
 	@$(call add,INSTALL2_PACKAGES,x11vnc xterm net-tools)
 
 # this one expects external vncviewer to come
-use/install2/vnc/listen: \
-	use/install2/vnc use/syslinux/install-vnc-listen.cfg; @:
+use/install2/vnc/listen: use/install2/vnc \
+	use/syslinux/install-vnc-listen.cfg use/grub/install-vnc-listen.cfg; @:
 
 # this one connects to a specified vncviewer --listen
-use/install2/vnc/connect: \
-	use/install2/vnc use/syslinux/install-vnc-connect.cfg; @:
+use/install2/vnc/connect: use/install2/vnc \
+	use/syslinux/install-vnc-connect.cfg use/grub/install-vnc-connect.cfg; @:
 
 # add both bootloader items to be *that* explicit ;-)
 use/install2/vnc/full: use/install2/vnc/listen use/install2/vnc/connect; @:
@@ -123,6 +125,11 @@ use/install2/tools:
 # when VNC installation is less welcome than a few extra megs
 use/install2/cleanup/vnc:
 	@$(call add,INSTALL2_CLEANUP_PACKAGES,x11vnc xorg-xvfb)
+
+# when VNC installation is less welcome than a few extra megs
+use/install2/cleanup/dri:
+	@$(call set,INSTALL2_CLEANUP_DRI,yes)
+	@$(call xport,INSTALL2_CLEANUP_DRI)
 
 # conflicts with luks feature
 use/install2/cleanup/crypto:

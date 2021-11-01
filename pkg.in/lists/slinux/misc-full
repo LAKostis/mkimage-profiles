@@ -7,7 +7,8 @@ stardict-engcom
 
 # NVIDIA drivers
 #kernel-modules-nvidia-@KERNEL_MOD@
-nvidia-xconfig
+nvidia-xconfig@X86
+nvidia-xconfig@aarch64
 
 # ATI proprietary driver
 #fglrx_glx
@@ -16,12 +17,12 @@ nvidia-xconfig
 
 vlock
 
-hplip-PPDs
+hplip-PPDs@!riscv64
 
 tango-icon-theme
 tango-icon-theme-extras
 
-hwinfo
+hwinfo@X86
 
 # Merged from disk-dvd list
 
@@ -29,7 +30,6 @@ fonts-ttf-church
 fonts-ttf-latex-xft
 fonts-ttf-tempora
 
-clipart-openclipart-png
 ImageMagick
 
 ntfs-3g
@@ -38,10 +38,9 @@ perl-Crypt-Rijndael
 
 ffmpeg
 dvgrab
-mjpegtools
 mencoder
 transcode
-jackd
+jack-audio-connection-kit
 
 osec-mailreport
 slocate

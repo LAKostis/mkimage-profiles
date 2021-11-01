@@ -2,11 +2,30 @@
 # this breaks the default configuration on intent
 # so that alterator-setup can run predictably
 
-TARGET=/lib/systemd/system/setup.target
+TARGET=/lib/systemd/system/$GLOBAL_OEM_TARGET.target
 
 [ ! -s "$TARGET" ] ||
 	ln -s "$TARGET" /etc/systemd/system/default.target
 
 echo "LANG=en_US.utf-8" >> /etc/sysconfig/i18n
+
+# Disable cleanup alterator-setup
+[ ! "$GLOBAL_OEM_NO_CLEANUP" = yes ] ||
+	sed -i 's/^REMOVE_SELF=.*/REMOVE_SELF=0/' /etc/alterator-setup/config
+
+# Set alterator-setup steps
+if [ -n "$GLOBAL_OEM_STEPS" ]; then
+	rm -f /etc/alterator-setup/steps
+	for OEM_STEP in $GLOBAL_OEM_STEPS; do
+		echo $OEM_STEP >> /etc/alterator-setup/steps
+	done
+fi
+
+if [ -n "$GLOBAL_OEM_INSTALL" ]; then
+	mkdir -p /var/lib/install3
+	tar -xf /.install3.tar -C /var/lib/install3/
+	rm /.install3.tar
+	touch /var/lib/install3/lists/.base
+fi
 
 :

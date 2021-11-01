@@ -1,0 +1,17 @@
+#!/bin/sh
+# postprocess grub configuration
+# when the image sizes are finally known
+# NB: install2_size, live_size, rescue_size get defined here
+
+cd "$WORKDIR"
+cfg='boot/grub/grub.cfg'
+
+[ -f "$cfg" ] || exit 0
+
+# apply size census while looking for potential squashfs images
+find -maxdepth 1 -type f -size +1M \
+| sed 's,^\./,,' \
+| while read image; do
+	size="$[ $(stat -c%s "$image") / 1024 + 1 ]"
+	sed -i "s,@${image}_size@,$size," $cfg
+done

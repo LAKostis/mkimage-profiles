@@ -1,5 +1,5 @@
 Name: mkimage-profiles
-Version: 1.3.15
+Version: 1.4.19
 Release: alt1
 
 Summary: ALT based distribution metaprofile
@@ -8,7 +8,7 @@ Group: Development/Other
 
 Url: http://altlinux.org/m-p
 Source: %name-%version.tar
-Packager: Michael Shigorin <mike@altlinux.org>
+Packager: Anton Midyukov <antohami@altlinux.org>
 
 BuildArch: noarch
 BuildRequires: rsync
@@ -128,6 +128,308 @@ mv %buildroot%mpdir/doc/mkimage-profiles.7 %buildroot%_man7dir/
 %endif
 
 %changelog
+* Mon Oct 18 2021 Anton Midyukov <antohami@altlinux.org> 1.4.19-alt1
+- syslinux: fix broken 01-syslinux script in previous version 1.4.18
+- regular-vm.mk, regular.mk: drop udev-rule-generator
+- kernel: add rtw89 wifi kernel module for support Realtek RTL8852AE
+  (thanks zerg@)
+- install2: don't remove mmc kernel modules to allow USB 0bda:0129 cardreader
+  (thanks zerg@)
+- install2: do not cleanup cec and rc kernel modules (needed for amdgpu)
+  (thanks zerg@)
+- kernel/stage1: prevent to include nvidia to stage1 (thanks zerg@)
+- drm: drop use/drm/stage2/nvidia target
+- kworkstation: add latest commits from zerg@
+- initrd-bootchain: add etwork interface naming udev rules
+- initrd-bootchain: allow BOOTCHAIN_LOGFILE, BOOTCHAIN_LOG_VT to be reassigned
+- build-vm: create initrd from a special config (/etc/initrd.mk.oem)
+- kernel: add use/kernel/disable-usb-autosuspend
+- mixin.mk: disable usb autosuspend for regular-x11
+- kernel: add drivers/mfd drivers/clk to initrd for aarch64, armh
+- grub: remove 'ip=dhcp' from netinstall.cfg
+- isomd5sum: drop obsoletes feature
+- build.mk: Do nothing with IMAGEDIR if $(DIRECT_TARGETS) is running
+- init: Fix install /etc/os-release (thanks sem@)
+- workstation: add latest commits from sem@
+- slinux: add latest commits from sem@
+- education: add latest commits from cas@
+
+* Mon Sep 20 2021 Anton Midyukov <antohami@altlinux.org> 1.4.18-alt1
+- If the BRANCH variable is not empty, and the BRANDING variable on
+  the contrary is empty, then BRANDING is assigned to alt-starterkit.
+- Revert commit "base+rescue: add eepm"
+- Fixed conditions with variable BRANCH
+- Drop STARTERKIT variable
+- grub: add submenu "Network installation"
+- Do not use udev-rule-generator-net in regulars/starterkits
+- initrd-bootchain: Initial feature
+- stage1: allow creating stage1 without stage2
+- ntp: fix add fallbck THE_NTPD_SERVICE
+- Makefile: check *_PACKAGES* variables as lists
+- vmguest: fix build with use/vmguest/kvm/x11 for BRANCH=p9
+- grub, syslinux: replace 'splash=0' to 'nosplash' in rescue
+- drop features: aarch64-dbm, armh-cubox, armh-dovefb, nexus7,
+  armh-tegra, armh
+- build-vm: add FEATURES and MODULES_TRY_ADD from /etc/initrd.mk
+- syslinux: Generate isolinux.cfg for any BOOTLOADER
+- build-vm, stage2: set GLOBAL_HSH_PROC=1
+- vm.mk: Add sr_mod to initrd modules for vm/cloud-system
+  (thanks obirvalger@)
+
+* Tue Aug 31 2021 Anton Midyukov <antohami@altlinux.org> 1.4.17-alt1
+- Add COMMON_LISTS variable support by analogy COMMON_PACKAGES.
+  Fix use/efi (the list 'base+efi' was not added to rescue, base,
+  live)
+- kernel: add drivers/soc to VM_INITRDMODULES (needed for rk3399
+  support)
+- uboot: Added HiFive Unmatched support (thanks jqt4@)
+- lib/profile.mk: do not abort build with CHECK=0, if unavailable ARCH
+- base+rescue: add eepm (request by lav@)
+- stage2: update 50-stage2-sbc-aarch64. Use directories instead of
+  specifying modules 
+
+* Mon Aug 23 2021 Anton Midyukov <antohami@altlinux.org> 1.4.16-alt1
+- efi: add mokutil, pesign to COMMON_PACKAGES (for Secure Boot,
+  requset by nikel@)
+- build.mk: fix build without APTCONF parameter
+- image.in/Makefile: fix save-profile (exclude .work)
+- bin/metadep-expander: fix output redirection to /dev/null
+- bin/metadep-expander: do not abort build, if metapackage not available
+- adapt bin/check-pkg-list for mkimage-profiles. Use for build without
+  parameter CHECK=0
+- reports.mk: fix build with REPORT=1, CHECK=1 and undefined DEBUG
+- test.mk: add package availability test in all package lists.
+  Usage: make CHECK=1 DEBUG=1 check-all-pkglists.iso
+- add missing README for features: mipsel-bfk3, mipsel-mitx, lxc
+- ve.mk, vm.mk: replace systemd to use/init/systemd (request by obirvalger@)
+- net: Add networkd/resolved and networkd/resolved-stub subfeatures
+  (thanks obirvalger@)
+- education, slinux, workstation: fix build for non e2k ARCH.
+  See also commit 'e2k: add a stub for non e2k%'
+- education, slinux, workstation: add use/arm-rpi4 to vm/ targets
+  on aarch64, armh
+- fix build vm/alt-workstation-cloud
+- fix build vm/regular-cnc-rt-efi
+- drop armh.conf, target use/slinux/arm and linux-arm list
+- cleanup unavailable packages for p10 from package lists
+
+* Tue Aug 10 2021 Anton Midyukov <antohami@altlinux.org> 1.4.15-alt1
+- reports.mk: convert targets.svgz to pdf, if rsvg-convert is available
+- reports.mk: save distcfg.mk to report directory, when check build (CHECK=1)
+- vmguest: add xorg-drv-spiceqxl, xorg-dri-virtio to kvm/x11
+- grub: add missing '--id' for items menu grub.cfg
+- grub: not set GRUB_UI for unsupported ARCHES
+- grub: fix selection by default install2, if GRUB_DEFAULT is not set
+- live.mk: add new target grub-ui.iso
+- build.mk: initial .work/aptbox immediately after configuring the profile
+- pkg.in: Add @META suffix support for pkglist items
+- tar2fs: Add offset 16 MiB for singleboard PC support
+- tar2fs: Mark root partition as bootable if extlinux.conf is present
+- arm-rpi4: use mode nouboot for rpi kernel only
+- regular-vm.mk: build universal images for aarch64/armh
+- net: use/net/nm/native not require use/net/nm
+- net: enable udevd-final for etcnet
+- regular.mk: not use grupcboot and multiple kernels for boot ISO for
+  starterkit's
+- firmware: add firmware-alsa-sof to use/firmware/laptop (thanks cas@)
+- x11: drop primus
+- init: enable udevd-final for sysvinit
+- pack: add squash to the list of ve archive formats (thanks glebfm@)
+- add lxc-guest feature (thanks glebfm@)
+- arm-rpi4: not use specyphic features for RPi4 in use/arm-rpi4
+- regular-vm.mk: set VM_SIZE to 7 GiB
+- realtime.mk: disable plymouth
+- e2k fixes for alt-workstation, slinux
+- add latest commits for alt-server (thanks boyarsh@)
+- add latest commits for alt-workstation (thanks sem@)
+
+* Mon Jul 05 2021 Anton Midyukov <antohami@altlinux.org> 1.4.14-alt1
+- reports.mk: fix launch together with the CHECK option
+- Makefile: Create a report directory at each iteration
+- Makefile, profile.mk: not create temp directories with DIRECT_TARGETS
+- log.mk:  Don't write anything to build.log when DIRECT_TARGETS
+- Do not rsync .gitignore to build directories
+- regular-vm.mk: add deepin rootfs targets
+- engineering: use metapackage instead list
+- dev, kernel: not set BIGRAM to std-def
+- regulars: require the entire metapackage chain
+- grub: Updating 95fwsetup_efi.cfg. Replace "System setup" to
+  "UEFI Firmware Settings"
+- build-vm: overwrite existing output file
+- workstation: 9.2 rc1
+- server-v: 9.2 rc1
+
+* Mon Jun 07 2021 Anton Midyukov <antohami@altlinux.org> 1.4.13-alt1
+- add parametr's BRANCH, NO_SYMLINK
+- fix usage AUTOCLEAN parameter with DEBUG
+- use variable REPORT from ~/.mkimage/profiles.mk
+- move logs to reports directory, if enable REPORT
+- fix build pdf documentation after clean
+- update documetation
+- build starterkits from regular.mk profile
+- cnc-rt: uses lxqt DE instead of lxde
+- cnc-rt: Not add efi=runtime to EFI_BOOTARGS
+- kernel: add missing virtio kernel modules to VM_INITRDMODULES
+- server-v: 9.2 beta
+- workstation: 9.2 beta
+- education: added last commits
+
+* Fri May 21 2021 Anton Midyukov <antohami@altlinux.org> 1.4.12-alt1
+- fix VM_SAVE_TARBALL parameter support
+- grub: save ang read default menu item (thanks jqt4@, sin@)
+
+* Mon May 17 2021 Anton Midyukov <antohami@altlinux.org> 1.4.11-alt1
+- build-vm: Add ability to build .img.xz (thanks sem@)
+- reports.mk: optimiztion for generate rpm and srpms lists (thanks mike@)
+- reports.mk: generate targets.svgz instead targets.png
+- add VM_SAVE_TARBALL parameter
+- add MKIMAGE_PREFIX parameter
+- kernel: optimization use/kernel/initrd-setup
+- set STAGE1_INITRD_BOOTARGS in initrd-propagator
+- slinux 9.1
+- education 9.2
+
+* Mon Apr 26 2021 Anton Midyukov <antohami@altlinux.org> 1.4.10-alt1
+- build propagator and copy kernel in mkimage-profiles
+- copy kernel to boot/ directory on iso image
+- multiple kernels support for iso with grub
+- add support initrd.img instead full.cz in stage1 with grub, syslinux
+- use method:cdrom,fuid instead method:disk,uuid in uuid-iso feature
+  (thanks jqt4@)
+- vmguest: Drop virtualbox-addition kernel modules
+- fix make distclean
+- reports.mk: Generate rpm and srpms lists
+- add hdt for grub-pc (floppy disk image)
+- add items boot with local drive for grub-pc (iso)
+- oem: use/deflogin/root
+- add switch sddm|lightdm for kde5
+- education 9.2 beta
+
+* Mon Apr 05 2021 Anton Midyukov <antohami@altlinux.org> 1.4.9-alt1
+- build-distro: BOOT_TYPE = BOOTLOADER
+- Add the ability to override BOOTLOADER
+- grub: restrict graphics mode to architectures i586, x86_64, aarch64
+- Add grub-efi support for riscv64 (thanks arei@)
+- New feature uuid-iso for create UUID for ISO image (thanks jqt4@)
+- Disable sort subprofiles (build stage1 first)
+- fonts: Set SYSTEM_FONTS for use/fonts/install2 again
+- stage2: Add cmac.ko for use SMB2 and newer
+- live.mk: Add distro/grub, fix allowed targets for architectures
+- init: Add mount-efivars for sysvinit
+- alt-server: fix missing packages in p9
+- education: pull new commits
+
+* Mon Mar 15 2021 Anton Midyukov <antohami@altlinux.org> 1.4.8-alt1
+- Set BOOT_TYPE, BOOTLOADER to efiboot for aarch64
+- 'Simply Linux 9.1 (beta)' commits contained (Thanks sem@)
+- mipsel-bfk3: Switch to 5.4 kernel, other changes (Thanks iv@)
+- oem: Add use/oem/distro
+- uboot: Drop BOOTARGS cma=192M
+- net: Added switch between NetworkManager (etcnet) and NetworkManager (native)
+  Assigned by default NetworkManager (etcnet)
+- x11: Not add use/drm to use/x11
+- efi: Add check EFIVAR_FS option
+- sound/base: Add test-audio
+- armh-mcom02: set screen resolution 1366x768
+- realtime.mk: Refactoring, drop live with session support
+- engineering.mk: Switch to MATE
+- x11: Reduce size of kde5
+- regular-vm.mk: Set as default un-def kernel flavour, drop lts kernel flavour
+
+* Mon Feb 15 2021 Anton Midyukov <antohami@altlinux.org> 1.4.7-alt1
+- Add kernel modules for support Raspberry Pi 4 (mainline kernel)
+- grub: Markup configuration files for translation (thanks Ivan Razzhivin)
+- grub: Use META_VOL_ID for @distro@ instead RELNAME if available
+  (ALT bug 39611, 39612)
+- tar2fs: Enable secure-boot support for x86_64, add riscv64 support
+- Add initrd features for rootfs: kbd rdshell rootfs
+- desktop+mate: list is fixed,  as removed metapackage mate-default
+- grub: use single boot/grub/grub.cfg in ISO
+- Add support grub-pc for bootloading ISO (experimentall)
+- Removed kernel modules that haven't been built for a long time
+
+* Mon Jan 25 2021 Anton Midyukov <antohami@altlinux.org> 1.4.6-alt1
+- deepin: add Network Manager applet
+- engineering: initial as distributiv
+- efi: fixed check modules for kernel-image >= 5.10
+- oem: fixed calculation of required free space for installing additional
+  packages
+- oem: not use git in 60-oem-install.mk
+- regular: do not default to mounting anything found (thanks mike@)
+- rescue: added save session mode support for efi
+- tar2fs: Disable os-probe at the time of grub installation
+- xfce-sysv: add gnome-disks (suggested by Speccyfighter)
+
+* Mon Dec 07 2020 Anton Midyukov <antohami@altlinux.org> 1.4.5-alt1
+- Initial feature drm, added Nvidia proprietary driver support
+- Adapted use/repo/main for vm/ targets
+- oem: Added ability to set alterator-setup steps
+- oem: Added use/oem/install target
+- wireless: Update kernel modules for wi-fi
+- armh-skit: Initial feature
+- grub: Drop multiple kernel support
+- stage1: Also add STAGE1_KMODULES
+- bootloader, plymouth: Add splash to BASE_BOOTARGS only when using
+  the plymouth feature
+- tar2fs: Not add EFI partition for all aarch64, armh, but only for
+  those with grub-efi bootloader or VM_BOOTTYPE variable set
+- regular.mk, x11: Initial regular-deepin.iso
+- arm-rpi4: Cleanup
+- grub: Added EFI_BOOTARGS into BOOT/EFI/grub.cfg
+
+* Mon Oct 26 2020 Anton Midyukov <antohami@altlinux.org> 1.4.4-alt1
+- apply server-v 9.1 release patches (thanks shaba@)
+- apply e2k patches (mike@)
+- mipsel-bfk3: Fix /etc/fstab generation (thanks iv@)
+- Rename all RPMs to canonical names before genbasedir (thanks boyars@)
+- gnustep: Fix build
+- oem: Add use/oem/no-cleanup
+- deflogin: Now you can add a user with specific uid, gid and so on
+
+* Fri Sep 25 2020 Anton Midyukov <antohami@altlinux.org> 1.4.3-alt1
+- education: added commits skipped when rebase was done
+- wireless: added rtl8812au driver
+- partially added commits from the kworkstation
+- added e2k patches (mike@)
+- tar2fs: set UUID in extlinux.conf, if exist
+- vm.mk: simplified conditions for choosing a bootloader depending on arch
+- added a couple of commits (obirvalger@)
+- added commits for mipsel support (iv@)
+- added the ability to override fonts (needed kworkstation)
+- added target use/live/no-cleanup which is needed to disable cleanup
+  documentation and rpmdb; is needed for live kworkstation without
+  livecd-install
+- fixed adding empty variable in "use/efi"
+- don't cleanup dri modules from install2 (needed for support glamore)
+- metadata/lib/50-metadata.mk: space-prefixed strings handling fixed (boyarsh@)
+
+* Tue Sep 01 2020 Anton Midyukov <antohami@altlinux.org> 1.4.2-alt1
+- x11: Added missing xorg-dri-armsoc for armh
+- oem: Added rootfs-installer-features
+- server-v: Added more commits by andy@, shaba@
+- Set default timeout 60 seconds for syslinux and grub
+- Set default item to install2 for syslinux and grub
+- main.mk: Added vm/, ve/ targets into everything target
+- Extended e2k support in distributions (thanks mike@)
+- education: fix build and install
+
+* Mon Aug 17 2020 Anton Midyukov <antohami@altlinux.org> 1.4.1-alt1
+- Revert commit for support multiple kernel in iso image.
+
+* Mon Aug 17 2020 Anton Midyukov <antohami@altlinux.org> 1.4.0-alt1
+- New official maintainer antohami@ (blessed by mike@)
+- Added grub config file generator for iso images
+  (thanks shaba@)
+- Expanded support for USB controllers and SD card readers
+- Added support for booting on single-board Raspberry Pi 3 and 4
+  in EFI mode (u-boot or edk2)
+- Added grub-efi bootloader support for rootfs images
+- Merged with branches for Workstation, Education,
+  Simply Linux, Server, Server-V distributions
+- Added a starterkit build profile with a real-time kernel (live)
+- Added riscv64 platform support (thanks arei@)
+- rootfs: support headless boot via alterator-setup-vnc (thanks arei@)
+
 * Mon Nov 18 2019 Michael Shigorin <mike@altlinux.org> 1.3.15-alt1
 - autoinstall fix (sin@)
 - Baikal-M support, @ARM, elogind removal, other tweaks (antohami@)

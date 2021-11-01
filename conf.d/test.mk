@@ -2,6 +2,9 @@
 ifneq (,$(DEBUG))
 
 ifeq (distro,$(IMAGE_CLASS))
+# For check all package lists
+distro/pkg-all-lists: distro/.init
+	@$(call add,THE_LISTS,*)
 
 distro/syslinux-auto: distro/.boot use/hdt use/syslinux/timeout/1; @:
 distro/syslinux-noescape: distro/syslinux-auto use/syslinux/noescape.cfg; @:
@@ -12,10 +15,6 @@ distro/live-mediacheck: distro/.base use/mediacheck +plymouth; @:
 
 distro/live-testserver: distro/live-install use/server/mini
 	@$(call set,KFLAVOURS,std-def el-smp)
-
-distro/live-gns3: distro/live-icewm
-	@$(call add,LIVE_LISTS,gns3)
-	@$(call add,LIVE_KMODULES,kvm virtualbox)
 
 # NB: requires runtime Server/ServerActive setup in zabbix_agentd.conf
 distro/live-zabbix: distro/live-icewm use/net-eth

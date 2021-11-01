@@ -1,0 +1,30 @@
+#!/bin/sh
+# Expand metapackage dependenies
+#
+APT_CACHE=$1
+f=$2
+[ -n "$f" ] || exit 0
+
+metapkgs="$(grep -e @META "$f" | grep -v '^#')"
+[ -n "metapkgs" ] || exit 0
+
+for metapkg in $metapkgs; do
+	metapkg=${metapkg%@META}
+	if ! "$APT_CACHE" show "$metapkg" > /dev/null 2>&1; then
+		echo "Warning: Metapackage $metapkg not available!!!" >&2
+		continue
+	fi
+	t="`mktemp`"
+	LANG=C "$APT_CACHE" depends "$metapkg"| grep 'Depends:' |
+		cut -f4 -d ' ' |grep -v '<' > "$t"
+	if [ -s "$t" ]; then
+		sed -i -e "/$metapkg@META/r $t" -e "s/$metapkg@META/$metapkg/" "$f"
+	fi
+	sed -i "s/$metapkg@META/$metapkg/" "$f"
+	rm -f "$t"
+done
+
+# Cleanup not available metapackages
+sed -i "/@META/d" "$f"
+
+exit 0

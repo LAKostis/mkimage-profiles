@@ -14,6 +14,7 @@ eject
 
 # Package management
 apt-repo
+aptitude
 
 # Partition management
 fdisk
@@ -24,12 +25,15 @@ agetty
 # Console mouse
 gpm
 
+# File management
+mc
+
 # Provisioning
-udpcast
-partclone@X86
+partclone
 
 # l10n
 glibc-locales
 
 # Misc
 rescue-launcher
+system-backup

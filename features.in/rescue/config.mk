@@ -9,7 +9,7 @@ use/rescue/base: use/rescue/.base
 	@$(call add,RESCUE_LISTS,\
 		$(call tags,base && (rescue || network || security || archive)))
 
-use/rescue: use/rescue/.base use/syslinux/sdab.cfg \
+use/rescue: use/rescue/.base use/syslinux/sdab.cfg use/grub/sdab_bios.cfg \
 	use/services use/firmware/full +wireless
 	@$(call add,DEFAULT_SERVICES_DISABLE,rpcbind)
 ifeq (,$(filter-out i586 x86_64,$(ARCH)))
@@ -23,15 +23,9 @@ ifneq (,$(EFI_BOOTLOADER))
 endif
 	@$(call add,RESCUE_LISTS,\
 		$(call tags,(base || extra || server || backup || misc || fs) \
-			&& (rescue || comm || network || security || archive)))
+			&& !x11 && (rescue || comm || network || security || archive)))
 
-# rw slice, see also use/live/rw (don't use simultaneously)
-ifeq (,$(EFI_BOOTLOADER))
-use/rescue/rw: use/rescue use/syslinux
-	@$(call add,SYSLINUX_CFG,rescue_rw)
-else
-use/rescue/rw: use/rescue; @:
-endif
+use/rescue/rw: use/rescue use/syslinux/rescue_rw.cfg use/grub/rescue_rw.cfg; @:
 
 test/rescue:
 	@$(call xport,TEST_RESCUE)

@@ -1,5 +1,11 @@
 #!/bin/sh
 
+# validate just in case (see also stage1 Makefile)
+if [ ! -f "$WORKDIR/syslinux/$GLOBAL_BOOTLOADER.cfg" ]; then
+	echo "Warning: syslinux/*.cfg not found"
+	exit 0
+fi
+
 gfxboot_datadir=/usr/share/gfxboot
 
 if [ ! -d "$gfxboot_datadir" ]; then
@@ -15,9 +21,7 @@ if [ ! -f "$bootlogo" ]; then
 	exit 0
 fi
 
-cd "$WORKDIR"
-mkdir -p syslinux
-cd syslinux
+cd "$WORKDIR/syslinux"
 
 # unpack
 cpio -iduV <"$bootlogo"

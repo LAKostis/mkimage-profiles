@@ -1,14 +1,18 @@
 #!/bin/sh -x
 
-kver="$(rpm -qa 'kernel-image*' \
-            --qf '%{installtime} %{version}-%{name}-%{release}\n' \
-        | sort -n \
-        | cut -f 2 -d ' ' \
-        | sed 's/kernel-image-//')"
+[ -n "$GLOBAL_KFLAVOURS" ] ||
+  { echo "** KFLAVOURS is empty" >&2; exit 0; }
 
-[ -n "$kver" ] || { echo "** unable to deduce kernel version" >&2; exit 1; }
+kver=
+for KFLAVOUR in $GLOBAL_KFLAVOURS; do
+	kver+=" $(rpm -qa 'kernel-image*' \
+		--qf '%{version}-%{name}-%{release}\n' \
+	| grep "$KFLAVOUR" \
+	| sed 's/kernel-image-//')"
+done
+[ ! -z "${kver#"${kver%%[! ]*}"}" ] ||
+  { echo "** unable to deduce kernel version" >&2; exit 1; }
 
 for KVER in $kver; do
 	/sbin/installkernel --uboot --keep-initrd "$KVER"
 done
-printf 'LABEL=ROOT\t/\text4\tdefaults\t1 1\n' >> /etc/fstab
