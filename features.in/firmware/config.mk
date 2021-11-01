@@ -25,12 +25,8 @@ use/firmware/server: use/firmware
 use/firmware/qlogic: use/firmware
 	@$(call add,SYSTEM_PACKAGES,firmware-ql6312)
 
-# NB: individual firmwarez would sometimes conflict
-#     with ones newly merged into firmware-linux
-use/firmware/wireless: use/firmware
-	@$(call add,THE_PACKAGES_REGEXP,firmware-prism.*)
-	@$(call add,THE_PACKAGES_REGEXP,firmware-ipw.*)
-	@$(call add,THE_PACKAGES_REGEXP,firmware-zd.*)
+# stub
+use/firmware/wireless: use/firmware; @:
 
 use/firmware/laptop: use/firmware/cpu
 	@$(call add,THE_KMODULES,acpi_call)
