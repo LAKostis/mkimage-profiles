@@ -18,7 +18,7 @@ use/vmguest/kvm: use/vmguest
 use/vmguest/kvm/x11: use/vmguest/kvm
 	@$(call add,THE_PACKAGES,spice-vdagent xorg-drv-qxl xorg-drv-spiceqxl)
 ifneq (p9,$(BRANCH))
-	@$(call add,THE_PACKAGES,xorg-dri-virtio)
+	@$(call add,THE_PACKAGES,xorg-dri-virtio_gpu)
 endif
 else
 use/vmguest/kvm use/vmguest/kvm/x11: ; @:
