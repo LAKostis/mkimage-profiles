@@ -169,6 +169,7 @@ distro/lakostis-gnome3: distro/regular-gnome3 use/x11/vulkan
 
 distro/lakostis-gnome3-nvidia: distro/lakostis-gnome3 \
 	use/x11/nvidia use/nvidia/uvm
+	@$(call set,NVIDIA_PACKAGES,nvidia_glx nvidia-settings nvidia-xconfig cuda-libs nvidia-tools)
 
 distro/regular-lxqt: distro/.regular-desktop mixin/regular-lxqt +plymouth \
 	use/browser/falkon use/x11/sddm
