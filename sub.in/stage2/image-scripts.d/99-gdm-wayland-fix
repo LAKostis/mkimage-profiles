@@ -1,0 +1,3 @@
+#!/bin/sh -efu
+
+[ -s /lib/udev/rules.d/61-gdm.rules ] && sed -i -r '/^DRIVER=="nvidia".*/d' /lib/udev/rules.d/61-gdm.rules
