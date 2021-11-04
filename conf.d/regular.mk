@@ -179,14 +179,14 @@ distro/regular-gnome3: distro/.regular-desktop mixin/regular-gnome3 \
 
 distro/lakostis-gnome3: distro/regular-gnome3 use/x11/vulkan
 	@$(call set,KFLAVOURS,lks-wks)
-	@$(call add,THE_KMODULES,media)
-	@$(call add,SERVICES_ENABLE,sshd NetworkManager bluetoothd)
+	@$(call add,THE_KMODULES,media alsa)
+	@$(call add,SERVICES_ENABLE,sshd NetworkManager bluetoothd cups)
 	@$(call add,LIVE_LISTS,$(call tags,desktop lakostis))
-	@$(call add,LIVE_PACKAGES,cups-pk-helper system-config-printer)
+	@$(call add,LIVE_PACKAGES,cups cups-pk-helper system-config-printer firefox-wayland java-11-openjdk clinfo)
 
 distro/lakostis-gnome3-nvidia: distro/lakostis-gnome3 \
 	use/x11/nvidia use/nvidia/uvm
-	@$(call set,NVIDIA_PACKAGES,nvidia_glx nvidia-settings nvidia-xconfig cuda-libs nvidia-tools)
+	@$(call set,NVIDIA_PACKAGES,nvidia_glx nvidia-settings nvidia-xconfig cuda-libs nvidia-tools libnvidia-opencl)
 
 distro/regular-lxqt: distro/.regular-desktop mixin/regular-lxqt +plymouth \
 	use/browser/falkon use/x11/sddm
