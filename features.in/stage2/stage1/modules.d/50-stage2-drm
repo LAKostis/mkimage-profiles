@@ -1,1 +1,3 @@
 kernel/drivers/gpu/drm
+cec.ko
+rc-core.ko
